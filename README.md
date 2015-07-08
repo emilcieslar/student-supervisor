@@ -1,2 +1,4 @@
-# student-supervisor
-Student Supervisor Management System
+# Student Supervisor Management System
+University of Glasgow Masters Project 2015
+
+

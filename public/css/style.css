@@ -1,0 +1,100 @@
+body {
+    font-family: FontAwesome;
+}
+
+/* OVERRIDES FOUNDATION */
+.top-bar {
+    background: #003865;
+}
+
+.top-bar .name h1 a {
+    line-height: 41px;
+}
+
+h3 {
+    margin-top: 15px;
+}
+
+div.action-points {
+    padding: 0;
+}
+
+i.icon {
+    width: 10%;
+}
+
+ul.action-points {
+    margin: 0;
+}
+
+ul.action-points li {
+    width: 100%;
+    list-style: none;
+    border-bottom: 1px solid #dddddd;
+    cursor: pointer;
+    text-indent: 20px;
+    background: white;
+}
+
+ul.action-points li.active {
+    background-color: #eeeeee;
+}
+
+ul.action-points li:last-child {
+    border-bottom: none;
+}
+
+ul.action-points li:hover {
+    background-color: #eeeeee;
+}
+
+    ul.action-points li a {
+        width: 100%;
+        height: 100%;
+        display: block;
+        line-height: 50px;
+    }
+
+.action-point {
+    background-color: #eeeeee;
+}
+
+    .action-point-detail div {
+        margin: 5px;
+    }
+
+
+/* DASHBOARD */
+.dashboard-links {
+    background-color: rgba(0, 56, 101, 0.43);
+    padding: 0;
+}
+
+    .dashboard-links ul {
+        margin: 0;
+    }
+
+    .dashboard-links li {
+        line-height: 50px;
+        padding: 0 20px;
+        margin-left: 0;
+    }
+
+    .dashboard-links li.active {
+        background: #c6d2dc;
+    }
+
+.dashboard-main {
+    background-color: rgba(0, 56, 101, 0.22);
+    padding: 0.9375em;
+}
+
+
+/* GENERAL STYLES */
+.top-10 {
+    margin-top: 10px !important;
+}
+
+.top-20 {
+    margin-top: 20px !important;
+}
