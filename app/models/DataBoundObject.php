@@ -75,6 +75,14 @@ abstract class DataBoundObject {
         $objStatement->execute();
     }
 
+    public function RemoveTemporary()
+    {
+        # Remove temporary row that was created
+        $strQuery = 'DELETE FROM ' . $this->strTableName . 'Temp WHERE id = ' . $this->ID;
+        $objStatement = $this->objPDO->query($strQuery);
+        unset($objStatement);
+    }
+
     public function Save() {
         if (isset($this->ID)) {
             $strQuery = 'UPDATE ' . $this->strTableName . ' SET ';

@@ -117,11 +117,16 @@ CREATE TABLE session_variable (
 # INSERT SOME VALUES
 INSERT INTO User(username,password,first_name,last_name,type) VALUES('emil','955db0b81ef1989b4a4dfeae8061a9a6','Emil','Cieslar',0);
 INSERT INTO User(username,password,first_name,last_name,type) VALUES('rose','955db0b81ef1989b4a4dfeae8061a9a6','Rosanne','English',1);
+INSERT INTO User(username,password,first_name,last_name,type) VALUES('joe','955db0b81ef1989b4a4dfeae8061a9a6','Joe','Doe',0);
 
 INSERT INTO Project(name,description) VALUES('SSMS','Student Supervisor Management System');
+INSERT INTO Project(name,description) VALUES('Quizzes','Quizzes Management System');
 
 INSERT INTO UserProject(user_id,project_id) VALUES(1,1);
 INSERT INTO UserProject(user_id,project_id) VALUES(2,1);
+
+INSERT INTO UserProject(user_id,project_id) VALUES(2,2);
+INSERT INTO UserProject(user_id,project_id) VALUES(3,2);
 
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
     VALUES(NOW() - INTERVAL 7 DAY,0,0,1,1,1,1);
@@ -131,7 +136,7 @@ INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_pla
 VALUES(NOW() + INTERVAL 14 DAY,0,0,1,0,1,1);
 
 INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, grade, meeting_id, user_id, project_id)
-    VALUES(NOW() + INTERVAL 7 DAY,NOW(),'Finish first version of UML',1,0,0,1,1,1);
+    VALUES(NOW() + INTERVAL 7 DAY,NOW(),'Finish first version of UML',0,0,0,1,1,1);
 INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, grade, meeting_id, user_id, project_id)
     VALUES(NOW() + INTERVAL 7 DAY,NOW(),'User stories first iteration',1,0,0,1,1,1);
 

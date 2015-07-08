@@ -24,8 +24,12 @@ class Login extends Controller
         {
             # Get user
             $user = HTTPSession::getInstance()->GetUserObject();
-            # Set project id
+            # Set project id session
             HTTPSession::getInstance()->PROJECT_ID = $user->getProjectId();
+            # Set user type session
+            HTTPSession::getInstance()->USER_TYPE = $user->getType();
+            # Set username session
+            HTTPSession::getInstance()->USERNAME = $user->getUsername();
             # Redirect to index
             header('Location: ' . SITE_URL);
         }

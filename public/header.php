@@ -18,7 +18,7 @@
 <nav class="top-bar" data-topbar role="navigation">
     <ul class="title-area">
         <li class="name">
-            <h1><a href="#" class="fa fa-comment"> ssms</a></h1>
+            <h1><a href="#" class="fa fa-comment"> &nbsp;<strong>s</strong>tudent<strong>s</strong>upervisor</a></h1>
         </li>
         <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
         <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
@@ -28,15 +28,24 @@
         <!-- Right Nav Section -->
         <ul class="right">
             <?php if(HTTPSession::getInstance()->IsLoggedIn()): ?>
-                <li><a href="<?=SITE_URL;?>logout">Logout</a></li>
+                <li class="has-dropdown">
+                    <a href="#">Hello <strong><?=HTTPSession::getInstance()->USERNAME;?></strong></a>
+                    <ul class="dropdown">
+                        <li><a href="<?=SITE_URL;?>logout">Sign out</a></li>
+                    </ul>
+                </li>
+                <!-- Only supervisor can choose from different projects -->
+                <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+                <li class="has-dropdown">
+                    <a href="#">Project</a>
+                    <ul class="dropdown">
+                        <?php foreach(ProjectFactory::getAllProjectsForUser(HTTPSession::getInstance()->GetUserID()) as $project): ?>
+                        <li><a href="<?=SITE_URL.'project/'.$project->getID();?>"><?=$project->getName();?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </li>
+                <?php endif; ?>
             <?php endif; ?>
-            <li class="has-dropdown">
-                <a href="#">ssms project</a>
-                <ul class="dropdown">
-                    <li><a href="#">Another project</a></li>
-                    <li><a href="#">Another one</a></li>
-                </ul>
-            </li>
         </ul>
 
     </section>

@@ -25,16 +25,30 @@ $date->modify('+7 day');
     <?php foreach ($data['actionpoints'] as $actionpoint): ?>
 
         <?php if(isset($data['id'])) { if($actionpoint->getID() == $data['id']->getID()) { ?>
-            <li class="active"><a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>"><?=$actionpoint->getText();?></a></li>
+            <li class="active"><a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
+                    <!-- If action point is set to done -->
+                    <?php if($actionpoint->getIsDone()): ?>
+                        <i class="fa fa-check inline"></i>&nbsp;&nbsp;
+                    <?php endif; ?>
+
+                    <?=$actionpoint->getText();?></a>
+            </li>
         <?php } else { ?>
-            <li><a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>"><?=$actionpoint->getText();?></a></li>
+            <li><a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
+                    <!-- If action point is set to done -->
+                    <?php if($actionpoint->getIsDone()): ?>
+                    <i class="fa fa-check inline"></i>&nbsp;&nbsp;
+                    <?php endif; ?>
+
+                    <?=$actionpoint->getText();?></a>
+            </li>
         <?php }} else { ?>
             <li><a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>"><?=$actionpoint->getText();?></a></li>
         <?php } ?>
 
     <?php endforeach; ?>
 
-        <li class="<?php if($data['add']) echo 'active';?>"><a class="fa fa-plus" href="<?=SITE_URL;?>actionpoints/add">&nbsp;&nbsp;Add a new action point</a></li>
+        <li class="add-new-action-point<?php if(isset($data['add'])) echo ' active';?>"><a class="fa fa-plus" href="<?=SITE_URL;?>actionpoints/add">&nbsp;&nbsp;Add a new action point</a></li>
     </ul>
 </div>
 <!-- DETAIL OF ACTION POINT -->
@@ -54,9 +68,18 @@ $date->modify('+7 day');
             <span><?=$data['id']->getDeadlineUserFriendly();?></span>
         </div>
 
-        <div class="large-12 columns">
-            <span><?php if(!$data['id']->getIsApproved()) echo "This action point hasn't been approved yet."?></span>
-        </div>
+        <?php if($data['id']->getIsDone()): ?>
+            <div class="large-12 columns">
+                <i class="fa fa-check icon" title="Deadline"></i>
+                <span>This action point has been marked as done</span>
+            </div>
+        <?php endif; ?>
+
+        <?php if(!$data['id']->getIsApproved()): ?>
+            <div class="large-12 columns">
+                <div class="panel">This action point hasn't been approved yet.</div>
+            </div>
+        <?php endif; ?>
 
         <div class="large-12 columns left top-20">
             <a href="<?=SITE_URL;?>actionpoints/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"> Edit</a>
@@ -131,6 +154,13 @@ $date->modify('+7 day');
                 <div class="large-12 columns">
                     <input name="isDone" id="checkbox1" type="checkbox" <?php if($data['id']->getIsDone()) echo "checked";?>><label for="checkbox1">Is this action point done?</label>
                 </div>
+
+                <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+                    <!-- If we're logged in as a supervisor -->
+                    <div class="large-12 columns">
+                        <input name="isApproved" id="checkboxApproved" type="checkbox" <?php if($data['id']->getIsApproved()) echo "checked";?>><label for="checkboxApproved">Approve changes</label>
+                    </div>
+                <?php endif; ?>
                 <div class="large-12 columns top-10">
                     <input class="button" type="submit" name="addActionPoint" value="Save changes">
                 </div>
@@ -155,7 +185,9 @@ $date->modify('+7 day');
             <input name="action" type="hidden">
 
             <div class="large-12 columns">
-                <input name="deadline" placeholder="Choose deadline" type="text" id="dp1">
+                <label>Choose deadline:
+                    <input name="deadline" placeholder="Choose deadline" type="text" id="dp1">
+                </label>
             </div>
             <div class="large-6 columns">
                 <select name="deadline_time_hours" placeholder="Choose time">
@@ -172,18 +204,22 @@ $date->modify('+7 day');
                 </select>
             </div>
             <div class="large-12 columns">
-                <input name="text" placeholder="Action Point" type="text">
+                <label>Name the action point:
+                    <input name="text" placeholder="Action Point" type="text">
+                </label>
             </div>
             <div class="large-12 columns">
-                <select name="meetingId">
-                    <option value="0">Choose a meeting</option>
-                    <?php foreach($data["meetings"] as $meeting): ?>
-                        <option value="<?=$meeting->getID();?>"><?=$meeting->getDatetime()?></option>
-                    <?php endforeach; ?>
-                </select>
+                <label>Associate the action point with a meeting:
+                    <select name="meetingId">
+                        <option value="0">Choose a meeting</option>
+                        <?php foreach($data["meetings"] as $meeting): ?>
+                            <option value="<?=$meeting->getID();?>"><?=DatetimeConverter::getUserFriendlyDateTimeFormat($meeting->getDatetime())?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
             </div>
-            <div class="large-12 columns">
-                <input class="button" type="submit" name="addActionPoint" value="Save">
+            <div class="large-12 columns top-10">
+                <input class="button" type="submit" name="addActionPoint" value="Add">
             </div>
         </form>
         </div><!-- row -->

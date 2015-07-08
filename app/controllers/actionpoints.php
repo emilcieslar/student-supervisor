@@ -70,7 +70,15 @@ class ActionPoints extends Controller
 
     public function remove($id)
     {
+        # Retrieve action point from database based on provided id
         $actionPoint = $this->model('ActionPoint',$id);
+
+        # Save the existing actionPoint to the temporary table
+        # in order to retrieve it if not approved by supervisor
+        # Delete operation will appear in the supervisor's notification
+        # and supervisor and cancel the action if necessary
+        $actionPoint->SaveTemporary();
+
         $actionPoint->MarkForDeletion();
 
         # Redirect back to action points
@@ -100,7 +108,7 @@ class ActionPoints extends Controller
 
     public function editPost($post)
     {
-        # Create action point
+        # Retrieve action point from database based on provided id
         $actionPoint = $this->model('ActionPoint', $post['id']);
 
         # Save the existing actionPoint to the temporary table
@@ -118,6 +126,15 @@ class ActionPoints extends Controller
         if(isset($post['isDone']))
             $isDone = 1;
 
+        # Default is 0 because default is student and every time student
+        # edits action point, isApproved must be set to 0
+        $isApproved = 0;
+        # If it's a supervisor who edits the post, isApproved is passed as well
+        if(isset($post['isApproved']))
+        {
+            $isApproved = 1;
+        }
+
         # Set correct format of provided date
         $date = DateTime::createFromFormat('d-m-Y H:i', $deadline . " " . $deadline_time_hours . ":" . $deadline_time_minutes);
         $date = $date->format('Y-m-d H:i:s');
@@ -128,9 +145,11 @@ class ActionPoints extends Controller
         $actionPoint->setMeetingId($meetingId);
         $actionPoint->setProjectId(HTTPSession::getInstance()->PROJECT_ID);
         $actionPoint->setIsDone($isDone);
-        # Because we edited action point, it's not approved anymore
-        $actionPoint->setIsApproved(0);
-        # TODO: When the action point is approved again, record must be deleted from temporary table
+
+        $actionPoint->setIsApproved($isApproved);
+        # If the action point is approved, we must delete the temporary one from temp table
+        if($isApproved)
+            $actionPoint->RemoveTemporary();
 
         # Save the action point
         $actionPoint->Save();

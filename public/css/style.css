@@ -1,5 +1,5 @@
 body {
-    font-family: FontAwesome;
+    _font-family: FontAwesome;
 }
 
 /* OVERRIDES FOUNDATION */
@@ -10,6 +10,20 @@ body {
 .top-bar .name h1 a {
     line-height: 41px;
 }
+
+.inline {
+    display: inline;
+}
+
+.top-bar-section ul li {
+    background: #003865;
+}
+
+.top-bar-section li:not(.has-form) a:not(.button) {
+    background: #003865;
+}
+
+/* GENERAL STYLES */
 
 h3 {
     margin-top: 15px;
@@ -34,6 +48,10 @@ ul.action-points li {
     cursor: pointer;
     text-indent: 20px;
     background: white;
+}
+
+ul.action-points li.add-new-action-point {
+    background: #c6d2dc;
 }
 
 ul.action-points li.active {

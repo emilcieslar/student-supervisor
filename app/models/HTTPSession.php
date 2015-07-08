@@ -3,6 +3,7 @@
 /**
  * Class HTTPSession
  * Used for more secure session management than the default one in PHP
+ * Uses database to store session instead of a file
  *
  * 1. Instantiate the session – $objSession = new HTTPSession($objPDO);
  * 2. Impress the session (for session timeout purposes) – $objSession->Impress();
@@ -188,6 +189,12 @@ class HTTPSession
 
     public function __set($nm, $val)
     {
+        # First remove existing value (if it has the same variable name during the same session)
+        $strQuery = "DELETE FROM session_variable WHERE session_id = " . $this->native_session_id . " AND variable_name = '" . $nm . "'";
+        $objStatement = $this->objPDO->query($strQuery);
+        unset($objStatement);
+
+        # Then insert it
         $strSer = serialize($val);
         $strQuery = "INSERT INTO session_variable(session_id, variable_name, variable_value) VALUES(" . $this->native_session_id . ", '$nm', '$strSer')";
         $objStatement = $this->objPDO->query($strQuery);

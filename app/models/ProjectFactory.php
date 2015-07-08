@@ -52,4 +52,31 @@ class ProjectFactory
 
         return null;
     }
+
+    public static function getAllProjectsForUser($userId)
+    {
+        # Get PDO
+        $objPDO = PDOFactory::get();
+
+        # Get all meetings associated with the $projectId from a database
+        $strQuery = "SELECT DISTINCT project_id FROM UserProject WHERE user_id = :user_id";
+        $objStatement = $objPDO->prepare($strQuery);
+        $objStatement->bindValue(':user_id',$userId,PDO::PARAM_INT);
+        $objStatement->execute();
+
+        # Define empty array
+        $myArr = array();
+
+        # Add all meetings associated with the $projectId to an array
+        if($result = $objStatement->fetchAll(PDO::FETCH_ASSOC))
+        {
+            foreach($result as $row)
+            {
+                $myArr[$row["project_id"]] = new Project($row["project_id"]);
+            }
+        }
+
+        return $myArr;
+    }
+
 }
