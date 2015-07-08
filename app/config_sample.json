@@ -1,0 +1,17 @@
+/*
+ * This is a sample config, to make it work, edit details
+ * and save it as config.json
+ */
+
+
+{
+  "connect": {
+    "host":"localhost",
+    "dbname":"yourdbname",
+    "charset":"utf8",
+    "username":"root",
+    "password":"password"
+  },
+
+  "site_url":"/directory/directory/"
+}

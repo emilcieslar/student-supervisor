@@ -7,14 +7,7 @@ class GoogleAuth
     public function __construct($client)
     {
         $this->client = $client;
-        $this->client->setClientId('20865495637-3lpoaisr8t4eimfd7j0dah9c9k7a22cg.apps.googleusercontent.com');
-        $this->client->setClientSecret('lkgo08wubnJ6iqawMSa3afhz');
-        $this->client->setDeveloperKey("AIzaSyD6CFYSOhlUbdRLzZdqBYkxO6qCtFbTbcg");
 
-        $this->client->setRedirectUri('http://localhost/master/student-supervisor/index.php');
-        $this->client->addScope("https://www.googleapis.com/auth/calendar");
-        $this->client->addScope("https://www.googleapis.com/auth/userinfo.email");
-        $this->client->setAccessType('offline');
     }
 
     public function checkCode($code)
