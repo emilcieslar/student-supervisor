@@ -6,10 +6,16 @@
             <p>Please provide correct details.</p>
         </div>
     <?php endif; ?>
-    <form action="<?=SITE_URL;?>login/loginPost" method="post" name="loginForm">
+
+    <a class="clearfix" href="<?=SITE_URL;?>login/forgotPassword">Forgot password?</a>
+
+    <form action="<?=SITE_URL;?>login/loginPost" method="post" name="loginForm" class="top-20">
         <input type="hidden" name="action">
         <label>Username: <input name="user" type="text"></label>
         <label>Password: <input name="pass" type="password"></label>
         <input type="submit" class="button" value="Log in" name="logIn">
+        <a href="<?=$data['link']?>" class="button success">Sign in using Google &rarr;</a>
     </form>
+
+
 </div>

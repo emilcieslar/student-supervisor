@@ -15,6 +15,7 @@ CREATE TABLE User (
   first_name VARCHAR(25) NOT NULL,
   last_name VARCHAR(25) NOT NULL,
   type INT(1) DEFAULT 0,
+  email VARCHAR(50) NOT NULL UNIQUE,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM;
 
@@ -115,9 +116,10 @@ CREATE TABLE session_variable (
 );
 
 # INSERT SOME VALUES
-INSERT INTO User(username,password,first_name,last_name,type) VALUES('emil','955db0b81ef1989b4a4dfeae8061a9a6','Emil','Cieslar',0);
-INSERT INTO User(username,password,first_name,last_name,type) VALUES('rose','955db0b81ef1989b4a4dfeae8061a9a6','Rosanne','English',1);
-INSERT INTO User(username,password,first_name,last_name,type) VALUES('joe','955db0b81ef1989b4a4dfeae8061a9a6','Joe','Doe',0);
+INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('emil','955db0b81ef1989b4a4dfeae8061a9a6','Emil','Cieslar',0,'emil.cieslar@gmail.com');
+INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('rose','955db0b81ef1989b4a4dfeae8061a9a6','Rosanne','English',1,'cieslaremil@gmail.com');
+INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('rose_gmail','955db0b81ef1989b4a4dfeae8061a9a6','Rosanne','English',1,'rosanneenglish@gmail.com');
+INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('joe','955db0b81ef1989b4a4dfeae8061a9a6','Joe','Doe',0,'cieslar@webkreativ.cz');
 
 INSERT INTO Project(name,description) VALUES('SSMS','Student Supervisor Management System');
 INSERT INTO Project(name,description) VALUES('Quizzes','Quizzes Management System');

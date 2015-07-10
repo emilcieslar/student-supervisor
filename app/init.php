@@ -20,9 +20,10 @@ require_once 'models/HTTPSession.php';
 
 # Start a more secure session
 $objSession = HTTPSession::getInstance();
+$objSession->Impress();
 
-# For testing purposes, set default PROJECT_ID to 1
-#$objSession->PROJECT_ID = 1;
+# Start up a GoogleAuth
+GoogleAuth::getInstance();
 
 # Check if user is NOT logged in
 if(!$objSession->IsLoggedIn())

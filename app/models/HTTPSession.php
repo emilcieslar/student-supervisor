@@ -96,7 +96,7 @@ class HTTPSession
     {
         if ($this->native_session_id) {
             $strQuery = "UPDATE http_session SET last_impression = now() WHERE id = " . $this->native_session_id;
-            $objStatement = $this->objPDO->query($strQuery);
+            $this->objPDO->query($strQuery);
         }
     }
 
@@ -130,7 +130,7 @@ class HTTPSession
     public function Login($strUsername, $strPlainPassword)
     {
         $strMD5Password = md5($strPlainPassword);
-        $strQuery = "SELECT id FROM user WHERE username = :username AND password = :pass";
+        $strQuery = "SELECT id FROM User WHERE username = :username AND password = :pass";
         $objStatement = $this->objPDO->prepare($strQuery);
 
         $objStatement->bindValue(':username', $strUsername, PDO::PARAM_STR);
@@ -155,12 +155,75 @@ class HTTPSession
         }
     }
 
+    public function LoginGoogle($email)
+    {
+        # Check if Google User is in the database
+        $strQuery = "SELECT email,id FROM User WHERE email = :email";
+        $objStatement = $this->objPDO->prepare($strQuery);
+        $objStatement->bindValue(':email',$email,PDO::PARAM_STR);
+        $objStatement->execute();
+
+        $row = $objStatement->fetch(PDO::FETCH_ASSOC);
+
+        # If there's a record with this user
+        if($row)
+        {
+            # Set user ID and log in
+            $this->user_id = $row['id'];
+            $this->logged_in = true;
+
+            # Update session in database
+            unset($objStatement);
+            $strQuery = "UPDATE http_session SET logged_in = 1, user_id = " . $this->user_id . " WHERE id = " . $this->native_session_id;
+            $objStatement = $this->objPDO->prepare($strQuery);
+            $objStatement->execute();
+
+            # Get user object
+            $user = HTTPSession::getInstance()->GetUserObject();
+            # Set project id session
+            HTTPSession::getInstance()->PROJECT_ID = $user->getProjectId();
+            # Set user type session
+            HTTPSession::getInstance()->USER_TYPE = $user->getType();
+            # Set username session
+            HTTPSession::getInstance()->USERNAME = $user->getUsername();
+        }
+        # If there's no record with such user
+        else
+        {
+            # Create it in the database
+            /*$strQuery = "INSERT INTO User(username, first_name, last_name, type, email) VALUES(:username,:first_name,:last_name,:user_type,:email)";
+            unset($objStatement);
+            $objStatement = $this->objPDO->prepare($strQuery);
+            $objStatement->bindValue(':username',$email,PDO::PARAM_STR);
+            $objStatement->bindValue(':first_name',$email,PDO::PARAM_STR);
+            $objStatement->bindValue(':last_name',$email,PDO::PARAM_STR);
+            $objStatement->bindValue(':user_type',1,PDO::PARAM_INT);
+            $objStatement->bindValue(':email',$email,PDO::PARAM_STR);
+            $objStatement->execute();
+
+            $this->user_id = $this->objPDO->lastInsertId("User_id_seq");
+            $this->logged_in = true;*/
+
+
+            # OR Let user know that he/she doesn't have permissions to enter the site
+            HTTPSession::getInstance()->ACCESS_TOKEN = null;
+            header("Location: ".SITE_URL."login/permissionDenied");
+        }
+
+
+    }
+
     public function LogOut()
     {
         if ($this->logged_in == true) {
             $strQuery = "UPDATE http_session SET logged_in = 0, user_id = 0 WHERE id = " . $this->native_session_id;
             $objStatement = $this->objPDO->prepare($strQuery);
             $objStatement->execute();
+
+            # In case it was a google sign in
+            if(!empty(GoogleAuth::$auth))
+                # Unset access token
+                HTTPSession::getInstance()->ACCESS_TOKEN = null;
 
             $this->logged_in = false;
             $this->user_id = 0;
@@ -181,7 +244,7 @@ class HTTPSession
         $row = $objStatement->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            return(unserialize($row["variable_value"]));
+            return(unserialize(base64_decode($row["variable_value"])));
         } else {
             return(false);
         }
@@ -195,7 +258,7 @@ class HTTPSession
         unset($objStatement);
 
         # Then insert it
-        $strSer = serialize($val);
+        $strSer = base64_encode(serialize($val));
         $strQuery = "INSERT INTO session_variable(session_id, variable_name, variable_value) VALUES(" . $this->native_session_id . ", '$nm', '$strSer')";
         $objStatement = $this->objPDO->query($strQuery);
     }

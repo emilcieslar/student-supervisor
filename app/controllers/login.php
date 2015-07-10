@@ -9,7 +9,10 @@ class Login extends Controller
         if(HTTPSession::getInstance()->IsLoggedIn())
             header('Location: ' . SITE_URL);
 
-        $this->view('login/index', ['error'=>$error]);
+        # Get link for google auth
+        $link = GoogleAuth::getInstance()->getAuthLink();
+
+        $this->view('login/index', ['error'=>$error, 'link'=>$link]);
     }
 
     public function loginPost($post)
@@ -44,6 +47,21 @@ class Login extends Controller
     public function error()
     {
         $this->index(true);
+    }
+
+    public function forgotPassword($error = null)
+    {
+        $this->view('login/pass', ['error'=>$error]);
+    }
+
+    public function generatePass($post)
+    {
+
+    }
+
+    public function permissionDenied()
+    {
+        $this->view('login/permission_denied');
     }
 
 }

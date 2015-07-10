@@ -32,7 +32,10 @@ class User extends DataBoundObject
     public function getProjectId()
     {
         # Get Project object and its ID
-        return ProjectFactory::getProjectWithUserId($this->ID)->getID();
+        if($projectId = ProjectFactory::getProjectWithUserId($this->ID))
+            return $projectId->getID();
+
+        return null;
     }
 
 }

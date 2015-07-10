@@ -2,22 +2,15 @@
 
 require_once 'app/init.php';
 
-# Start up the login
-/*require 'app/google-api-php-client/src/Google/autoload.php';
-# Create google client
-$client = new Google_Client();
-# Init helper class that will log user in
-$googleAuth = new GoogleAuth($client);
-
 # Check whether code was passed back
 if(isset($_GET['code']))
 {
     # If it was, pass it to the class
-    $googleAuth->checkCode($_GET['code']);
+    GoogleAuth::getInstance()->checkCode($_GET['code']);
 }
 
-echo $_SESSION['access_token'];
 
+/*
 # Is user logged in?
 if(isset($_SESSION['access_token']) && $_SESSION['access_token'])
 {
