@@ -30,4 +30,14 @@ class Meeting extends DataBoundObject
         ));
     }
 
+    public function getDatetimeUserFriendly()
+    {
+        return DatetimeConverter::getUserFriendlyDateTimeFormat($this->Datetime);
+    }
+
+    public function getRepeatUntilUserFriendly()
+    {
+        return DatetimeConverter::getUserFriendlyDateTimeFormat($this->RepeatUntil);
+    }
+
 }

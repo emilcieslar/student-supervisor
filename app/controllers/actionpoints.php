@@ -62,7 +62,7 @@ class ActionPoints extends Controller
 
             # Get meetings for the add form
             $meetings = $this->model('MeetingFactory');
-            $meetings = $meetings->getMeetingsForProject(1, false);
+            $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, false);
 
             $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'meetings'=>$meetings, 'add'=>true]);
         }

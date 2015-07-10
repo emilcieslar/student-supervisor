@@ -19,7 +19,7 @@ class GoogleAuth
         $this->client->setClientSecret('lkgo08wubnJ6iqawMSa3afhz');
         $this->client->setDeveloperKey("AIzaSyD6CFYSOhlUbdRLzZdqBYkxO6qCtFbTbcg");
 
-        $this->client->setRedirectUri('http://localhost/master/student-supervisor/index.php');
+        $this->client->setRedirectUri(SITE_URL.'index.php');
         $this->client->addScope("https://www.googleapis.com/auth/calendar");
         $this->client->addScope("https://www.googleapis.com/auth/userinfo.email");
         $this->client->setAccessType('offline');

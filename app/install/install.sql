@@ -41,7 +41,7 @@ CREATE TABLE Meeting (
   repeat_until DATETIME NOT NULL,
   is_approved BOOLEAN DEFAULT 0,
   taken_place BOOLEAN DEFAULT 0,
-  arrived_on_time BOOLEAN DEFAULT 1,
+  arrived_on_time BOOLEAN DEFAULT 0,
   project_id INT(11) NOT NULL,
   FOREIGN KEY (project_id) REFERENCES Project(id),
   PRIMARY KEY (id)
@@ -131,11 +131,11 @@ INSERT INTO UserProject(user_id,project_id) VALUES(2,2);
 INSERT INTO UserProject(user_id,project_id) VALUES(3,2);
 
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
-    VALUES(NOW() - INTERVAL 7 DAY,0,0,1,1,1,1);
+    VALUES(NOW() - INTERVAL 7 DAY,0,0,1,1,0,1);
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
-    VALUES(NOW() + INTERVAL 7 DAY,0,0,1,0,1,1);
+    VALUES(NOW() + INTERVAL 7 DAY,0,0,1,0,0,1);
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
-VALUES(NOW() + INTERVAL 14 DAY,0,0,1,0,1,1);
+VALUES(NOW() + INTERVAL 14 DAY,0,0,0,0,0,1);
 
 INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, grade, meeting_id, user_id, project_id)
     VALUES(NOW() + INTERVAL 7 DAY,NOW(),'Finish first version of UML',0,0,0,1,1,1);

@@ -10,12 +10,13 @@
         line-height: 1;
     }
     .calendar .title { 
-        text-align: center; 
-        font-size: 1.6875rem; 
+        text-align: center;
+        line-height: 50px;
     }
     .calendar .week {
         padding: 0px;
         margin: 0px;
+        background: white;
     }
     .calendar .week:before, .calendar .week:after {
         content: " ";
@@ -27,9 +28,9 @@
 .calendar .day,
 .calendar .days {
   position: relative;
-  padding: 0.3rem 0.39375rem;
+  padding: 1rem 1rem;
   width: 100%;
-  min-height: 6rem;
+  min-height: 4rem;
   float: left;
 }
 .calendar .day-header {
