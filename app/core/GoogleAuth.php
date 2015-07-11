@@ -9,17 +9,22 @@ class GoogleAuth
 
     private function __construct()
     {
+        # Load config
+        $file = file_get_contents("app/config.json");
+        $config = json_decode($file);
+
         # Start up the login
         require_once 'app/google-api-php-client/src/Google/autoload.php';
         # Create google client
         $client = new Google_Client();
 
         $this->client = $client;
-        $this->client->setClientId('20865495637-3lpoaisr8t4eimfd7j0dah9c9k7a22cg.apps.googleusercontent.com');
-        $this->client->setClientSecret('lkgo08wubnJ6iqawMSa3afhz');
-        $this->client->setDeveloperKey("AIzaSyD6CFYSOhlUbdRLzZdqBYkxO6qCtFbTbcg");
+        $this->client->setClientId($config->{'google_auth'}->{'client_id'});
+        $this->client->setClientSecret($config->{'google_auth'}->{'client_secret'});
+        $this->client->setDeveloperKey($config->{'google_auth'}->{'developer_key'});
 
-        $this->client->setRedirectUri(SITE_URL.'index.php');
+        $this->client->setRedirectUri(SITE_URL.$config->{'google_auth'}->{'redirect_uri'});
+
         $this->client->addScope("https://www.googleapis.com/auth/calendar");
         $this->client->addScope("https://www.googleapis.com/auth/userinfo.email");
         $this->client->setAccessType('offline');

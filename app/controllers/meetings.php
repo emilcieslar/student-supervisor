@@ -9,7 +9,7 @@ class Meetings extends Controller
 
         # Is there a specific ID to display or display default?
         if($id)
-            # Create Action Point from provided ID
+            # Create Meeting from provided ID
             $id = new Meeting($id);
         # Get default
         else
@@ -113,5 +113,84 @@ class Meetings extends Controller
 
         # Redirect back to action points
         Header('Location: ' . SITE_URL . 'meetings');
+    }
+
+    public function edit($id = null)
+    {
+        if(isset($id))
+        {
+            # Get list of all meetings to display them in the left side list
+            $meetings = $this->model('MeetingFactory');
+            $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID);
+
+            # Create Meeting from provided ID
+            $id = new Meeting($id);
+
+            # Set correct format of provided date
+            $date = DateTime::createFromFormat('Y-m-d H:i:s', $id->getDatetime());
+            $data['date'] = $date->format('d-m-Y');
+            $data['hours'] = $date->format('H');
+            $data['minutes'] = $date->format('i');
+
+            # Set correct format of provided date for repeatUntil
+            $dateRepeatUntil = DateTime::createFromFormat('Y-m-d H:i:s', $id->getRepeatUntil());
+            $data['dateRepeatUntil'] = $dateRepeatUntil->format('d-m-Y');
+
+            $this->view('meetings/index', ['meetings'=>$meetings, 'id'=>$id, 'edit'=>true, 'datetime'=>$data]);
+        }
+        else
+            header('Location: '.SITE_URL.'meetings');
+    }
+
+    public function editPost($post = null)
+    {
+        if(isset($post))
+        {
+            # Create an object of existing meeting
+            $meeting = $this->model('Meeting',$post['id']);
+
+            # Save the existing Meeting to the temporary table
+            # in order to retrieve it if not approved by supervisor
+            $meeting->SaveTemporary();
+
+            # Get details from post request
+            $deadline = $post['deadline'];
+            $deadline_time_hours = $post['deadline_time_hours'];
+            $deadline_time_minutes = $post['deadline_time_minutes'];
+
+            $isApproved = 0;
+            if(isset($post['isApproved']))
+                $isApproved = 1;
+
+            $arrivedOnTime = 0;
+            if(isset($post['arrivedOnTime']))
+                $arrivedOnTime = 1;
+
+            $takenPlace = 0;
+            if(isset($post['takenPlace']))
+                $takenPlace = 1;
+
+            # Set correct format of provided date
+            $date = DateTime::createFromFormat('d-m-Y H:i', $deadline . " " . $deadline_time_hours . ":" . $deadline_time_minutes);
+            $date = $date->format('Y-m-d H:i:s');
+
+            # Set provided details
+            $meeting->setDatetime($date);
+            $meeting->setIsApproved($isApproved);
+            $meeting->setTakenPlace($takenPlace);
+            $meeting->setArrivedOnTime($arrivedOnTime);
+
+            # If the meeting is approved, we must delete the temporary one from temp table
+            if($isApproved)
+                $meeting->RemoveTemporary();
+
+            # Save changes
+            $meeting->Save();
+        }
+
+        # Redirect back to meetings
+        header('Location: '.SITE_URL.'meetings');
+
+        die();
     }
 }

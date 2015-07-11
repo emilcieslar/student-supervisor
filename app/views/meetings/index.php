@@ -14,7 +14,7 @@
 
     <div class="large-12 columns dashboard-main">
 
-        <!-- LIST OF ACTION POINTS -->
+        <!-- LIST OF MEETINGS -->
         <div class="large-8 columns action-points">
             <ul class="action-points">
                 <?php foreach ($data['meetings'] as $meeting): ?>
@@ -24,7 +24,8 @@
                         <?php if($meeting->getID() == $data['id']->getID()): ?>
                         <li class="active">
                             <a href="<?=SITE_URL;?>meetings/<?=$meeting->getID();?>">
-                                <!-- If action point is set to done -->
+
+                                <!-- If meeting has taken place -->
                                 <?php if($meeting->getTakenPlace()): ?>
                                     <i class="fa fa-check inline"></i>&nbsp;&nbsp;
                                 <?php endif; ?>
@@ -55,7 +56,7 @@
             </ul>
         </div>
 
-        <!-- DETAIL OF ACTION POINT -->
+        <!-- DETAIL OF MEETING -->
         <?php if(!isset($data['add']) AND !isset($data['edit'])): ?>
         <div class="large-4 columns action-point">
             <div class="row action-point-detail">
@@ -71,7 +72,7 @@
                 <?php if($data['id']->getIsRepeating()): ?>
                     <div class="large-12 columns">
                         <i class="fa fa-repeat icon" title="This meeting is repeating every week until"></i>
-                        <span id="dp2"><?=$data['id']->getRepeatUntilUserFriendly()?></span>
+                        <span><?=$data['id']->getRepeatUntilUserFriendly()?></span>
                     </div>
                 <?php endif; ?>
 
@@ -95,10 +96,23 @@
                     </div>
                 <?php endif; ?>
 
-                <div class="large-12 columns left top-20">
-                    <a href="<?=SITE_URL;?>actionpoints/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"> Edit</a>
-                    <a href="<?=SITE_URL;?>actionpoints/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
-                </div>
+                <?php if($data['id']->getTakenPlace() && HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT): ?>
+                    <!-- If a user is a student and this meeting has already taken place, don't allow to edit or remove -->
+                    <div class="large-12 columns left top-20"></div>
+
+                <?php else: ?>
+                    <!-- Otherwise display editing and canceling options -->
+                    <div class="large-12 columns left top-20">
+                        <a href="<?=SITE_URL;?>meetings/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"> Edit</a>
+                        <a href="<?=SITE_URL;?>meetings/cancel/<?=$data['id']->getID();?>" class="fa fa-times button alert"> Cancel</a>
+
+                        <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+                            <!-- Supervisor can remove a meeting -->
+                            <a href="<?=SITE_URL;?>meetings/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"> Remove</a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
             </div>
         </div>
         <?php endif; ?>
@@ -166,6 +180,91 @@
 
                         <div class="large-12 columns top-10">
                             <input class="button" type="submit" name="addMeeting" value="Add">
+                        </div>
+                    </form>
+                </div><!-- row -->
+            </div>
+
+        <?php endif; ?>
+
+
+        <!-- FORM FOR EDITING AN EXISTING MEETING -->
+        <?php if(isset($data['edit'])): ?>
+
+            <div class="large-4 columns action-point">
+                <div class="row">
+                    <div class="large-12 columns">
+                        <h3>Edit Meeting</h3>
+                    </div>
+
+                    <form action="<?=SITE_URL;?>meetings/editPost" method="post" name="editMeeting">
+
+                        <!-- hidden input to tell router that it's a post request -->
+                        <input name="action" type="hidden">
+
+                        <input name="id" type="hidden" value="<?=$data['id']->getID()?>">
+
+                        <div class="large-12 columns">
+                            <label>Choose date and time:
+                                <input name="deadline" placeholder="Choose date and time" type="text" id="dp1" value="<?=$data['datetime']['date']?>">
+                            </label>
+                        </div>
+
+                        <div class="large-6 columns">
+                            <select name="deadline_time_hours" placeholder="Choose time">
+                                <?php for($i=1;$i<24;$i++): ?>
+                                    <?php if($i==$data['datetime']['hours']): ?>
+                                        <option value="<?=$i;?>" selected><?=$i;?></option>
+                                    <?php else: ?>
+                                        <option value="<?=$i;?>"><?=$i;?></option>
+                                    <?php endif; ?>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
+                        <div class="large-6 columns">
+                            <select name="deadline_time_minutes" placeholder="Choose time">
+                                <?php for($i=0;$i<6;$i++): ?>
+                                    <?php if($i==$data['datetime']['minutes']): ?>
+                                        <option value="<?=$i.'0';?>" selected><?=$i.'0';?></option>
+                                    <?php else: ?>
+                                        <option value="<?=$i.'0';?>"><?=$i.'0';?></option>
+                                    <?php endif; ?>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
+
+                        <!--<hr>
+
+
+                        <div class="large-12 columns">
+                            <input name="isRepeating" id="checkbox0" type="checkbox" <?=($data['id']->getIsRepeating()) ? "checked" : ""?>><label for="checkbox0">Should this meeting repeat?</label>
+                        </div>
+
+                        <div class="large-12 columns">
+                            <label>Choose repeat until date:
+                                <input name="repeatUntil" placeholder="Choose date" type="text" id="dp2" value="<?=($data['id']->getIsRepeating()) ? $data['datetime']['dateRepeatUntil'] : ""?>">
+                            </label>
+                        </div>
+
+                        <hr>-->
+
+                        <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+                            <!-- If we're logged in as a supervisor -->
+                            <div class="large-12 columns">
+                                <input name="isApproved" id="checkbox1" type="checkbox" <?=($data['id']->getIsApproved()) ? "checked" : ""?>><label for="checkbox1">Is this meeting approved?</label>
+                            </div>
+
+                            <div class="large-12 columns">
+                                <input name="arrivedOnTime" id="checkbox2" type="checkbox" <?=($data['id']->getArrivedOnTime()) ? "checked" : ""?>><label for="checkbox2">Has student arrived on time?</label>
+                            </div>
+
+                            <div class="large-12 columns">
+                                <input name="takenPlace" id="checkbox3" type="checkbox" <?=($data['id']->getTakenPlace()) ? "checked" : ""?>><label for="checkbox3">Has meeting taken place?</label>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="large-12 columns top-10">
+                            <input class="button" type="submit" name="editMeeting" value="Save changes">
                         </div>
                     </form>
                 </div><!-- row -->

@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS Project;
 DROP TABLE IF EXISTS UserProject;
 DROP TABLE IF EXISTS Meeting;
+DROP TABLE IF EXISTS MeetingTemp;
 DROP TABLE IF EXISTS ActionPoint;
 DROP TABLE IF EXISTS ActionPointTemp;
 DROP TABLE IF EXISTS Note;
@@ -35,6 +36,19 @@ CREATE TABLE UserProject (
 ) ENGINE=MyISAM;
 
 CREATE TABLE Meeting (
+  id int(11) AUTO_INCREMENT NOT NULL,
+  datetime DATETIME NOT NULL,
+  is_repeating BOOLEAN DEFAULT 0,
+  repeat_until DATETIME NOT NULL,
+  is_approved BOOLEAN DEFAULT 0,
+  taken_place BOOLEAN DEFAULT 0,
+  arrived_on_time BOOLEAN DEFAULT 0,
+  project_id INT(11) NOT NULL,
+  FOREIGN KEY (project_id) REFERENCES Project(id),
+  PRIMARY KEY (id)
+) ENGINE=MyISAM;
+
+CREATE TABLE MeetingTemp (
   id int(11) AUTO_INCREMENT NOT NULL,
   datetime DATETIME NOT NULL,
   is_repeating BOOLEAN DEFAULT 0,
