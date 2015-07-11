@@ -3,7 +3,6 @@
  * and save it as config.json
  */
 
-
 {
   "connect": {
     "host":"localhost",
@@ -13,5 +12,12 @@
     "password":"password"
   },
 
-  "site_url":"/directory/directory/"
+  "site_url":"/directory/directory/",
+
+  "google_auth": {
+    "client_id":"",
+    "client_secret":"",
+    "developer_key":"",
+    "redirect_uri":"index.php"
+  }
 }
