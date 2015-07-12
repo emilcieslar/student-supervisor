@@ -9,7 +9,6 @@ if(isset($_GET['code']))
     GoogleAuth::getInstance()->checkCode($_GET['code']);
 }
 
-
 /*
 # Is user logged in?
 if(isset($_SESSION['access_token']) && $_SESSION['access_token'])

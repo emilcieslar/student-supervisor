@@ -79,4 +79,30 @@ class ProjectFactory
         return $myArr;
     }
 
+    public static function getAllUsersForProject($projectId)
+    {
+        # Get PDO
+        $objPDO = PDOFactory::get();
+
+        # Get all meetings associated with the $projectId from a database
+        $strQuery = "SELECT user_id FROM UserProject WHERE project_id = :project_id";
+        $objStatement = $objPDO->prepare($strQuery);
+        $objStatement->bindValue(':project_id',$projectId,PDO::PARAM_INT);
+        $objStatement->execute();
+
+        # Define empty array
+        $myArr = array();
+
+        # Add all users associated with the $projectId to an array
+        if($result = $objStatement->fetchAll(PDO::FETCH_ASSOC))
+        {
+            foreach($result as $row)
+            {
+                $myArr[$row["user_id"]] = new User($row["user_id"]);
+            }
+        }
+
+        return $myArr;
+    }
+
 }

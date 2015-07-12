@@ -7,6 +7,7 @@ class User extends DataBoundObject
     protected $FirstName;
     protected $LastName;
     protected $Type;
+    protected $Email;
 
     const USER_TYPE_STUDENT = 0;
     const USER_TYPE_SUPERVISOR = 1;
@@ -25,7 +26,8 @@ class User extends DataBoundObject
             "password" => "Password",
             "first_name" => "FirstName",
             "last_name" => "LastName",
-            "type" => "Type"
+            "type" => "Type",
+            "email" => "Email"
         ));
     }
 

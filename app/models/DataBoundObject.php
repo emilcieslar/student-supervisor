@@ -106,9 +106,9 @@ abstract class DataBoundObject {
                     } else {
                         $objStatement->bindValue(':' . $value, $actualVal,
                             PDO::PARAM_STR);
-                    };
-                };
-            };
+                    }
+                }
+            }
             $objStatement->execute();
         } else {
             $strValueList = "";

@@ -18,8 +18,8 @@ class HTTPSession
     private $objPDO;
     private $logged_in;
     private $user_id;
-    private $session_timeout = 3600;      # 10 minute inactivity timeout
-    private $session_lifespan = 3600;    # 1 hour session duration
+    private $session_timeout = 3600;      # 1 hour inactivity timeout
+    private $session_lifespan = 86400;    # 1 day session duration
 
     private static $instance = null;
 

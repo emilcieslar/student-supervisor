@@ -108,7 +108,7 @@
 
                         <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
                             <!-- Supervisor can remove a meeting -->
-                            <a href="<?=SITE_URL;?>meetings/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"> Remove</a>
+                            <a href="<?=SITE_URL;?>meetings/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
@@ -152,31 +152,34 @@
                             </select>
                         </div>
 
-                        <hr>
+                        <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+                            <!-- If we're logged in as a supervisor -->
+                            <hr>
 
-                        <div class="large-12 columns">
-                            <input name="isRepeating" id="checkbox0" type="checkbox"><label for="checkbox0">Shoult this meeting repeat?</label>
-                        </div>
+                            <div class="large-12 columns">
+                                <input name="isRepeating" id="checkbox0" type="checkbox"><label for="checkbox0">Shoult this meeting repeat?</label>
+                            </div>
 
-                        <div class="large-12 columns">
-                            <label>Choose repeat until date:
-                                <input name="repeatUntil" placeholder="Choose date" type="text" id="dp2">
-                            </label>
-                        </div>
+                            <div class="large-12 columns">
+                                <label>Choose repeat until date:
+                                    <input name="repeatUntil" placeholder="Choose date" type="text" id="dp2">
+                                </label>
+                            </div>
 
-                        <hr>
+                            <hr>
 
-                        <div class="large-12 columns">
-                            <input name="isApproved" id="checkbox1" type="checkbox"><label for="checkbox1">Is this meeting approved?</label>
-                        </div>
+                            <div class="large-12 columns">
+                                <input name="isApproved" id="checkbox1" type="checkbox"><label for="checkbox1">Is this meeting approved?</label>
+                            </div>
 
-                        <div class="large-12 columns">
-                            <input name="arrivedOnTime" id="checkbox2" type="checkbox"><label for="checkbox2">Has student arrived on time?</label>
-                        </div>
+                            <div class="large-12 columns">
+                                <input name="arrivedOnTime" id="checkbox2" type="checkbox"><label for="checkbox2">Has student arrived on time?</label>
+                            </div>
 
-                        <div class="large-12 columns">
-                            <input name="takenPlace" id="checkbox3" type="checkbox"><label for="checkbox3">Has meeting taken place?</label>
-                        </div>
+                            <div class="large-12 columns">
+                                <input name="takenPlace" id="checkbox3" type="checkbox"><label for="checkbox3">Has meeting taken place?</label>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="large-12 columns top-10">
                             <input class="button" type="submit" name="addMeeting" value="Add">

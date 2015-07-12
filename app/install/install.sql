@@ -43,6 +43,7 @@ CREATE TABLE Meeting (
   is_approved BOOLEAN DEFAULT 0,
   taken_place BOOLEAN DEFAULT 0,
   arrived_on_time BOOLEAN DEFAULT 0,
+  google_event_id VARCHAR(255) DEFAULT '',
   project_id INT(11) NOT NULL,
   FOREIGN KEY (project_id) REFERENCES Project(id),
   PRIMARY KEY (id)
@@ -56,6 +57,7 @@ CREATE TABLE MeetingTemp (
   is_approved BOOLEAN DEFAULT 0,
   taken_place BOOLEAN DEFAULT 0,
   arrived_on_time BOOLEAN DEFAULT 0,
+  google_event_id VARCHAR(255) DEFAULT '',
   project_id INT(11) NOT NULL,
   FOREIGN KEY (project_id) REFERENCES Project(id),
   PRIMARY KEY (id)

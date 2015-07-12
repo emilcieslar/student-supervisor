@@ -9,6 +9,8 @@ class Meeting extends DataBoundObject
     protected $TakenPlace;
     protected $ArrivedOnTime;
 
+    protected $GoogleEventId;
+
     protected $ProjectId;
 
     protected function DefineTableName()
@@ -26,6 +28,7 @@ class Meeting extends DataBoundObject
             "is_approved" => "IsApproved",
             "taken_place" => "TakenPlace",
             "arrived_on_time" => "ArrivedOnTime",
+            "google_event_id" => "GoogleEventId",
             "project_id" => "ProjectId"
         ));
     }

@@ -7,4 +7,10 @@ class DatetimeConverter
         $date = DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
         return $date->format($format);
     }
+
+    public static function getGoogleAuthDateTimeFormat($datetime)
+    {
+        $date = DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
+        return $date->format("Y-m-d\TH:i:s");
+    }
 }
