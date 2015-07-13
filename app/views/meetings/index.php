@@ -8,7 +8,7 @@
             <li><a href="<?=SITE_URL;?>actionpoints">Action Points</a></li>
             <li><a href="#">Notes</a></li>
             <li class="active"><a href="<?=SITE_URL;?>meetings">Meetings</a></li>
-            <li><a href="#">Notifications</a></li>
+            <li><a href="<?=SITE_URL;?>notifications">Notifications</a></li>
         </ul>
     </div>
 

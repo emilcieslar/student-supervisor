@@ -37,11 +37,11 @@ i.icon {
     width: 10%;
 }
 
-ul.action-points {
+ul.action-points, ul.notifications {
     margin: 0;
 }
 
-ul.action-points li {
+ul.action-points li, ul.notifications li {
     width: 100%;
     list-style: none;
     border-bottom: 1px solid #dddddd;
@@ -49,6 +49,23 @@ ul.action-points li {
     text-indent: 20px;
     background: white;
 }
+
+ul.notifications li {
+    padding: 20px;
+    text-indent: 0;
+    display: block;
+    clear: both;
+    overflow: hidden;
+    cursor: auto;
+}
+
+    ul.notifications li .button {
+        margin-bottom: 0;
+    }
+
+    ul.notifications li .notification-object {
+        text-decoration: underline;
+    }
 
 ul.action-points li.add-new-action-point {
     background: #c6d2dc;

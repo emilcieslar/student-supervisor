@@ -15,7 +15,7 @@ class ActionPointFactory
             $sinceNowDatetime = "";
 
         # Get all action points associated with the $projectId from a database
-        $strQuery = "SELECT id FROM ActionPoint WHERE project_id = :project_id" . $sinceNowDatetime . " ORDER BY datetime_created";
+        $strQuery = "SELECT id FROM ActionPoint WHERE project_id = :project_id" . $sinceNowDatetime . " ORDER BY datetime_created DESC";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();

@@ -50,6 +50,17 @@ class ActionPoints extends Controller
             # Save the action point
             $actionPoint->Save();
 
+            # Create a new notification
+            $notif = new Notification();
+            $notif->setController("actionpoints");
+            $notif->setObjectType("Action Point");
+            $notif->setObjectId($actionPoint->getID());
+            $notif->setAction(Notification::ADD);
+            $notif->setProjectId(HTTPSession::getInstance()->PROJECT_ID);
+            $notif->setCreatorUserId(HTTPSession::getInstance()->GetUserID());
+            # Save notification
+            $notif->Save();
+
             # Redirect back to action points
             Header('Location: ' . SITE_URL . 'actionpoints');
         }

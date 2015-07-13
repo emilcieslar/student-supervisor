@@ -17,6 +17,7 @@ require_once 'core/GoogleAuth.php';
 require_once 'models/DataBoundObject.php';
 require_once 'models/ProjectFactory.php';
 require_once 'models/HTTPSession.php';
+require_once 'models/Notification.php';
 
 # Start a more secure session
 $objSession = HTTPSession::getInstance();

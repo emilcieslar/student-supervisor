@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS MeetingTemp;
 DROP TABLE IF EXISTS ActionPoint;
 DROP TABLE IF EXISTS ActionPointTemp;
 DROP TABLE IF EXISTS Note;
+DROP TABLE IF EXISTS Notification;
 DROP TABLE IF EXISTS http_session;
 DROP TABLE IF EXISTS session_variable;
 
@@ -110,6 +111,20 @@ CREATE TABLE Note (
   FOREIGN KEY (project_id) REFERENCES Project(id),
   PRIMARY KEY (id)
 ) ENGINE=MyISAM;
+
+CREATE TABLE Notification (
+  id INT(11) AUTO_INCREMENT NOT NULL,
+  datetime_created DATETIME DEFAULT NOW(),
+  is_done BOOLEAN DEFAULT 0,
+  controller VARCHAR(50) NOT NULL DEFAULT '',
+  object_type VARCHAR(50) NOT NULL DEFAULT '',
+  object_id INT(11) NOT NULL DEFAULT 0,
+  action VARCHAR(50) NOT NULL DEFAULT '',
+  project_id INT(11) NOT NULL,
+  reason_for_action VARCHAR(255) NOT NULL DEFAULT '',
+  creator_user_id INT(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);
 
 # Schema for session management
 CREATE TABLE http_session (

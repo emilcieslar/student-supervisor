@@ -16,7 +16,7 @@ class MeetingFactory
             $sinceNowDatetime = "";
 
         # Get all meetings associated with the $projectId from a database
-        $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id" . $sinceNowDatetime . " ORDER BY datetime";
+        $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id" . $sinceNowDatetime . " ORDER BY datetime DESC";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();
