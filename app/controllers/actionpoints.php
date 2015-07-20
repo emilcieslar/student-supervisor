@@ -69,7 +69,7 @@ class ActionPoints extends Controller
         {
             # Get action points for the list
             $actionPoints = $this->model('ActionPointFactory');
-            $actionPoints = $actionPoints->getActionPointsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
+            $actionPoints = $actionPoints->getActionPointsForProject(HTTPSession::getInstance()->PROJECT_ID);
 
             # Get meetings for the add form
             $meetings = $this->model('MeetingFactory');
@@ -99,7 +99,7 @@ class ActionPoints extends Controller
     public function edit($id)
     {
         $actionPoints = $this->model('ActionPointFactory');
-        $actionPoints = $actionPoints->getActionPointsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
+        $actionPoints = $actionPoints->getActionPointsForProject(HTTPSession::getInstance()->PROJECT_ID);
 
         # Create Action Point from provided ID
         $id = new ActionPoint($id);

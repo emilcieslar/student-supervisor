@@ -1,8 +1,19 @@
 </div><!-- .row -->
 
 <script src="<?=SITE_URL;?>public/js/foundation.min.js"></script>
+<script src="<?=SITE_URL;?>public/js/foundation/foundation.abide.js"></script>
+
 <script>
-    $(document).foundation();
+    $(document).foundation(
+        {
+            abide : {
+                patterns: {
+                    date_friendly: /^(\d{1,2})-(\d{1,2})-(\d{4})$/
+                },
+                focus_on_invalid : false
+            }
+        }
+    );
 </script>
 </body>
 </html>

@@ -51,6 +51,7 @@ $date->modify('+7 day');
         <li class="add-new-action-point<?php if(isset($data['add'])) echo ' active';?>"><a class="fa fa-plus" href="<?=SITE_URL;?>actionpoints/add">&nbsp;&nbsp;Add a new action point</a></li>
     </ul>
 </div>
+
 <!-- DETAIL OF ACTION POINT -->
 <?php if(!isset($data['meetings']) AND !isset($data['edit'])): ?>
 <div class="large-4 columns action-point">
@@ -89,7 +90,7 @@ $date->modify('+7 day');
 </div>
 <?php endif; ?>
 
-<!-- FORM FOR EDITING EXISITNG ACTION POINT -->
+<!-- FORM FOR EDITING EXISTING ACTION POINT -->
 <?php if(isset($data['edit'])): ?>
 
     <div class="large-4 columns action-point">
@@ -98,7 +99,7 @@ $date->modify('+7 day');
                 <h3>Edit Action Point</h3>
             </div>
 
-            <form action="<?=SITE_URL;?>actionpoints/editPost" method="post" name="addActionPoint">
+            <form action="<?=SITE_URL;?>actionpoints/editPost" method="post" name="addActionPoint" data-abide>
 
                 <!-- hidden input to tell router that it's a post request -->
                 <input name="action" type="hidden">
@@ -106,13 +107,15 @@ $date->modify('+7 day');
                 <input name="id" type="hidden" value="<?=$data['id']->getID();?>">
 
                 <div class="large-12 columns">
-                    <label>Choose deadline:
-                        <input name="deadline" placeholder="Choose deadline" type="text" id="dp1" value="<?=$data['datetime']['date'];?>">
+                    <label>Choose deadline: <small>required</small>
+                        <input name="deadline" placeholder="Choose deadline" type="text" id="dp1" value="<?=$data['datetime']['date'];?>" required pattern="date_friendly">
                     </label>
+                    <small class="error">Incorrect format of deadline</small>
                 </div>
-                <div class="large-6 columns">
-                    <select name="deadline_time_hours" placeholder="Choose time">
-                        <?php for($i=1;$i<24;$i++): ?>
+                <div class="large-6 small-6 columns">
+                    <select name="deadline_time_hours" required>
+                        <option value>Choose hour</option>
+                        <?php for($i=8;$i<19;$i++): ?>
                             <?php if($data['datetime']['hours'] == $i) { ?>
                                 <option value="<?=$i;?>" selected><?=$i;?></option>
                             <?php } else { ?>
@@ -120,9 +123,11 @@ $date->modify('+7 day');
                             <?php } ?>
                         <?php endfor; ?>
                     </select>
+                    <small class="error">Please choose hour</small>
                 </div>
-                <div class="large-6 columns">
-                    <select name="deadline_time_minutes" placeholder="Choose time">
+                <div class="large-6 small-6 columns">
+                    <select name="deadline_time_minutes" required>
+                        <option>Choose minute</option>
                         <?php for($i=0;$i<6;$i++): ?>
                             <?php if($data['datetime']['minutes'] == $i.'0') { ?>
                                 <option value="<?=$i.'0';?>" selected><?=$i.'0';?></option>
@@ -131,16 +136,18 @@ $date->modify('+7 day');
                             <?php } ?>
                         <?php endfor; ?>
                     </select>
+                    <small class="error">Please choose minute</small>
                 </div>
                 <div class="large-12 columns">
-                    <label>Name the action point:
-                        <input name="text" placeholder="Action Point" type="text" value="<?=$data['id']->getText();?>">
+                    <label>Name the action point: <small>required</small>
+                        <input name="text" placeholder="Action Point" type="text" value="<?=$data['id']->getText();?>" required>
                     </label>
+                    <small class="error">Name of the action point is required</small>
                 </div>
                 <div class="large-12 columns">
                     <label>Associate the action point with a meeting:
-                        <select name="meetingId">
-                            <option value="0">Choose a meeting</option>
+                        <select name="meetingId" required>
+                            <option value>Choose a meeting</option>
                             <?php foreach($data["meetings"] as $meeting): ?>
                                 <?php if($data['id']->getMeetingId() == $meeting->getID()) { ?>
                                     <option value="<?=$meeting->getID();?>" selected><?=DatetimeConverter::getUserFriendlyDateTimeFormat($meeting->getDatetime())?></option>
@@ -150,6 +157,7 @@ $date->modify('+7 day');
                             <?php endforeach; ?>
                         </select>
                     </label>
+                    <small class="error">Every action point has to be agreed on a certain meeting</small>
                 </div>
                 <div class="large-12 columns">
                     <input name="isDone" id="checkbox1" type="checkbox" <?php if($data['id']->getIsDone()) echo "checked";?>><label for="checkbox1">Is this action point done?</label>
@@ -179,44 +187,51 @@ $date->modify('+7 day');
             <h3>Add Action Point</h3>
         </div>
 
-        <form action="<?=SITE_URL;?>actionpoints/add" method="post" name="addActionPoint">
+        <form action="<?=SITE_URL;?>actionpoints/add" method="post" name="addActionPoint" data-abide>
 
             <!-- hidden input to tell router that it's a post request -->
             <input name="action" type="hidden">
 
             <div class="large-12 columns">
-                <label>Choose deadline:
-                    <input name="deadline" placeholder="Choose deadline" type="text" id="dp1">
+                <label>Choose deadline date and time: <small>required</small>
+                    <input name="deadline" placeholder="Choose date" type="text" id="dp1" required pattern="date_friendly">
                 </label>
+                <small class="error">Incorrect format of a deadline</small>
             </div>
-            <div class="large-6 columns">
-                <select name="deadline_time_hours" placeholder="Choose time">
-                    <?php for($i=1;$i<24;$i++): ?>
+            <div class="large-6 small-6 columns">
+                <select name="deadline_time_hours" required>
+                    <option value>Choose hour</option>
+                    <?php for($i=8;$i<19;$i++): ?>
                         <option value="<?=$i;?>"><?=$i;?></option>
                     <?php endfor; ?>
                 </select>
+                <small class="error">Please choose hour</small>
             </div>
-            <div class="large-6 columns">
-                <select name="deadline_time_minutes" placeholder="Choose time">
+            <div class="large-6 small-6 columns">
+                <select name="deadline_time_minutes" required>
+                    <option value>Choose minute</option>
                     <?php for($i=0;$i<6;$i++): ?>
                         <option value="<?=$i.'0';?>"><?=$i.'0';?></option>
                     <?php endfor; ?>
                 </select>
+                <small class="error">Please choose minute</small>
             </div>
             <div class="large-12 columns">
-                <label>Name the action point:
-                    <input name="text" placeholder="Action Point" type="text">
+                <label>Name the action point: <small>required</small>
+                    <input name="text" placeholder="e.g. Draft of chapter 6" type="text" required>
                 </label>
+                <small class="error">Name of the action point is required</small>
             </div>
             <div class="large-12 columns">
-                <label>Associate the action point with a meeting:
-                    <select name="meetingId">
-                        <option value="0">Choose a meeting</option>
+                <label>Associate the action point with a meeting: <small>required</small>
+                    <select name="meetingId" required>
+                        <option value>Choose a meeting</option>
                         <?php foreach($data["meetings"] as $meeting): ?>
                             <option value="<?=$meeting->getID();?>"><?=DatetimeConverter::getUserFriendlyDateTimeFormat($meeting->getDatetime())?></option>
                         <?php endforeach; ?>
                     </select>
                 </label>
+                <small class="error">Every action point has to be agreed on a certain meeting</small>
             </div>
             <div class="large-12 columns top-10">
                 <input class="button" type="submit" name="addActionPoint" value="Add">

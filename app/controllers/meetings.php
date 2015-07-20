@@ -42,14 +42,22 @@ class Meetings extends Controller
             $deadline_time_hours = $post['deadline_time_hours'];
             $deadline_time_minutes = $post['deadline_time_minutes'];
 
+            # Default for is repeating is 0
             $isRepeating = 0;
+            # Default time for repeat until is nothing
             $repeatUntil = 0;
             $dateTimeRepeatUntil = null;
+            # If isRepeating was checked
             if(isset($post['isRepeating']))
             {
                 $isRepeating = 1;
+                # Get date from repeatUntil input field
                 $repeatUntil = $post['repeatUntil'];
+                # Convert date into DB friendly format and keep $dateTimeRepeatUntil object so we can use it
+                # in order to create more meetings until this date (because it's a repeated meeting)
                 $dateTimeRepeatUntil = DateTime::createFromFormat('d-m-Y H:i', $repeatUntil . " 23:59");
+                # $repeatUntil will contain DB friendly format, whereas $dateTimeRepeatUntil will contain
+                # object that we can manipulate with it further
                 $repeatUntil = $dateTimeRepeatUntil->format('Y-m-d H:i:s');
             }
 
@@ -64,6 +72,11 @@ class Meetings extends Controller
             $takenPlace = 0;
             if(isset($post['takenPlace']))
                 $takenPlace = 1;
+
+            # If we are logged in as a supervisor, isApproved option is automatically set to true because
+            # supervisor adds approved meetings (only student adds meetings that need approval)
+            if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
+                $isApproved = 1;
 
             # Set correct format of provided date
             $dateTime = DateTime::createFromFormat('d-m-Y H:i', $deadline . " " . $deadline_time_hours . ":" . $deadline_time_minutes);
