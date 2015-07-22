@@ -92,6 +92,17 @@ class ActionPoints extends Controller
 
         $actionPoint->MarkForDeletion();
 
+        # Create a new notification
+        $notif = new Notification();
+        $notif->setController("actionpoints");
+        $notif->setObjectType("Action Point");
+        $notif->setObjectId($actionPoint->getID());
+        $notif->setAction(Notification::DELETE);
+        $notif->setProjectId(HTTPSession::getInstance()->PROJECT_ID);
+        $notif->setCreatorUserId(HTTPSession::getInstance()->GetUserID());
+        # Save notification
+        $notif->Save();
+
         # Redirect back to action points
         Header('Location: ' . SITE_URL . 'actionpoints');
     }
@@ -140,8 +151,8 @@ class ActionPoints extends Controller
         # Default is 0 because default is student and every time student
         # edits action point, isApproved must be set to 0
         $isApproved = 0;
-        # If it's a supervisor who edits the post, isApproved is passed as well
-        if(isset($post['isApproved']))
+        # If it's a supervisor who edits the post, isApproved is automatically true with any edit
+        if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
         {
             $isApproved = 1;
         }
@@ -165,7 +176,38 @@ class ActionPoints extends Controller
         # Save the action point
         $actionPoint->Save();
 
+        # Create a new notification
+        $notif = new Notification();
+        $notif->setController("actionpoints");
+        $notif->setObjectType("Action Point");
+        $notif->setObjectId($actionPoint->getID());
+        $notif->setAction(Notification::EDIT);
+        $notif->setProjectId(HTTPSession::getInstance()->PROJECT_ID);
+        $notif->setCreatorUserId(HTTPSession::getInstance()->GetUserID());
+        # Save notification
+        $notif->Save();
+
         # Redirect back to action points
         Header('Location: ' . SITE_URL . 'actionpoints');
     }
+
+    public function approve($id)
+    {
+        # Only supervisor can approve, no one else has access to this page
+        if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
+        {
+            # Retrieve action point from database based on provided id
+            $actionPoint = $this->model('ActionPoint',$id);
+
+            # Approve the action point
+            $actionPoint->setIsApproved(1);
+
+            # Save the action point
+            $actionPoint->Save();
+        }
+
+        # Redirect back to action points
+        Header('Location: ' . SITE_URL . 'actionpoints/' . $id);
+    }
+
 }

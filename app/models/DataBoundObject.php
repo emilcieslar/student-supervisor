@@ -83,6 +83,20 @@ abstract class DataBoundObject {
         unset($objStatement);
     }
 
+    public function RetrieveFromTemporary()
+    {
+        # Remove updated row in the normal table
+        $strQuery = 'DELETE FROM ' . $this->strTableName . ' WHERE id = ' . $this->ID;
+        $this->objPDO->query($strQuery);
+
+        # Copy row from temporary table to the normal table
+        $strQuery = 'INSERT INTO ' . $this->strTableName . ' SELECT * FROM ' . $this->strTableName . 'Temp WHERE id=' . $this->ID;
+        $this->objPDO->query($strQuery);
+
+        # Remove the temporary row
+        $this->RemoveTemporary();
+    }
+
     public function Save() {
         if (isset($this->ID)) {
             $strQuery = 'UPDATE ' . $this->strTableName . ' SET ';

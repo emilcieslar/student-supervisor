@@ -3,6 +3,8 @@
 class Notification extends DataBoundObject
 {
     const ADD = "added";
+    const EDIT = "modified";
+    const DELETE = "deleted";
 
     protected $DatetimeCreated;
     protected $IsDone;
@@ -41,5 +43,21 @@ class Notification extends DataBoundObject
             "reason_for_action" => "ReasonForAction",
             "creator_user_id" => "CreatorUserId"
         ));
+    }
+
+    public function getUsername()
+    {
+        require_once("User.php");
+        $user = new User($this->CreatorUserId);
+        return $user->getUsername();
+    }
+
+    public function getObject()
+    {
+        # Get object type without spaces
+        $objectType = str_replace(' ', '', $this->ObjectType);
+        require_once($objectType.".php");
+        $object = new $objectType($this->ObjectId);
+        return $object;
     }
 }

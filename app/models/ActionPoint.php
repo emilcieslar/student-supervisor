@@ -55,4 +55,15 @@ class ActionPoint extends DataBoundObject
     {
         return DatetimeConverter::getUserFriendlyDateTimeFormat($this->DatetimeCreated);
     }
+
+    public function hasRunOverDeadline()
+    {
+        $now = new DateTime('NOW');
+        $deadline = DateTime::createFromFormat('Y-m-d H:i:s', $this->Deadline);
+
+        if($now > $deadline)
+            return true;
+        else
+            return false;
+    }
 }

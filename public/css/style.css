@@ -23,6 +23,10 @@ body {
     background: #003865;
 }
 
+.button.right {
+    margin-left: 10px;
+}
+
 /* GENERAL STYLES */
 
 h3 {
@@ -132,4 +136,8 @@ ul.action-points li:hover {
 
 .top-20 {
     margin-top: 20px !important;
+}
+
+.no-indent {
+    text-indent: 0;
 }

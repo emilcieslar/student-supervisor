@@ -24,27 +24,54 @@ $date->modify('+7 day');
     <ul class="action-points">
     <?php foreach ($data['actionpoints'] as $actionpoint): ?>
 
-        <?php if(isset($data['id'])) { if($actionpoint->getID() == $data['id']->getID()) { ?>
-            <li class="active"><a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
-                    <!-- If action point is set to done -->
+        <!-- If it's the action point in the URL or default one -->
+        <?php if(isset($data['id'])): ?>
+
+            <!-- get the ID and decide which one should be active -->
+            <?php $active = ($actionpoint->getID() == $data['id']->getID()) ? 'class="active"' : ''; ?>
+
+            <!-- display one line which contains name of the action point with a link to it -->
+            <li <?=$active?>>
+                <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
+                    <!-- If action point is set to done, display a tick -->
                     <?php if($actionpoint->getIsDone()): ?>
                         <i class="fa fa-check inline"></i>&nbsp;&nbsp;
                     <?php endif; ?>
 
-                    <?=$actionpoint->getText();?></a>
-            </li>
-        <?php } else { ?>
-            <li><a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
-                    <!-- If action point is set to done -->
-                    <?php if($actionpoint->getIsDone()): ?>
-                    <i class="fa fa-check inline"></i>&nbsp;&nbsp;
+                    <!-- Display text of the action point -->
+                    <?=$actionpoint->getText();?>
+
+                    <!-- If the action point is not approved, display a notice -->
+                    <?php if(!$actionpoint->getIsApproved()): ?>
+                        &nbsp;<span class="label warning round no-indent">Not approved yet</span>
                     <?php endif; ?>
 
-                    <?=$actionpoint->getText();?></a>
+                    <!-- If the action point has run over deadline, display a notice -->
+                    <?php if($actionpoint->hasRunOverDeadline()): ?>
+                        &nbsp;<span class="label alert round no-indent">Deadline passed</span>
+                    <?php endif; ?>
+                </a>
             </li>
-        <?php }} else { ?>
-            <li><a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>"><?=$actionpoint->getText();?></a></li>
-        <?php } ?>
+
+        <!-- Otherwise we have no active (add action point selected) -->
+        <?php else: ?>
+            <li>
+                <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
+                    <!-- Display text of the action point -->
+                    <?=$actionpoint->getText();?>
+
+                    <!-- If the action point is not approved, display a notice -->
+                    <?php if(!$actionpoint->getIsApproved()): ?>
+                        &nbsp;<span class="label warning round no-indent">Not approved yet</span>
+                    <?php endif; ?>
+
+                    <!-- If the action point has run over deadline, display a notice -->
+                    <?php if($actionpoint->hasRunOverDeadline()): ?>
+                        &nbsp;<span class="label alert round no-indent">Deadline passed</span>
+                    <?php endif; ?>
+                </a>
+            </li>
+        <?php endif; ?>
 
     <?php endforeach; ?>
 
@@ -71,14 +98,19 @@ $date->modify('+7 day');
 
         <?php if($data['id']->getIsDone()): ?>
             <div class="large-12 columns">
-                <i class="fa fa-check icon" title="Deadline"></i>
+                <i class="fa fa-check icon" title="Done"></i>
                 <span>This action point has been marked as done</span>
             </div>
         <?php endif; ?>
 
         <?php if(!$data['id']->getIsApproved()): ?>
             <div class="large-12 columns">
-                <div class="panel">This action point hasn't been approved yet.</div>
+                <div class="panel">This action point hasn't been approved yet.
+                    <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+                        <!-- If it's the supervisor, display approve button -->
+                        <br><a href="<?=SITE_URL?>actionpoints/approve/<?=$data['id']->getID()?>" class="fa fa-check button tiny success top-10"> Approve</a>
+                    <?php endif; ?>
+                </div>
             </div>
         <?php endif; ?>
 
@@ -159,15 +191,17 @@ $date->modify('+7 day');
                     </label>
                     <small class="error">Every action point has to be agreed on a certain meeting</small>
                 </div>
+
                 <div class="large-12 columns">
                     <input name="isDone" id="checkbox1" type="checkbox" <?php if($data['id']->getIsDone()) echo "checked";?>><label for="checkbox1">Is this action point done?</label>
                 </div>
 
-                <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
-                    <!-- If we're logged in as a supervisor -->
-                    <div class="large-12 columns">
+                <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR && !$data['id']->getIsApproved()): ?>
+                    <!-- If we're logged in as a supervisor and the changes hasn't been approved yet
+                         TODO: Do I need this? It will be approved automatically since it's the supervisor who's approving it -->
+                    <!--<div class="large-12 columns">
                         <input name="isApproved" id="checkboxApproved" type="checkbox" <?php if($data['id']->getIsApproved()) echo "checked";?>><label for="checkboxApproved">Approve changes</label>
-                    </div>
+                    </div>-->
                 <?php endif; ?>
                 <div class="large-12 columns top-10">
                     <input class="button" type="submit" name="addActionPoint" value="Save changes">
