@@ -85,6 +85,10 @@ $date->modify('+7 day');
     <div class="row action-point-detail">
         <div class="large-12 columns">
             <h3><?=$data['id']->getText();?></h3>
+            <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getSentForApproval()): ?>
+                <!-- Display only to the student (and only if it hasn't been sent yet), it gives the student an option to finalize the action point -->
+                <a href="<?=SITE_URL?>actionpoints/send/<?=$data['id']->getID()?>" class="button small warning">Send for approval &rarr;</a>
+            <?php endif; ?>
         </div>
         <div class="large-12 columns">
             <i class="fa fa-calendar icon" title="This action point was agreed at this meeting"></i>
@@ -115,8 +119,16 @@ $date->modify('+7 day');
         <?php endif; ?>
 
         <div class="large-12 columns left top-20">
-            <a href="<?=SITE_URL;?>actionpoints/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"> Edit</a>
-            <a href="<?=SITE_URL;?>actionpoints/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
+            <?php if(!$data['id']->getIsDone() && $data['id']->getIsApproved()): ?>
+                <!-- display only if the action point hasn't been marked as done and has been approved -->
+                <a href="<?=SITE_URL?>actionpoints/done/<?=$data['id']->getID();?>" class="fa fa-check button success"></a>
+            <?php endif; ?>
+
+            <?php if((HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getSentForApproval()) OR HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+                <!-- display only if the action point hasn't been sent for approval (in case of a student) OR in case of a supervisor display anytime -->
+                <a href="<?=SITE_URL?>actionpoints/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"></a>
+                <a href="<?=SITE_URL?>actionpoints/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
+            <?php endif; ?>
         </div>
     </div>
 </div>
@@ -159,7 +171,7 @@ $date->modify('+7 day');
                 </div>
                 <div class="large-6 small-6 columns">
                     <select name="deadline_time_minutes" required>
-                        <option>Choose minute</option>
+                        <option value>Choose minute</option>
                         <?php for($i=0;$i<6;$i++): ?>
                             <?php if($data['datetime']['minutes'] == $i.'0') { ?>
                                 <option value="<?=$i.'0';?>" selected><?=$i.'0';?></option>
@@ -281,13 +293,27 @@ $date->modify('+7 day');
 
 <!-- DATE PICKER SCRIPT -->
 <script type="text/javascript">
+
     $(document).ready(function() {
 
+        // Get current date
+        nowTemp = new Date();
+        // Advance the date by 7 days
+        nowTemp.setDate(nowTemp.getDate() + 7);
+
+        // Run datepicker
         $('#dp1').fdatepicker({
             format: 'dd-mm-yyyy',
             disableDblClickSelection: true,
-            closeButton: true
+            closeButton: true,
+            startDate: '+1d'
         });
 
-    })
+        // Set default selected date to current + 7 days
+        $('#dp1').fdatepicker("setDate", nowTemp);
+        // Update datepicker
+        $('#dp1').fdatepicker("update");
+
+    });
+
 </script>

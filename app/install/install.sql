@@ -71,6 +71,9 @@ CREATE TABLE ActionPoint (
   text VARCHAR(255) NOT NULL,
   is_approved BOOLEAN DEFAULT 0,
   is_done BOOLEAN DEFAULT 0,
+  is_removed BOOLEAN DEFAULT 0,
+  sent_for_approval BOOLEAN DEFAULT 0,
+  datetime_done DATETIME DEFAULT 0,
   grade INT(1) NOT NULL DEFAULT 0,
   meeting_id int(11) NOT NULL DEFAULT 0,
   user_id int(11) NOT NULL DEFAULT 0,
@@ -88,6 +91,9 @@ CREATE TABLE ActionPointTemp (
   text VARCHAR(255) NOT NULL,
   is_approved BOOLEAN DEFAULT 0,
   is_done BOOLEAN DEFAULT 0,
+  is_removed BOOLEAN DEFAULT 0,
+  sent_for_approval BOOLEAN DEFAULT 0,
+  datetime_done DATETIME DEFAULT 0,
   grade INT(1) NOT NULL DEFAULT 0,
   meeting_id int(11) NOT NULL DEFAULT 0,
   user_id int(11) NOT NULL DEFAULT 0,
@@ -102,6 +108,7 @@ CREATE TABLE Note (
   id INT(11) AUTO_INCREMENT NOT NULL,
   text TEXT NOT NULL,
   is_agenda BOOLEAN DEFAULT 0,
+  is_private BOOLEAN DEFAULT 0,
   datetime_created DATETIME DEFAULT NOW(),
   meeting_id INT(11) NOT NULL DEFAULT 0,
   user_id INT(11) NOT NULL DEFAULT 0,
@@ -168,10 +175,10 @@ INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_pla
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
 VALUES(NOW() + INTERVAL 14 DAY,0,0,0,0,0,1);
 
-INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, grade, meeting_id, user_id, project_id)
-    VALUES(NOW() + INTERVAL 7 DAY,NOW(),'Finish first version of UML',0,0,0,1,1,1);
-INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, grade, meeting_id, user_id, project_id)
-    VALUES(NOW() + INTERVAL 7 DAY,NOW(),'User stories first iteration',1,0,0,1,1,1);
+INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, sent_for_approval, grade, meeting_id, user_id, project_id)
+    VALUES(NOW() + INTERVAL 7 DAY,NOW(),'Finish first version of UML',0,0,0,0,1,1,1);
+INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, sent_for_approval, grade, meeting_id, user_id, project_id)
+    VALUES(NOW() + INTERVAL 7 DAY,NOW(),'User stories first iteration',1,0,1,0,1,1,1);
 
 INSERT INTO Note(text, is_agenda, datetime_created, meeting_id, user_id, project_id)
     VALUES("Note 1: at the end of the meeting, student should say, here’s what we’ve talked about and these are the action points; Rose will approve them or adjust them (sometimes there is a miscommunication)",0,NOW(),1,1,1);

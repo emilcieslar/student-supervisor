@@ -1,5 +1,12 @@
 <?php
 
+/*
+
+TODO: Check in all methods if a user is authorized to edit/remove action points (same for meetings) because user can change the ID in GET request
+
+*/
+
+
 class ActionPoints extends Controller
 {
     public function index($id = null)
@@ -47,6 +54,14 @@ class ActionPoints extends Controller
             $actionPoint->setMeetingId($meetingId);
             $actionPoint->setProjectId(HTTPSession::getInstance()->PROJECT_ID);
 
+            # If it's the supervisor who adds the action point,
+            # it is automatically approved and student don't have to send it for approval
+            if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
+            {
+                $actionPoint->setSentForApproval(1);
+                $actionPoint->setIsApproved(1);
+            }
+
             # Save the action point
             $actionPoint->Save();
 
@@ -62,7 +77,7 @@ class ActionPoints extends Controller
             $notif->Save();
 
             # Redirect back to action points
-            Header('Location: ' . SITE_URL . 'actionpoints');
+            Header('Location: ' . SITE_URL . 'actionpoints/' . $actionPoint->getID());
         }
         # If it's a get request
         else
@@ -73,7 +88,7 @@ class ActionPoints extends Controller
 
             # Get meetings for the add form
             $meetings = $this->model('MeetingFactory');
-            $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, false);
+            $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
 
             $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'meetings'=>$meetings, 'add'=>true]);
         }
@@ -84,11 +99,18 @@ class ActionPoints extends Controller
         # Retrieve action point from database based on provided id
         $actionPoint = $this->model('ActionPoint',$id);
 
+        # Action point will never actually be removed from database, we will keep it
+        # for reference, it is only flagged as removed
+        $actionPoint->setIsRemoved(1);
+
+        # Save the action point
+        $actionPoint->Save();
+
         # Save the existing actionPoint to the temporary table
         # in order to retrieve it if not approved by supervisor
         # Delete operation will appear in the supervisor's notification
         # and supervisor and cancel the action if necessary
-        $actionPoint->SaveTemporary();
+        /*$actionPoint->SaveTemporary();
 
         $actionPoint->MarkForDeletion();
 
@@ -102,6 +124,8 @@ class ActionPoints extends Controller
         $notif->setCreatorUserId(HTTPSession::getInstance()->GetUserID());
         # Save notification
         $notif->Save();
+
+        */
 
         # Redirect back to action points
         Header('Location: ' . SITE_URL . 'actionpoints');
@@ -123,7 +147,7 @@ class ActionPoints extends Controller
 
         # Get meetings for the add form
         $meetings = $this->model('MeetingFactory');
-        $meetings = $meetings->getMeetingsForProject(1, false);
+        $meetings = $meetings->getMeetingsForProject(1, true);
 
         $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'id'=>$id, 'edit'=>true, 'datetime'=>$data, 'meetings'=>$meetings]);
     }
@@ -188,7 +212,7 @@ class ActionPoints extends Controller
         $notif->Save();
 
         # Redirect back to action points
-        Header('Location: ' . SITE_URL . 'actionpoints');
+        Header('Location: ' . SITE_URL . 'actionpoints/' . $post['id']);
     }
 
     public function approve($id)
@@ -205,6 +229,36 @@ class ActionPoints extends Controller
             # Save the action point
             $actionPoint->Save();
         }
+
+        # Redirect back to action points
+        Header('Location: ' . SITE_URL . 'actionpoints/' . $id);
+    }
+
+    public function done($id)
+    {
+        # Retrieve action point from database based on provided id
+        $actionPoint = $this->model('ActionPoint',$id);
+
+        # Set done to the action point
+        $actionPoint->setIsDone(1);
+
+        # Save the action point
+        $actionPoint->Save();
+
+        # Redirect back to action points
+        Header('Location: ' . SITE_URL . 'actionpoints/' . $id);
+    }
+
+    public function send($id)
+    {
+        # Retrieve action point from database based on provided id
+        $actionPoint = $this->model('ActionPoint',$id);
+
+        # Set done to the action point
+        $actionPoint->setSentForApproval(1);
+
+        # Save the action point
+        $actionPoint->Save();
 
         # Redirect back to action points
         Header('Location: ' . SITE_URL . 'actionpoints/' . $id);

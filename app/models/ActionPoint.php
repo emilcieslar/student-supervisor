@@ -1,17 +1,28 @@
 <?php
-
 class ActionPoint extends DataBoundObject
 {
     protected $Deadline;
     protected $DatetimeCreated;
     protected $Text;
     protected $IsApproved;
+    protected $IsRemoved;
     protected $IsDone;
+    protected $SentForApproval;
+    protected $DatetimeDone;
     protected $Grade;
 
     protected $MeetingId;
     protected $UserId;
     protected $ProjectId;
+
+    public function __construct($id = NULL, $temp = NULL)
+    {
+        parent::__construct($id);
+
+        # If we want to instantiate an object from a temporary table in the DB
+        if($temp)
+            $this->strTableName = $this->strTableName . "Temp";
+    }
 
     protected function DefineTableName()
     {
@@ -26,7 +37,10 @@ class ActionPoint extends DataBoundObject
             "datetime_created" => "DatetimeCreated",
             "text" => "Text",
             "is_approved" => "IsApproved",
+            "is_removed" => "IsRemoved",
             "is_done" => "IsDone",
+            "sent_for_approval" => "SentForApproval",
+            "datetime_done" => "DatetimeDone",
             "grade" => "Grade",
             "meeting_id" => "MeetingId",
             "user_id" => "UserId",

@@ -8,14 +8,19 @@ class ActionPointFactory
     {
         $objPDO = PDOFactory::get();
 
-        # Find out whether we want only future meetings
+        # If it's the supervisor logged in, get only action points that were sent for approval by student
+        $sentForApproval = "";
+        if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
+            $sentForApproval = " AND sent_for_approval = 1";
+
+        # Find out whether we want only future action points
         if($sinceNow)
             $sinceNowDatetime = " AND deadline >= '" . date("Y-m-d H:i:s") . "'";
         else
             $sinceNowDatetime = "";
 
         # Get all action points associated with the $projectId from a database
-        $strQuery = "SELECT id FROM ActionPoint WHERE project_id = :project_id" . $sinceNowDatetime . " ORDER BY datetime_created DESC";
+        $strQuery = "SELECT id FROM ActionPoint WHERE project_id = :project_id AND is_removed = 0" . $sinceNowDatetime . $sentForApproval . " ORDER BY datetime_created DESC";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();
