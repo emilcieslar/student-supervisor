@@ -17,7 +17,8 @@ class Project extends DataBoundObject
             "id" => "ID",
             "name" => "Name",
             "datetime_created" => "DatetimeCreated",
-            "description" => "Description"
+            "description" => "Description",
+            "is_deleted" => "IsDeleted"
         ));
     }
 

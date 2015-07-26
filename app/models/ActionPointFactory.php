@@ -20,7 +20,7 @@ class ActionPointFactory
             $sinceNowDatetime = "";
 
         # Get all action points associated with the $projectId from a database
-        $strQuery = "SELECT id FROM ActionPoint WHERE project_id = :project_id AND is_removed = 0" . $sinceNowDatetime . $sentForApproval . " ORDER BY datetime_created DESC";
+        $strQuery = "SELECT id FROM ActionPoint WHERE project_id = :project_id AND is_deleted = 0" . $sinceNowDatetime . $sentForApproval . " ORDER BY datetime_created DESC";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();

@@ -18,6 +18,7 @@ CREATE TABLE User (
   last_name VARCHAR(25) NOT NULL,
   type INT(1) DEFAULT 0,
   email VARCHAR(50) NOT NULL UNIQUE,
+  is_deleted BOOLEAN DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM;
 
@@ -26,6 +27,7 @@ CREATE TABLE Project (
   name VARCHAR(50) NOT NULL,
   datetime_created DATETIME DEFAULT NOW(),
   description TEXT NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM;
 
@@ -46,6 +48,7 @@ CREATE TABLE Meeting (
   arrived_on_time BOOLEAN DEFAULT 0,
   google_event_id VARCHAR(255) DEFAULT '',
   project_id INT(11) NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0,
   FOREIGN KEY (project_id) REFERENCES Project(id),
   PRIMARY KEY (id)
 ) ENGINE=MyISAM;
@@ -60,6 +63,7 @@ CREATE TABLE MeetingTemp (
   arrived_on_time BOOLEAN DEFAULT 0,
   google_event_id VARCHAR(255) DEFAULT '',
   project_id INT(11) NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0,
   FOREIGN KEY (project_id) REFERENCES Project(id),
   PRIMARY KEY (id)
 ) ENGINE=MyISAM;
@@ -71,13 +75,13 @@ CREATE TABLE ActionPoint (
   text VARCHAR(255) NOT NULL,
   is_approved BOOLEAN DEFAULT 0,
   is_done BOOLEAN DEFAULT 0,
-  is_removed BOOLEAN DEFAULT 0,
   sent_for_approval BOOLEAN DEFAULT 0,
   datetime_done DATETIME DEFAULT 0,
   grade INT(1) NOT NULL DEFAULT 0,
   meeting_id int(11) NOT NULL DEFAULT 0,
   user_id int(11) NOT NULL DEFAULT 0,
   project_id INT(11) NOT NULL DEFAULT 0,
+  is_deleted BOOLEAN DEFAULT 0,
   FOREIGN KEY (meeting_id) REFERENCES Meeting(id),
   FOREIGN KEY (user_id) REFERENCES User(id),
   FOREIGN KEY (project_id) REFERENCES Project(id),
@@ -91,13 +95,13 @@ CREATE TABLE ActionPointTemp (
   text VARCHAR(255) NOT NULL,
   is_approved BOOLEAN DEFAULT 0,
   is_done BOOLEAN DEFAULT 0,
-  is_removed BOOLEAN DEFAULT 0,
   sent_for_approval BOOLEAN DEFAULT 0,
   datetime_done DATETIME DEFAULT 0,
   grade INT(1) NOT NULL DEFAULT 0,
   meeting_id int(11) NOT NULL DEFAULT 0,
   user_id int(11) NOT NULL DEFAULT 0,
   project_id INT(11) NOT NULL DEFAULT 0,
+  is_deleted BOOLEAN DEFAULT 0,
   FOREIGN KEY (meeting_id) REFERENCES Meeting(id),
   FOREIGN KEY (user_id) REFERENCES User(id),
   FOREIGN KEY (project_id) REFERENCES Project(id),
@@ -107,12 +111,14 @@ CREATE TABLE ActionPointTemp (
 CREATE TABLE Note (
   id INT(11) AUTO_INCREMENT NOT NULL,
   text TEXT NOT NULL,
+  title VARCHAR(255) DEFAULT '',
   is_agenda BOOLEAN DEFAULT 0,
   is_private BOOLEAN DEFAULT 0,
   datetime_created DATETIME DEFAULT NOW(),
   meeting_id INT(11) NOT NULL DEFAULT 0,
   user_id INT(11) NOT NULL DEFAULT 0,
   project_id INT(11) NOT NULL DEFAULT 0,
+  is_deleted BOOLEAN DEFAULT 0,
   FOREIGN KEY (meeting_id) REFERENCES Meeting(id),
   FOREIGN KEY (user_id) REFERENCES User(id),
   FOREIGN KEY (project_id) REFERENCES Project(id),
@@ -130,6 +136,7 @@ CREATE TABLE Notification (
   project_id INT(11) NOT NULL,
   reason_for_action VARCHAR(255) NOT NULL DEFAULT '',
   creator_user_id INT(11) NOT NULL DEFAULT 0,
+  is_deleted BOOLEAN DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -168,19 +175,24 @@ INSERT INTO UserProject(user_id,project_id) VALUES(2,1);
 INSERT INTO UserProject(user_id,project_id) VALUES(2,2);
 INSERT INTO UserProject(user_id,project_id) VALUES(3,2);
 
+SET @now_meeting = CONCAT(CURRENT_DATE(),' 11:00:00');
+
+
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
-    VALUES(NOW() - INTERVAL 7 DAY,0,0,1,1,0,1);
+    VALUES(@now_meeting - INTERVAL 7 DAY,0,0,1,1,0,1);
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
-    VALUES(NOW() + INTERVAL 7 DAY,0,0,1,0,0,1);
+    VALUES(@now_meeting + INTERVAL 7 DAY,0,0,1,0,0,1);
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
-VALUES(NOW() + INTERVAL 14 DAY,0,0,0,0,0,1);
+VALUES(@now_meeting + INTERVAL 14 DAY,0,0,0,0,0,1);
 
 INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, sent_for_approval, grade, meeting_id, user_id, project_id)
-    VALUES(NOW() + INTERVAL 7 DAY,NOW(),'Finish first version of UML',0,0,0,0,1,1,1);
+    VALUES(@now_meeting + INTERVAL 7 DAY,NOW(),'Finish first version of UML',0,0,0,0,1,1,1);
 INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, sent_for_approval, grade, meeting_id, user_id, project_id)
-    VALUES(NOW() + INTERVAL 7 DAY,NOW(),'User stories first iteration',1,0,1,0,1,1,1);
+    VALUES(@now_meeting + INTERVAL 7 DAY,NOW(),'User stories first iteration',1,0,1,0,1,1,1);
 
 INSERT INTO Note(text, is_agenda, datetime_created, meeting_id, user_id, project_id)
-    VALUES("Note 1: at the end of the meeting, student should say, here’s what we’ve talked about and these are the action points; Rose will approve them or adjust them (sometimes there is a miscommunication)",0,NOW(),1,1,1);
+    VALUES("<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla a ornare tellus, at mollis ante. Maecenas pulvinar tempus vestibulum. Fusce pharetra sagittis turpis non luctus. Mauris aliquam, libero vitae pretium sollicitudin, purus felis cursus leo, sed accumsan erat velit in justo. Mauris nibh nisl, tempus nec venenatis nec, mattis eget metus. Cras et rutrum metus, vitae bibendum diam. Praesent pulvinar blandit lorem vitae molestie. Donec nec facilisis ante. Maecenas sed hendrerit lorem. Sed dapibus lacus id mauris dignissim, id vehicula erat pharetra. Donec nisi quam, vehicula non faucibus sed, semper non diam.</p><ol><li>Something</li><li>Another thing</li><li>Last thing</li></ol><p><strong>This is gonna be bold&nbsp;<em>and this is gonna be bold and italic.&nbsp;</em></strong><em>Whereas this is only italic.</em></p>",0,NOW(),1,1,1);
 INSERT INTO Note(text, is_agenda, datetime_created, meeting_id, user_id, project_id)
-VALUES("The following we're gonan talk about this...",1,NOW(),1,1,1)
+    VALUES("<p>Donec commodo odio in molestie tincidunt. Etiam sit amet facilisis arcu, ac fringilla risus. Praesent eget elit at sapien vulputate euismod ac a arcu. Phasellus lacus ante, finibus nec dolor non, mollis hendrerit sem. Cras dictum sed felis et tincidunt. Curabitur ullamcorper rhoncus nisi id blandit. Fusce dolor risus, elementum in augue vitae, ultrices rutrum lorem. Etiam gravida volutpat urna in porttitor. Mauris condimentum dolor dolor, et facilisis velit dictum vitae. Nullam sit amet lorem non dolor hendrerit pellentesque. Praesent mollis tempor orci nec interdum. Morbi a imperdiet eros. Vivamus nec enim vel odio fringilla rhoncus sed eu nisi. Donec ultrices in eros non mattis. Duis nec efficitur ante, ut ornare risus. Ut mi libero, mattis eget leo sed, accumsan venenatis lacus.</p><p>&nbsp;</p><p>Donec commodo odio in molestie tincidunt. Etiam sit amet facilisis arcu, ac fringilla risus. Praesent eget elit at sapien vulputate euismod ac a arcu. Phasellus lacus ante, finibus nec dolor non, mollis hendrerit sem. Cras dictum sed felis et tincidunt. Curabitur ullamcorper rhoncus nisi id blandit. Fusce dolor risus, elementum in augue vitae, ultrices rutrum lorem. Etiam gravida volutpat urna in porttitor. Mauris condimentum dolor dolor, et facilisis velit dictum vitae. Nullam sit amet lorem non dolor hendrerit pellentesque. Praesent mollis tempor orci nec interdum. Morbi a imperdiet eros. Vivamus nec enim vel odio fringilla rhoncus sed eu nisi. Donec ultrices in eros non mattis. Duis nec efficitur ante, ut ornare risus. Ut mi libero, mattis eget leo sed, accumsan venenatis lacus.</p>",1,NOW(),1,2,1);
+INSERT INTO Note(title, text, is_agenda, datetime_created, meeting_id, user_id, project_id)
+    VALUES("Just another note", "<p>Donec commodo odio in molestie tincidunt. Etiam sit amet facilisis arcu, ac fringilla risus. Praesent eget elit at sapien vulputate euismod ac a arcu. Phasellus lacus ante, finibus nec dolor non, mollis hendrerit sem. Cras dictum sed felis et tincidunt. Curabitur ullamcorper rhoncus nisi id blandit. Fusce dolor risus, elementum in augue vitae, ultrices rutrum lorem. Etiam gravida volutpat urna in porttitor. Mauris condimentum dolor dolor, et facilisis velit dictum vitae. Nullam sit amet lorem non dolor hendrerit pellentesque. Praesent mollis tempor orci nec interdum. Morbi a imperdiet eros. Vivamus nec enim vel odio fringilla rhoncus sed eu nisi. Donec ultrices in eros non mattis. Duis nec efficitur ante, ut ornare risus. Ut mi libero, mattis eget leo sed, accumsan venenatis lacus.</p><p>&nbsp;</p><p>Donec commodo odio in molestie tincidunt. Etiam sit amet facilisis arcu, ac fringilla risus. Praesent eget elit at sapien vulputate euismod ac a arcu. Phasellus lacus ante, finibus nec dolor non, mollis hendrerit sem. Cras dictum sed felis et tincidunt. Curabitur ullamcorper rhoncus nisi id blandit. Fusce dolor risus, elementum in augue vitae, ultrices rutrum lorem. Etiam gravida volutpat urna in porttitor. Mauris condimentum dolor dolor, et facilisis velit dictum vitae. Nullam sit amet lorem non dolor hendrerit pellentesque. Praesent mollis tempor orci nec interdum. Morbi a imperdiet eros. Vivamus nec enim vel odio fringilla rhoncus sed eu nisi. Donec ultrices in eros non mattis. Duis nec efficitur ante, ut ornare risus. Ut mi libero, mattis eget leo sed, accumsan venenatis lacus.</p>",1,NOW(),1,2,1)

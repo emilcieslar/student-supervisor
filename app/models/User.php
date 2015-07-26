@@ -27,7 +27,8 @@ class User extends DataBoundObject
             "first_name" => "FirstName",
             "last_name" => "LastName",
             "type" => "Type",
-            "email" => "Email"
+            "email" => "Email",
+            "is_deleted" => "IsDeleted"
         ));
     }
 

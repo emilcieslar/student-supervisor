@@ -5,7 +5,6 @@ class ActionPoint extends DataBoundObject
     protected $DatetimeCreated;
     protected $Text;
     protected $IsApproved;
-    protected $IsRemoved;
     protected $IsDone;
     protected $SentForApproval;
     protected $DatetimeDone;
@@ -37,7 +36,7 @@ class ActionPoint extends DataBoundObject
             "datetime_created" => "DatetimeCreated",
             "text" => "Text",
             "is_approved" => "IsApproved",
-            "is_removed" => "IsRemoved",
+            "is_deleted" => "IsDeleted",
             "is_done" => "IsDone",
             "sent_for_approval" => "SentForApproval",
             "datetime_done" => "DatetimeDone",

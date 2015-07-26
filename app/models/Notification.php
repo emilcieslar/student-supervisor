@@ -41,7 +41,8 @@ class Notification extends DataBoundObject
             "action" => "Action",
             "project_id" => "ProjectId",
             "reason_for_action" => "ReasonForAction",
-            "creator_user_id" => "CreatorUserId"
+            "creator_user_id" => "CreatorUserId",
+            "is_deleted" => "IsDeleted"
         ));
     }
 

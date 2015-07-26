@@ -29,7 +29,8 @@ class Meeting extends DataBoundObject
             "taken_place" => "TakenPlace",
             "arrived_on_time" => "ArrivedOnTime",
             "google_event_id" => "GoogleEventId",
-            "project_id" => "ProjectId"
+            "project_id" => "ProjectId",
+            "is_deleted" => "IsDeleted"
         ));
     }
 

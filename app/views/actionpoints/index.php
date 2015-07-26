@@ -11,7 +11,7 @@ $date->modify('+7 day');
 <div class="large-12 columns dashboard-links">
     <ul class="inline-list">
         <li class="active"><a href="<?=SITE_URL;?>actionpoints">Action Points</a></li>
-        <li><a href="#">Notes</a></li>
+        <li><a href="<?=SITE_URL;?>notes">Notes</a></li>
         <li><a href="<?=SITE_URL;?>meetings">Meetings</a></li>
         <li><a href="<?=SITE_URL;?>notifications">Notifications</a></li>
     </ul>

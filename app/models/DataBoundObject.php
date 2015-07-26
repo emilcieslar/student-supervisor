@@ -11,6 +11,7 @@ abstract class DataBoundObject {
     protected $blForDeletion;
     protected $blIsLoaded;
     protected $arModifiedRelations;
+    protected $IsDeleted;
 
     abstract protected function DefineTableName();
     abstract protected function DefineRelationMap();
@@ -108,6 +109,7 @@ abstract class DataBoundObject {
             }
             $strQuery = substr($strQuery, 0, strlen($strQuery)-2);
             $strQuery .= ' WHERE id = :eid';
+
             unset($objStatement);
             $objStatement = $this->objPDO->prepare($strQuery);
             $objStatement->bindValue(':eid', $this->ID, PDO::PARAM_INT);
@@ -123,6 +125,7 @@ abstract class DataBoundObject {
                     }
                 }
             }
+
             $objStatement->execute();
         } else {
             $strValueList = "";
@@ -163,14 +166,31 @@ abstract class DataBoundObject {
         }
     }
 
+    /**
+     * Removes an object from database
+     */
     public function MarkForDeletion() {
         $this->blForDeletion = true;
     }
 
+    public function Delete()
+    {
+        $this->IsDeleted = 1;
+    }
+
     public function __destruct() {
         if(isset($this->ID)) {
-            if($this->blForDeletion == true) {
+            if($this->blForDeletion == true)
+            {
                 $strQuery = 'DELETE FROM ' . $this->strTableName . ' WHERE id = :eid';
+                $objStatement = $this->objPDO->prepare($strQuery);
+                $objStatement->bindValue(':eid', $this->ID, PDO::PARAM_INT);
+                $objStatement->execute();
+            }
+
+            if($this->IsDeleted == 1)
+            {
+                $strQuery = 'UPDATE ' . $this->strTableName . ' SET is_deleted = 1 WHERE id = :eid';
                 $objStatement = $this->objPDO->prepare($strQuery);
                 $objStatement->bindValue(':eid', $this->ID, PDO::PARAM_INT);
                 $objStatement->execute();
