@@ -172,7 +172,7 @@ class Notes extends Controller
         $note = $this->model('Note',$id);
 
         # Check whether user is authorized to revert back a note
-        $this->checkAuth($note->getUserId());
+        $this->checkAuth($note->getUserId(), $note->getProjectId());
 
         $note->setIsDeleted(0);
 
