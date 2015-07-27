@@ -19,12 +19,26 @@
             <a href="<?=SITE_URL?>notes/create" class="button success small">New note</a>
         </div>
 
-        <!--<div class="large-6 columns note-wrapper">
-            <select name="filterByMeeting">
-                <option value="0">Filter by a meeting</option>
-                <option value="1">Meeting</option>
-            </select>
-        </div>-->
+
+        <div class="large-6 columns note-wrapper">
+            <div class="row collapse">
+                <div class="large-2 columns">
+                    <!-- Display only if there's a filter applied -->
+                    <?php if(isset($data['meeting'])): ?>
+                        <a href="<?=SITE_URL?>notes" class="button tiny fa fa-times warning postfix"></a>
+                    <?php endif; ?>
+                </div>
+                <div class="large-10 columns">
+                    <select name="filterByMeeting">
+                        <option value="0">Filter by a meeting</option>
+                        <?php foreach($data['meetings'] as $meeting): ?>
+                            <?php $selected = ($meeting->getID() == $data['meeting']) ? "selected" : ""; ?>
+                            <option value="<?=$meeting->getID()?>" <?=$selected?>><?=$meeting->getDatetimeUserFriendly()?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+        </div>
     </div><!-- clearfix -->
 
     <!-- If isset delete, display panel to revert delete -->
@@ -66,9 +80,16 @@
     $(document).ready(function() {
         // On select change, filter by a meeting
         $('select[name=filterByMeeting]').change(function() {
-            var meetingId = $(this).val();
+            // Get site_url from PHP
             var SITE_URL = '<?php echo SITE_URL; ?>';
-            window.location = SITE_URL+"notes/meeting/"+meetingId;
+
+            // Perform only if the first option wasn't selected
+            if($(this).val() != 0) {
+                var meetingId = $(this).val();
+                window.location = SITE_URL + "notes/meeting/" + meetingId;
+            } else {
+                window.location = SITE_URL + "notes";
+            }
         });
     });
 </script>

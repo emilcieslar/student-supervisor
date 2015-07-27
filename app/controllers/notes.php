@@ -12,6 +12,7 @@ class Notes extends Controller
 
         $data = array();
         $data['notes'] = $notes;
+        $data['meetings'] = $meetings;
 
         # If delete is set
         if($delete)
