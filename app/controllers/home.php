@@ -7,4 +7,9 @@ class Home extends Controller
         // Default is actionpoints
         header('Location: ' . SITE_URL . 'actionpoints');
     }
+
+    public function accessDenied()
+    {
+        echo "You are not authorized to access this page.";
+    }
 }

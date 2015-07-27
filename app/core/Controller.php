@@ -38,4 +38,23 @@ class Controller
         require_once 'app/views/' . $view . '.php';
         require_once 'public/footer.php';
     }
+
+    /**
+     * Checks whether an object (this can be ActionPoint, Note, ...) a user is trying to display/edit/remove
+     * has the same projectId associated with it as the one stored in the current logged in session
+     * @param $objectProjectId int the ID of the associated project
+     *
+     * @return true if user has access
+     */
+    protected function checkAuthProjectScope($objectProjectId)
+    {
+        if($objectProjectId != HTTPSession::getInstance()->PROJECT_ID)
+        {
+            # Redirect to the warning page
+            header('Location: ' . SITE_URL . 'accessDenied');
+            # Do not continue to execute code
+            die();
+        } else
+            return true;
+    }
 }

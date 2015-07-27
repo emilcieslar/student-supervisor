@@ -23,6 +23,9 @@ class ActionPoints extends Controller
             # Get the first item from the array
             $id = reset($actionPoints);
 
+        # Check access rights for user
+        $this->checkAuth($id, true, false);
+
         # Get meeting associated with action point
         $meeting = $this->model('Meeting',$id->getMeetingId());
 
@@ -31,7 +34,19 @@ class ActionPoints extends Controller
 
     public function add($post = null)
     {
-        # If it's a post request, we'll have parameters passed
+        # Get action points for the list
+        $actionPoints = $this->model('ActionPointFactory');
+        $actionPoints = $actionPoints->getActionPointsForProject(HTTPSession::getInstance()->PROJECT_ID);
+
+        # Get meetings for the add form
+        $meetings = $this->model('MeetingFactory');
+        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
+
+        $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'meetings'=>$meetings, 'add'=>true]);
+    }
+
+    public function addPost($post = null)
+    {
         if($post)
         {
             # Create an empty action point
@@ -78,20 +93,11 @@ class ActionPoints extends Controller
 
             # Redirect back to action points
             Header('Location: ' . SITE_URL . 'actionpoints/' . $actionPoint->getID());
+            die();
         }
-        # If it's a get request
-        else
-        {
-            # Get action points for the list
-            $actionPoints = $this->model('ActionPointFactory');
-            $actionPoints = $actionPoints->getActionPointsForProject(HTTPSession::getInstance()->PROJECT_ID);
 
-            # Get meetings for the add form
-            $meetings = $this->model('MeetingFactory');
-            $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
-
-            $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'meetings'=>$meetings, 'add'=>true]);
-        }
+        # Redirect back to action points
+        Header('Location: ' . SITE_URL . 'actionpoints');
     }
 
     public function remove($id)
@@ -99,12 +105,12 @@ class ActionPoints extends Controller
         # Retrieve action point from database based on provided id
         $actionPoint = $this->model('ActionPoint',$id);
 
+        # Check access rights for user
+        $this->checkAuth($actionPoint);
+
         # Action point will never actually be removed from database, we will keep it
         # for reference, it is only flagged as removed
-        $actionPoint->setIsRemoved(1);
-
-        # Save the action point
-        $actionPoint->Save();
+        $actionPoint->Delete();
 
         # Save the existing actionPoint to the temporary table
         # in order to retrieve it if not approved by supervisor
@@ -139,6 +145,9 @@ class ActionPoints extends Controller
         # Create Action Point from provided ID
         $id = new ActionPoint($id);
 
+        # Check access rights for user
+        $this->checkAuth($id);
+
         # Set correct format of provided date
         $date = DateTime::createFromFormat('Y-m-d H:i:s', $id->getDeadline());
         $data['date'] = $date->format('d-m-Y');
@@ -156,6 +165,9 @@ class ActionPoints extends Controller
     {
         # Retrieve action point from database based on provided id
         $actionPoint = $this->model('ActionPoint', $post['id']);
+
+        # Check access rights for user
+        $this->checkAuth($actionPoint);
 
         # Save the existing actionPoint to the temporary table
         # in order to retrieve it if not approved by supervisor
@@ -223,6 +235,9 @@ class ActionPoints extends Controller
             # Retrieve action point from database based on provided id
             $actionPoint = $this->model('ActionPoint',$id);
 
+            # Check action point project scope access for a supervisor
+            $this->checkAuth($actionPoint, false, false);
+
             # Approve the action point
             $actionPoint->setIsApproved(1);
 
@@ -239,6 +254,12 @@ class ActionPoints extends Controller
         # Retrieve action point from database based on provided id
         $actionPoint = $this->model('ActionPoint',$id);
 
+        # Check user access
+        $this->checkAuth($actionPoint, false, false);
+
+        # Check if action point has been approved
+        $this->checkAuthApproved($actionPoint->getIsApproved());
+
         # Set done to the action point
         $actionPoint->setIsDone(1);
 
@@ -254,6 +275,9 @@ class ActionPoints extends Controller
         # Retrieve action point from database based on provided id
         $actionPoint = $this->model('ActionPoint',$id);
 
+        # Check user access
+        $this->checkAuth($actionPoint, true, false);
+
         # Set done to the action point
         $actionPoint->setSentForApproval(1);
 
@@ -262,6 +286,58 @@ class ActionPoints extends Controller
 
         # Redirect back to action points
         Header('Location: ' . SITE_URL . 'actionpoints/' . $id);
+    }
+
+    protected function checkAuthSentForApproval($actionPointSentForApproval)
+    {
+        # If the action point hasn't been sent for approval and logged in user is supervisor, the supervisor
+        # is not able to access it
+        if(!$actionPointSentForApproval && HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
+        {
+            header('Location: ' . SITE_URL . 'actionpoints');
+            # Do not execute code any longer
+            die();
+        } else
+            return true;
+    }
+
+    protected function checkAuthStudentAfterApproval($actionPointSentForApproval)
+    {
+        # If it has been sent for approval and a user is a student, then the student
+        # is not able to access it
+        if($actionPointSentForApproval && HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT)
+        {
+            header('Location: ' . SITE_URL . 'actionpoints');
+            # Do not execute code any longer
+            die();
+        } else
+            return true;
+    }
+
+    protected function checkAuthApproved($actionPointApproved)
+    {
+        # If an action point hasn't been approved yet, no access (return back to action points)
+        if(!$actionPointApproved)
+        {
+            header('Location: ' . SITE_URL . 'actionpoints');
+            # Do not execute code any longer
+            die();
+        }
+    }
+
+    protected function checkAuth($actionPoint = null, $supervisor = true, $student = true, $project = true)
+    {
+        if($supervisor)
+            # Check if a supervisor has access
+            $this->checkAuthSentForApproval($actionPoint->getSentForApproval());
+
+        if($student)
+            # Check if a student has access
+            $this->checkAuthStudentAfterApproval($actionPoint->getSentForApproval());
+
+        if($project)
+            # Check if it's within the scope of the project
+            $this->checkAuthProjectScope($actionPoint->getProjectId());
     }
 
 }

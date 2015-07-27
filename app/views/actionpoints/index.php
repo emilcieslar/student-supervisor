@@ -233,7 +233,7 @@ $date->modify('+7 day');
             <h3>Add Action Point</h3>
         </div>
 
-        <form action="<?=SITE_URL;?>actionpoints/add" method="post" name="addActionPoint" data-abide>
+        <form action="<?=SITE_URL;?>actionpoints/addPost" method="post" name="addActionPoint" data-abide>
 
             <!-- hidden input to tell router that it's a post request -->
             <input name="action" type="hidden">
