@@ -35,4 +35,31 @@ class MeetingFactory
 
         return $myArr;
     }
+
+    public static function getNextMeeting()
+    {
+        # Get database connection
+        $objPDO = PDOFactory::get();
+
+        # Get project ID from session
+        $projectId = HTTPSession::getInstance()->PROJECT_ID;
+
+        # Get the next meeting
+        $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id AND datetime > NOW() AND is_deleted = 0 LIMIT 1";
+        $objStatement = $objPDO->prepare($strQuery);
+        $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
+        $objStatement->execute();
+
+
+        # Define empty variable
+        $nextMeeting = null;
+
+        # Add all notes to an array
+        if($row = $objStatement->fetch(PDO::FETCH_ASSOC))
+        {
+            $nextMeeting = new Meeting($row['id']);
+        }
+
+        return $nextMeeting;
+    }
 }

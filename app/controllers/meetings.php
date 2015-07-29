@@ -16,6 +16,13 @@ class Meetings extends Controller
             # Get the first item from the array
             $id = reset($meetings);
 
+        # If we have nothing to display we instead call add()
+        if(!$id)
+        {
+            $this->add();
+            die();
+        }
+
         $this->view('meetings/index', ['meetings'=>$meetings, 'id'=>$id]);
         #$this->view('meetings/index', ['month'=>$month, 'year'=>$year]);
     }

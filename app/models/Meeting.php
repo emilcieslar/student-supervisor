@@ -36,12 +36,12 @@ class Meeting extends DataBoundObject
 
     public function getDatetimeUserFriendly()
     {
-        return DatetimeConverter::getUserFriendlyDateTimeFormat($this->Datetime);
+        return DatetimeConverter::getUserFriendlyDateTimeFormat($this->getDatetime());
     }
 
     public function getRepeatUntilUserFriendly()
     {
-        return DatetimeConverter::getUserFriendlyDateTimeFormat($this->RepeatUntil);
+        return DatetimeConverter::getUserFriendlyDateTimeFormat($this->getRepeatUntil());
     }
 
 }

@@ -40,7 +40,7 @@ class HTTPSession
     {
         # Set database connection
         $this->objPDO = PDOFactory::get();
-        # Set up the handler
+        # Set up the handler for default session methods
         session_set_save_handler(
             array(&$this, '_session_open_method'),
             array(&$this, '_session_close_method'),
@@ -50,16 +50,22 @@ class HTTPSession
             array(&$this, '_session_gc_method')
         );
 
-        # Check the cookie passed - if one is - if it looks wrong we'll scrub it right away
+        # Get the user agent string
         $strUserAgent = $_SERVER["HTTP_USER_AGENT"];
 
+        # Check if cookie has passed
         if (isset($_COOKIE["PHPSESSID"]))
         {
-            # Security and age check
+            # Get the cookie
             $this->php_session_id = $_COOKIE["PHPSESSID"];
 
+            # This statement gets the session from database under following conditions:
+            # 1. If there's a session ID equal to $this->php_session_id
+            # 2. If session_lifespan hasn't run out of time
+            # 3. If a user is still in the same user_agent (browser)
+            # 4. If session_timeout hasn't run out of time
             # Prepare statement for database
-            $strQuery = "SELECT id FROM http_session WHERE ascii_session_id = '" . $this->php_session_id . "' AND ((now() - created) < ' " . $this->session_lifespan . " seconds') AND user_agent='$strUserAgent" . "' AND ((now() - last_impression) <= '".$this->session_timeout." seconds' OR last_impression IS NULL)";
+            $strQuery = "SELECT id FROM http_session WHERE ascii_session_id = '" . $this->php_session_id . "' AND (TIME_TO_SEC(TIMEDIFF(now(),created)) < " . $this->session_lifespan . ") AND user_agent='$strUserAgent" . "' AND (TIME_TO_SEC(TIMEDIFF(now(),last_impression)) <= ".$this->session_timeout." OR last_impression IS NULL)";
 
             # Execute statement
             $objStatement = $this->objPDO->query($strQuery);
@@ -67,21 +73,21 @@ class HTTPSession
             # Fetch it from the database
             $row = $objStatement->fetch(PDO::FETCH_ASSOC);
 
-            # If such row doesn't exist...
+            # If such row doesn't exist..
             if (!$row)
             {
-                # Set failed flag
-                $failed = 1;
                 # Delete from database - we do garbage cleanup at the same time
                 $maxlifetime = $this->session_lifespan;
                 $strQuery = "DELETE FROM http_session WHERE (ascii_session_id = '". $this->php_session_id . "') OR (now() - created > '$maxlifetime seconds')";
                 unset($objStatement);
                 $objStatement = $this->objPDO->query($strQuery);
+
                 # Clean up stray session variables
                 $strQuery = "DELETE FROM session_variable WHERE session_id NOT IN (SELECT id FROM http_session)";
                 unset($objStatement);
                 $objStatement = $this->objPDO->query($strQuery);
-                # Get rid of this one... this will force PHP to give us another
+
+                # Get rid of old PHPSESSID, this will force PHP to give us another
                 unset($_COOKIE["PHPSESSID"]);
             }
         }
@@ -92,6 +98,10 @@ class HTTPSession
         session_start();
     }
 
+    /**
+     * For each load of a page, a session is impressed in order to save the last time
+     * a user has visited the site and move the timeout
+     */
     public function Impress()
     {
         if ($this->native_session_id) {
@@ -275,6 +285,11 @@ class HTTPSession
         return(true);
     }
 
+    /**
+     * This is the first thing that is called when session is started
+     * @param $id
+     * @return string
+     */
     public function _session_read_method($id)
     {
         # We use this to determine whether or not our session actually exists.
@@ -289,7 +304,7 @@ class HTTPSession
 
         $row = $objStatement->fetch(PDO::FETCH_ASSOC);
 
-        if ($row)
+        if($row)
         {
             $this->native_session_id = $row["id"];
 

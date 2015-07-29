@@ -23,6 +23,13 @@ class ActionPoints extends Controller
             # Get the first item from the array
             $id = reset($actionPoints);
 
+        # If we have nothing to display we instead call add()
+        if(!$id)
+        {
+            $this->add();
+            die();
+        }
+
         # Check access rights for user
         $this->checkAuth($id, true, false);
 
@@ -32,7 +39,7 @@ class ActionPoints extends Controller
         $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'id'=>$id, 'meeting'=>$meeting]);
     }
 
-    public function add($post = null)
+    public function add()
     {
         # Get action points for the list
         $actionPoints = $this->model('ActionPointFactory');
@@ -187,7 +194,7 @@ class ActionPoints extends Controller
         # Default is 0 because default is student and every time student
         # edits action point, isApproved must be set to 0
         $isApproved = 0;
-        # If it's a supervisor who edits the post, isApproved is automatically true with any edit
+        # If it's a supervisor who edits the AP, isApproved is automatically true with any edit
         if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
         {
             $isApproved = 1;
@@ -260,8 +267,23 @@ class ActionPoints extends Controller
         # Check if action point has been approved
         $this->checkAuthApproved($actionPoint->getIsApproved());
 
+        # isApproved default is 0 because default is student and every time student
+        # sets the AP as done, isApproved must be set to 0
+        $isApproved = 0;
+        # If it's a supervisor who sets the AP as done, isApproved is automatically true
+        if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
+        {
+            $isApproved = 1;
+        }
+        $actionPoint->setIsApproved($isApproved);
+
         # Set done to the action point
         $actionPoint->setIsDone(1);
+
+        # Set time that the action point has been done
+        $now = new DateTime('NOW');
+        $now = $now->format('Y-m-d H:i:s');
+        $actionPoint->setDatetimeDone($now);
 
         # Save the action point
         $actionPoint->Save();

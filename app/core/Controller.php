@@ -32,10 +32,18 @@ class Controller
      * @param $view
      * @param array $data
      */
-    protected function view($view, $data = [])
+    protected function view($view, $data = [], $dashboard = true)
     {
         require_once 'public/header.php';
+
+        if($dashboard)
+            require_once 'public/dashboard_header.php';
+
         require_once 'app/views/' . $view . '.php';
+
+        if($dashboard)
+            require_once 'public/dashboard_footer.php';
+
         require_once 'public/footer.php';
     }
 

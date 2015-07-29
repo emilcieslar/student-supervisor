@@ -12,7 +12,7 @@ class Login extends Controller
         # Get link for google auth
         $link = GoogleAuth::getInstance()->getAuthLink();
 
-        $this->view('login/index', ['error'=>$error, 'link'=>$link]);
+        $this->view('login/index', ['error'=>$error, 'link'=>$link], false);
     }
 
     public function loginPost($post)
@@ -51,7 +51,7 @@ class Login extends Controller
 
     public function forgotPassword($error = null)
     {
-        $this->view('login/pass', ['error'=>$error]);
+        $this->view('login/pass', ['error'=>$error], false);
     }
 
     public function generatePass($post)
@@ -61,7 +61,7 @@ class Login extends Controller
 
     public function permissionDenied()
     {
-        $this->view('login/permission_denied');
+        $this->view('login/permission_denied', [], false);
     }
 
 }

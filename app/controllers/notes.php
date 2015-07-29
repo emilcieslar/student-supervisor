@@ -32,12 +32,17 @@ class Notes extends Controller
         $this->view('notes/index', ['notes'=>$notes, 'meeting'=>$id, 'meetings'=>$meetings]);
     }
 
-    public function create()
+    public function create($agenda = false)
     {
         $meetings = $this->model('MeetingFactory');
         $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
 
-        $this->view('notes/create', ['meetings'=>$meetings]);
+        $data['meetings'] = $meetings;
+
+        if($agenda)
+            $data['agenda'] = true;
+
+        $this->view('notes/create', $data);
     }
 
     public function createPost($post = null)
@@ -51,6 +56,7 @@ class Notes extends Controller
             $isPrivate = 0;
             if(isset($post['isPrivate']))
                 $isPrivate = 1;
+
             $text = $post['text'];
 
             # Create an empty note
@@ -58,16 +64,30 @@ class Notes extends Controller
 
             # Set values
             $note->setTitle($title);
-            $note->setMeetingId($meetingId);
-            $note->setIsPrivate($isPrivate);
             $note->setText($text);
             $note->setUserId(HTTPSession::getInstance()->GetUserID());
             $note->setProjectId(HTTPSession::getInstance()->PROJECT_ID);
 
+            # If we're adding agenda note
+            if(isset($post['isAgenda']))
+            {
+                $note->setIsAgenda(1);
+                $note->setMeetingId($this->model('MeetingFactory')->getNextMeeting()->getID());
+            } else
+            # If it's a normal note
+            {
+                $note->setMeetingId($meetingId);
+                $note->setIsPrivate($isPrivate);
+            }
+
             $note->Save();
 
-            # Redirect back to notes
-            header('Location: ' . SITE_URL . 'notes');
+            if(isset($post['isAgenda']))
+                # Redirect back to agenda
+                header('Location: ' . SITE_URL . 'agenda');
+            else
+                # Redirect back to notes
+                header('Location: ' . SITE_URL . 'notes');
 
             die();
 
@@ -88,7 +108,7 @@ class Notes extends Controller
         $this->view('notes/note', ['note'=>$note]);
     }
 
-    public function edit($id)
+    public function edit($id, $agenda = false)
     {
         $note = $this->model('Note',$id);
 
@@ -97,7 +117,14 @@ class Notes extends Controller
 
         $meetings = $this->model('MeetingFactory');
         $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
-        $this->view('notes/edit', ['note'=>$note, 'meetings'=>$meetings]);
+
+        $data['note'] = $note;
+        $data['meetings'] = $meetings;
+
+        if($agenda)
+            $data['agenda'] = true;
+
+        $this->view('notes/edit', $data);
     }
 
     public function editPost($post = null)
@@ -123,14 +150,23 @@ class Notes extends Controller
 
             # Set values
             $note->setTitle($title);
-            $note->setMeetingId($meetingId);
-            $note->setIsPrivate($isPrivate);
             $note->setText($text);
+
+            # If we're not editing agenda note
+            if(!isset($post['isAgenda']))
+            {
+                $note->setMeetingId($meetingId);
+                $note->setIsPrivate($isPrivate);
+            }
 
             $note->Save();
 
-            # Redirect back to notes
-            header('Location: ' . SITE_URL . 'notes');
+            if(isset($post['isAgenda']))
+                # Redirect back to agenda
+                header('Location: ' . SITE_URL . 'agenda');
+            else
+                # Redirect back to notes
+                header('Location: ' . SITE_URL . 'notes');
 
             die();
 
@@ -157,7 +193,7 @@ class Notes extends Controller
         }
     }
 
-    public function remove($id)
+    public function remove($id, $agenda = false)
     {
         $note = $this->model('Note',$id);
 
@@ -165,10 +201,14 @@ class Notes extends Controller
         $this->checkAuth($note->getUserId(), $note->getProjectId());
 
         $note->Delete();
-        header('Location: ' . SITE_URL . 'notes/' . $id . '/deleted');
+
+        if($agenda)
+            header('Location: ' . SITE_URL . 'agenda/' . $id . '/deleted');
+        else
+            header('Location: ' . SITE_URL . 'notes/' . $id . '/deleted');
     }
 
-    public function revertRemoval($id)
+    public function revertRemoval($id, $agenda = false)
     {
         $note = $this->model('Note',$id);
 
@@ -178,6 +218,12 @@ class Notes extends Controller
         $note->setIsDeleted(0);
 
         $note->Save();
-        header('Location: ' . SITE_URL . 'notes');
+
+        if($agenda)
+            # Redirect back to agenda
+            header('Location: ' . SITE_URL . 'agenda');
+        else
+            # Redirect back to notes
+            header('Location: ' . SITE_URL . 'notes');
     }
 }

@@ -40,4 +40,35 @@ class ActionPointFactory
         return $myArr;
 
     }
+
+    public static function getActionPointsForAgenda()
+    {
+        # Get database connection
+        $objPDO = PDOFactory::get();
+
+        # Get project ID from session
+        $projectId = HTTPSession::getInstance()->PROJECT_ID;
+
+        # Get the next meeting
+        $strQuery = "SELECT id FROM ActionPoint WHERE project_id = :project_id
+                      AND deadline > (SELECT datetime FROM Meeting WHERE project_id = :project_id AND datetime < NOW() AND is_deleted = 0 LIMIT 1)
+                      AND deadline < (SELECT datetime FROM Meeting WHERE project_id = :project_id AND datetime > NOW() AND is_deleted = 0 LIMIT 1)";
+        $objStatement = $objPDO->prepare($strQuery);
+        $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
+        $objStatement->execute();
+
+        # Define empty array
+        $myArr = array();
+
+        # Add all notes to an array
+        if($result = $objStatement->fetchAll(PDO::FETCH_ASSOC))
+        {
+            foreach($result as $row)
+            {
+                $myArr[$row["id"]] = new ActionPoint($row["id"]);
+            }
+        }
+
+        return $myArr;
+    }
 }

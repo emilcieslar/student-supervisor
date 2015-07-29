@@ -4,7 +4,7 @@ require_once("Note.php");
 
 class NoteFactory
 {
-    public static function getNotes($meeting = null)
+    public static function getNotes($meeting = null, $agenda = false)
     {
         # Get database connection
         $objPDO = PDOFactory::get();
@@ -21,9 +21,16 @@ class NoteFactory
         else
             $meeting = "";
 
+        # If notes for agenda are requested
+        if($agenda)
+            $agenda = " AND is_agenda = 1";
+        # Otherwise only notes that are not agenda should be returned
+        else
+            $agenda = " AND is_agenda = 0";
+
         # Get all notes associated with a given project with the following condition:
         # – Apart from notes that are private AND associated with a different user than logged in
-        $strQuery = "SELECT id FROM Note WHERE project_id = :project_id AND NOT (user_id != :user_id AND is_private = 1) AND is_deleted = 0 " . $meeting . " ORDER BY datetime_created DESC";
+        $strQuery = "SELECT id FROM Note WHERE project_id = :project_id AND NOT (user_id != :user_id AND is_private = 1) AND is_deleted = 0 " . $meeting . $agenda . " ORDER BY datetime_created DESC";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->bindValue(':user_id', $userID, PDO::PARAM_INT);

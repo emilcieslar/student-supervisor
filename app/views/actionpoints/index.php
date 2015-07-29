@@ -1,79 +1,65 @@
-<?php
-# Get current date + 7 days
-$date = DateTime::createFromFormat('d-m-Y', date("d-m-Y"));
-$date->modify('+7 day');
-?>
-
-<div class="large-12 columns">
-    <h3>Dashboard</h3>
-</div>
-
-<div class="large-12 columns dashboard-links">
-    <ul class="inline-list">
-        <li class="active"><a href="<?=SITE_URL;?>actionpoints">Action Points</a></li>
-        <li><a href="<?=SITE_URL;?>notes">Notes</a></li>
-        <li><a href="<?=SITE_URL;?>meetings">Meetings</a></li>
-        <li><a href="<?=SITE_URL;?>notifications">Notifications</a></li>
-    </ul>
-</div>
-
-<div class="large-12 columns dashboard-main">
-
 <!-- LIST OF ACTION POINTS -->
 <div class="large-8 columns action-points">
     <ul class="action-points">
-    <?php foreach ($data['actionpoints'] as $actionpoint): ?>
+        <?php if($data['actionpoints']): ?>
+        <?php foreach ($data['actionpoints'] as $actionpoint): ?>
 
-        <!-- If it's the action point in the URL or default one -->
-        <?php if(isset($data['id'])): ?>
+            <!-- If it's the action point in the URL or default one -->
+            <?php if(isset($data['id'])): ?>
 
-            <!-- get the ID and decide which one should be active -->
-            <?php $active = ($actionpoint->getID() == $data['id']->getID()) ? 'class="active"' : ''; ?>
+                <!-- get the ID and decide which one should be active -->
+                <?php $active = ($actionpoint->getID() == $data['id']->getID()) ? 'class="active"' : ''; ?>
 
-            <!-- display one line which contains name of the action point with a link to it -->
-            <li <?=$active?>>
-                <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
-                    <!-- If action point is set to done, display a tick -->
-                    <?php if($actionpoint->getIsDone()): ?>
-                        <i class="fa fa-check inline"></i>&nbsp;&nbsp;
-                    <?php endif; ?>
+                <!-- display one line which contains name of the action point with a link to it -->
+                <li <?=$active?>>
+                    <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
+                        <!-- If action point is set to done, display a tick -->
+                        <?php if($actionpoint->getIsDone()): ?>
+                            <i class="fa fa-check inline"></i>&nbsp;&nbsp;
+                        <?php endif; ?>
 
-                    <!-- Display text of the action point -->
-                    <?=$actionpoint->getText();?>
+                        <!-- Display text of the action point -->
+                        <?=$actionpoint->getText();?>
 
-                    <!-- If the action point is not approved, display a notice -->
-                    <?php if(!$actionpoint->getIsApproved()): ?>
-                        &nbsp;<span class="label warning round no-indent">Not approved yet</span>
-                    <?php endif; ?>
+                        <!-- If the action point is not approved, display a notice -->
+                        <?php if(!$actionpoint->getIsApproved()): ?>
+                            &nbsp;<span class="label warning round no-indent">Not approved yet</span>
+                        <?php endif; ?>
 
-                    <!-- If the action point has run over deadline, display a notice -->
-                    <?php if($actionpoint->hasRunOverDeadline()): ?>
-                        &nbsp;<span class="label alert round no-indent">Deadline passed</span>
-                    <?php endif; ?>
-                </a>
-            </li>
+                        <!-- If the action point has run over deadline, display a notice -->
+                        <?php if($actionpoint->hasRunOverDeadline()): ?>
+                            &nbsp;<span class="label alert round no-indent">Deadline passed</span>
+                        <?php endif; ?>
+                    </a>
+                </li>
 
-        <!-- Otherwise we have no active (add action point selected) -->
-        <?php else: ?>
-            <li>
-                <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
-                    <!-- Display text of the action point -->
-                    <?=$actionpoint->getText();?>
+            <!-- Otherwise we have no active (Add Action Point will be selected) -->
+            <?php else: ?>
+                <li>
+                    <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
+                        <!-- If action point is set to done, display a tick -->
+                        <?php if($actionpoint->getIsDone()): ?>
+                            <i class="fa fa-check inline"></i>&nbsp;&nbsp;
+                        <?php endif; ?>
 
-                    <!-- If the action point is not approved, display a notice -->
-                    <?php if(!$actionpoint->getIsApproved()): ?>
-                        &nbsp;<span class="label warning round no-indent">Not approved yet</span>
-                    <?php endif; ?>
+                        <!-- Display text of the action point -->
+                        <?=$actionpoint->getText();?>
 
-                    <!-- If the action point has run over deadline, display a notice -->
-                    <?php if($actionpoint->hasRunOverDeadline()): ?>
-                        &nbsp;<span class="label alert round no-indent">Deadline passed</span>
-                    <?php endif; ?>
-                </a>
-            </li>
+                        <!-- If the action point is not approved, display a notice -->
+                        <?php if(!$actionpoint->getIsApproved()): ?>
+                            &nbsp;<span class="label warning round no-indent">Not approved yet</span>
+                        <?php endif; ?>
+
+                        <!-- If the action point has run over deadline, display a notice -->
+                        <?php if($actionpoint->hasRunOverDeadline()): ?>
+                            &nbsp;<span class="label alert round no-indent">Deadline passed</span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+        <?php endforeach; ?>
         <?php endif; ?>
-
-    <?php endforeach; ?>
 
         <li class="add-new-action-point<?php if(isset($data['add'])) echo ' active';?>"><a class="fa fa-plus" href="<?=SITE_URL;?>actionpoints/add">&nbsp;&nbsp;Add a new action point</a></li>
     </ul>
@@ -103,7 +89,7 @@ $date->modify('+7 day');
         <?php if($data['id']->getIsDone()): ?>
             <div class="large-12 columns">
                 <i class="fa fa-check icon" title="Done"></i>
-                <span>This action point has been marked as done</span>
+                <span>This action point has been marked as done on <?=DatetimeConverter::getUserFriendlyDateTimeFormat($data['id']->getDatetimeDone())?></span>
             </div>
         <?php endif; ?>
 
@@ -124,8 +110,10 @@ $date->modify('+7 day');
                 <a href="<?=SITE_URL?>actionpoints/done/<?=$data['id']->getID();?>" class="fa fa-check button success"></a>
             <?php endif; ?>
 
-            <?php if((HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getSentForApproval()) OR HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+            <?php if((!$data['id']->getIsDone() || !$data['id']->getIsApproved()) && ((HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getSentForApproval())
+                    || HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)): ?>
                 <!-- display only if the action point hasn't been sent for approval (in case of a student) OR in case of a supervisor display anytime -->
+                <!-- also doesn't display to any user when an action point has been set as done and the operation has been approved -->
                 <a href="<?=SITE_URL?>actionpoints/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"></a>
                 <a href="<?=SITE_URL?>actionpoints/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
             <?php endif; ?>
@@ -152,7 +140,7 @@ $date->modify('+7 day');
 
                 <div class="large-12 columns">
                     <label>Choose deadline: <small>required</small>
-                        <input name="deadline" placeholder="Choose deadline" type="text" id="dp1" value="<?=$data['datetime']['date'];?>" required pattern="date_friendly">
+                        <input name="deadline" placeholder="Choose deadline" type="text" id="dp_deadline" value="<?=$data['datetime']['date'];?>" required pattern="date_friendly">
                     </label>
                     <small class="error">Incorrect format of deadline</small>
                 </div>
@@ -288,8 +276,6 @@ $date->modify('+7 day');
 
 <?php endif; ?>
 
-</div><!-- large-12 columns -->
-
 
 <!-- DATE PICKER SCRIPT -->
 <script type="text/javascript">
@@ -302,7 +288,7 @@ $date->modify('+7 day');
         nowTemp.setDate(nowTemp.getDate() + 7);
 
         // Run datepicker
-        $('#dp1').fdatepicker({
+        $('#dp1, #dp_deadline').fdatepicker({
             format: 'dd-mm-yyyy',
             disableDblClickSelection: true,
             closeButton: true,
@@ -313,6 +299,7 @@ $date->modify('+7 day');
         $('#dp1').fdatepicker("setDate", nowTemp);
         // Update datepicker
         $('#dp1').fdatepicker("update");
+
 
     });
 

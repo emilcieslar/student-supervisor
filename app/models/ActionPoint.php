@@ -73,8 +73,10 @@ class ActionPoint extends DataBoundObject
     {
         $now = new DateTime('NOW');
         $deadline = DateTime::createFromFormat('Y-m-d H:i:s', $this->Deadline);
+        $timeCompleted = DateTime::createFromFormat('Y-m-d H:i:s', $this->DatetimeDone);
+        $isDone = $this->IsDone;
 
-        if($now > $deadline)
+        if($now > $deadline && !$isDone || $timeCompleted > $deadline)
             return true;
         else
             return false;

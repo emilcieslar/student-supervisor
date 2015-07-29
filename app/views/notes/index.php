@@ -1,61 +1,48 @@
-<div class="large-12 columns">
-    <h3>Dashboard</h3>
-</div>
-
-<div class="large-12 columns dashboard-links">
-    <ul class="inline-list">
-        <li><a href="<?=SITE_URL;?>actionpoints">Action Points</a></li>
-        <li class="active"><a href="<?=SITE_URL;?>notes">Notes</a></li>
-        <li><a href="<?=SITE_URL;?>meetings">Meetings</a></li>
-        <li><a href="<?=SITE_URL;?>notifications">Notifications</a></li>
-    </ul>
-</div>
-
-<div class="large-12 columns dashboard-main">
-
-    <!-- CREATE A NEW NOTE -->
-    <div class="clearfix">
-        <div class="large-6 columns note-wrapper">
-            <a href="<?=SITE_URL?>notes/create" class="button success small">New note</a>
-        </div>
+<!-- CREATE A NEW NOTE -->
+<div class="clearfix">
+    <div class="large-6 columns note-wrapper">
+        <a href="<?=SITE_URL?>notes/create" class="button success small">New note</a>
+    </div>
 
 
-        <div class="large-6 columns note-wrapper">
-            <div class="row collapse">
-                <div class="large-2 columns">
-                    <!-- Display only if there's a filter applied -->
-                    <?php if(isset($data['meeting'])): ?>
-                        <a href="<?=SITE_URL?>notes" class="button tiny fa fa-times warning postfix"></a>
-                    <?php endif; ?>
-                </div>
-                <div class="large-10 columns">
-                    <select name="filterByMeeting">
-                        <option value="0">Filter by a meeting</option>
-                        <?php foreach($data['meetings'] as $meeting): ?>
-                            <?php $selected = ($meeting->getID() == $data['meeting']) ? "selected" : ""; ?>
-                            <option value="<?=$meeting->getID()?>" <?=$selected?>><?=$meeting->getDatetimeUserFriendly()?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+    <div class="large-6 columns note-wrapper">
+        <div class="row collapse">
+            <div class="large-2 columns">
+                <!-- Display only if there's a filter applied -->
+                <?php if(isset($data['meeting'])): ?>
+                    <a href="<?=SITE_URL?>notes" class="button tiny fa fa-times warning postfix"></a>
+                <?php endif; ?>
+            </div>
+            <div class="large-10 columns">
+                <select name="filterByMeeting">
+                    <option value="0">Filter by a meeting</option>
+                    <?php foreach($data['meetings'] as $meeting): ?>
+                        <?php $selected = ($meeting->getID() == $data['meeting']) ? "selected" : ""; ?>
+                        <option value="<?=$meeting->getID()?>" <?=$selected?>><?=$meeting->getDatetimeUserFriendly()?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
         </div>
-    </div><!-- clearfix -->
+    </div>
+</div><!-- clearfix -->
 
-    <!-- If isset delete, display panel to revert delete -->
-    <?php if(isset($data['delete'])): ?>
-        <div class="panel large-12 columns text-center">
-            <a class="button warning tiny" href="<?=SITE_URL?>notes/revertRemoval/<?=$data['delete']?>">Cancel removal</a>
-            <a class="button success tiny" href="<?=SITE_URL?>notes">Ok</a><br>
-            A note has been removed
-        </div>
-    <?php endif; ?>
+<!-- If isset delete, display panel to revert delete -->
+<?php if(isset($data['delete'])): ?>
+    <div class="alert-box info large-12 columns text-center">
+        <a class="button warning tiny" href="<?=SITE_URL?>notes/revertRemoval/<?=$data['delete']?>">Cancel removal</a>
+        <a class="button success tiny" href="<?=SITE_URL?>notes">Ok</a><br>
+        A note has been removed
+    </div>
+<?php endif; ?>
 
-    <!-- DISPLAY ALL THE NOTES -->
-    <?php foreach($data['notes'] as $note): ?>
+<!-- DISPLAY ALL THE NOTES -->
+<?php if($data['notes']): ?>
+<?php foreach($data['notes'] as $note): ?>
 
-        <a href="<?=SITE_URL?>notes/note/<?=$note->getID()?>">
-            <div class="note-wrapper large-4 medium-6 small-12 columns">
-                <div class="note">
+    <a href="<?=SITE_URL?>notes/note/<?=$note->getID()?>">
+        <div class="note-wrapper large-4 medium-6 small-12 columns">
+            <div class="note">
+                <div>
                     <h4>
                         <?php if(!$note->getTitle() && $note->getMeetingId() != 0): ?>
                             Note from meeting of <?=$note->getMeetingDatetime()?>
@@ -66,15 +53,15 @@
                         <?php endif; ?>
                     </h4>
                     <p><?=$note->getExcerpt()?></p>
-                    <hr>
-                    <span class="created">Created by <?=$note->getUsername()?> on <?=DatetimeConverter::getUserFriendlyDateTimeFormat($note->getDatetimeCreated())?></span>
-                </div><!-- note -->
-            </div>
-        </a>
+                </div>
+                <hr>
+                <span class="created">Created by <?=$note->getUsername()?> on <?=DatetimeConverter::getUserFriendlyDateTimeFormat($note->getDatetimeCreated())?></span>
+            </div><!-- note -->
+        </div>
+    </a>
+<?php endforeach; ?>
+<?php endif; ?>
 
-    <?php endforeach; ?>
-
-</div><!-- dashboard-main columns -->
 
 <script type="text/javascript">
     $(document).ready(function() {
