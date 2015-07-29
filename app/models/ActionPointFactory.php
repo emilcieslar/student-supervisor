@@ -49,10 +49,10 @@ class ActionPointFactory
         # Get project ID from session
         $projectId = HTTPSession::getInstance()->PROJECT_ID;
 
-        # Get the next meeting
+        # Get action points that have deadline more than the last meeting and less than or equal to the next meeting
         $strQuery = "SELECT id FROM ActionPoint WHERE project_id = :project_id
                       AND deadline > (SELECT datetime FROM Meeting WHERE project_id = :project_id AND datetime < NOW() AND is_deleted = 0 LIMIT 1)
-                      AND deadline < (SELECT datetime FROM Meeting WHERE project_id = :project_id AND datetime > NOW() AND is_deleted = 0 LIMIT 1)";
+                      AND deadline <= (SELECT datetime FROM Meeting WHERE project_id = :project_id AND datetime > NOW() AND is_deleted = 0 LIMIT 1)";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();

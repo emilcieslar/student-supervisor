@@ -2,6 +2,11 @@
 
 class Meetings extends Controller
 {
+    /**
+     * @param null $id
+     * @param null $month
+     * @param null $year
+     */
     public function index($id = null, $month = null, $year = null)
     {
         $meetings = $this->model('MeetingFactory');
