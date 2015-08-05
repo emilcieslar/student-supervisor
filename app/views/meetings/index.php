@@ -319,22 +319,28 @@
                 <h3>Cancel Meeting</h3>
             </div>
 
-            <form action="<?=SITE_URL;?>meetings/cancelPost" method="post" name="cancelMeeting" data-abide>
+            <?php if(!isset($data['error'])): ?>
+                <form action="<?=SITE_URL;?>meetings/cancelPost" method="post" name="cancelMeeting" data-abide>
 
-                <!-- hidden input with ID -->
-                <input name="id" type="hidden" value="<?=$data['id']->getID()?>">
+                    <!-- hidden input with ID -->
+                    <input name="id" type="hidden" value="<?=$data['id']->getID()?>">
 
-                <div class="large-12 columns">
-                    <label>Provide a reason: <small>required</small>
-                        <textarea name="reason" rows="3" placeholder="Provide a reason..." required></textarea>
-                    </label>
-                    <small class="error">Please provide a reason</small>
-                </div>
+                    <div class="large-12 columns">
+                        <label>Provide a reason: <small>required</small>
+                            <textarea name="reason" rows="3" placeholder="Provide a reason..." required></textarea>
+                        </label>
+                        <small class="error">Please provide a reason</small>
+                    </div>
 
+                    <div class="large-12 columns top-10">
+                        <input class="button alert" type="submit" name="cancelMeeting" value="Cancel Meeting">
+                    </div>
+                </form>
+            <?php else: ?>
                 <div class="large-12 columns top-10">
-                    <input class="button alert" type="submit" name="cancelMeeting" value="Cancel Meeting">
+                    <p>You cannot cancel two meetings in a row</p>
                 </div>
-            </form>
+            <?php endif; ?>
         </div><!-- row -->
     </div>
 

@@ -284,10 +284,6 @@ if(isset($data['id']))
         // Advance the date by 7 days
         nowTemp.setDate(nowTemp.getDate() + 7);
 
-        $('#dp1').click(function() {
-            alert('jj');
-        });
-
         // Run datepicker
         $('#dp1, #dp_deadline').fdatepicker({
             format: 'dd-mm-yyyy',

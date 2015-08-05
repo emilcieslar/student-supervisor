@@ -63,13 +63,48 @@ class MeetingFactory
         # Define empty variable
         $nextMeeting = null;
 
-        # Add all notes to an array
+        # Get the next meeting
         if($row = $objStatement->fetch(PDO::FETCH_ASSOC))
         {
             $nextMeeting = new Meeting($row['id']);
         }
 
         return $nextMeeting;
+    }
+
+    public static function getPreviousMeeting($meeting)
+    {
+        # Get database connection
+        $objPDO = PDOFactory::get();
+
+        # Get project ID from session
+        $projectId = HTTPSession::getInstance()->PROJECT_ID;
+
+        # Get the previous meeting, which we can recognize by
+        # 1. datetime of that meeting is less than meeting provided
+        # 2. Meeting is not deleted, however can be cancelled, because we might look for a meeting that was cancelled
+        # 3. Meeting is approved
+        $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id
+                      AND datetime < (SELECT datetime FROM Meeting WHERE id = ".$meeting->getID().")
+                      AND is_deleted = 0
+                      AND is_approved
+                      ORDER BY datetime DESC
+                      LIMIT 1";
+        $objStatement = $objPDO->prepare($strQuery);
+        $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
+        $objStatement->execute();
+
+
+        # Define empty variable
+        $prevMeeting = null;
+
+        # Get the previous meeting if it exists
+        if($row = $objStatement->fetch(PDO::FETCH_ASSOC))
+        {
+            $prevMeeting = new Meeting($row['id']);
+        }
+
+        return $prevMeeting;
     }
 
     public static function getMeetingsCount($factor)

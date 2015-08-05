@@ -1,7 +1,9 @@
 <?php
 
 # Display errors
-ini_set('display_errors', 1);
+ini_set('display_errors',1);
+ini_set('display_startup_errors',1);
+error_reporting(-1);
 
 # Load config file
 $file = file_get_contents("app/config.json");
@@ -28,7 +30,7 @@ $objSession = HTTPSession::getInstance();
 $objSession->Impress();
 
 # Start up a GoogleAuth
-GoogleAuth::getInstance();
+#GoogleAuth::getInstance();
 
 # Check if user is NOT logged in
 if(!$objSession->IsLoggedIn())

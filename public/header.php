@@ -21,8 +21,9 @@
         <li class="name">
             <h1><a href="<?=SITE_URL?>" class="fa fa-comment"> &nbsp;<strong>s</strong>tudent<strong>s</strong>upervisor</a></h1>
         </li>
-        <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
-        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+        <?php if(HTTPSession::getInstance()->IsLoggedIn()): ?>
+            <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+        <?php endif; ?>
     </ul>
 
     <section class="top-bar-section">
@@ -51,16 +52,18 @@
             <?php endif; ?>
         </ul>
 
-        <div id="drop-project" data-dropdown-content class="f-dropdown content small" aria-hidden="true" tabindex="-1">
-            <h5>Project information</h5>
-            <h6><?=$data['project']->getName()?></h6>
-            <p><?=$data['project']->getDescription()?></p>
-            <hr>
-            <h5>Participants</h5>
-            <?php foreach($data['projectUsers'] as $user): ?>
-                <?=$user->getFirstName() . " " . $user->getLastName() . " (" . $user->getTypeText($user->getType()) . ")"?><br>
-            <?php endforeach; ?>
-        </div>
+        <?php if(HTTPSession::getInstance()->IsLoggedIn()): ?>
+            <div id="drop-project" data-dropdown-content class="f-dropdown content small" aria-hidden="true" tabindex="-1">
+                <h5>Project information</h5>
+                <h6><?=$data['project']->getName()?></h6>
+                <p><?=$data['project']->getDescription()?></p>
+                <hr>
+                <h5>Participants</h5>
+                <?php foreach($data['projectUsers'] as $user): ?>
+                    <?=$user->getFirstName() . " " . $user->getLastName() . " (" . $user->getTypeText($user->getType()) . ")"?><br>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
 
     </section>
 </nav>

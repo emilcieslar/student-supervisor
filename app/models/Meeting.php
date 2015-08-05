@@ -48,4 +48,11 @@ class Meeting extends DataBoundObject
         return DatetimeConverter::getUserFriendlyDateTimeFormat($this->getRepeatUntil());
     }
 
+    public function getPreviousMeeting()
+    {
+        require_once 'MeetingFactory.php';
+        $prevMeeting = MeetingFactory::getPreviousMeeting($this);
+        return $prevMeeting;
+    }
+
 }

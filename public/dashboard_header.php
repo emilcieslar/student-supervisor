@@ -29,7 +29,7 @@ switch($page)
         <li <?=$activeM?>><a href="<?=SITE_URL;?>meetings">Meetings</a></li>
         <li <?=$activeNo?>><a href="<?=SITE_URL;?>notifications">Notifications</a></li>
 
-        <li class="right"><a><i class="fa fa-question-circle"></i></a></li>
+        <!--<li class="right"><a><i class="fa fa-question-circle"></i></a></li>-->
 
     </ul>
 

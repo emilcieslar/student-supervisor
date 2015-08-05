@@ -345,7 +345,7 @@ class Meetings extends Controller
         header('Location: ' . SITE_URL . 'meetings/' . $id . '/deleted');
     }
 
-    public function cancel($id = null)
+    public function cancel($id = null, $error = null)
     {
         if($id)
         {
@@ -359,8 +359,9 @@ class Meetings extends Controller
             # Check if we have access to cancelling
             $this->checkAuthIsNotApproved($id);
             $this->checkAuthProjectScope($id->getProjectId());
+            $this->checkAuthTwoMeetingsInRow($id, $error);
 
-            $this->view('meetings/index', ['id'=>$id, 'cancel'=>true, 'meetings'=>$meetings]);
+            $this->view('meetings/index', ['id'=>$id, 'cancel'=>true, 'meetings'=>$meetings, 'error'=>$error]);
         }
         else
             # Redirect back to meetings
@@ -381,6 +382,7 @@ class Meetings extends Controller
             # Check if we have access to cancelling
             $this->checkAuthIsNotApproved($meeting);
             $this->checkAuthProjectScope($meeting->getProjectId());
+            $this->checkAuthTwoMeetingsInRow($meeting);
 
             # Set values
             $meeting->setIsCancelled(1);
@@ -443,6 +445,15 @@ class Meetings extends Controller
             die();
         } else
             return true;
+    }
+
+    protected function checkAuthTwoMeetingsInRow($meeting, $error = null)
+    {
+        # Two meetings in a row cannot be cancelled, if previous meeting was cancelled
+        # then we cannot approve this meeting to be cancelled
+        if($meeting->getPreviousMeeting()->getIsCancelled() && !$error)
+            header('Location: '. SITE_URL . 'meetings/cancel/'.$meeting->getID().'/error');
+
     }
 
 }

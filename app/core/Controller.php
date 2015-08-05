@@ -34,6 +34,7 @@ class Controller
      */
     protected function view($view, $data = [], $dashboard = true)
     {
+
         if($dashboard)
         {
             # Get info about the project if we are displaying dashboard
@@ -43,7 +44,6 @@ class Controller
             $data['project'] = $project;
             $data['projectUsers'] = $projectUsers;
         }
-
 
         require_once 'public/header.php';
 

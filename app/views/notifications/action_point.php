@@ -56,5 +56,5 @@ else
         ?>
 
     </div>
-    <i class="notif-close fa fa-times"></i>
+    <a href="<?=SITE_URL?>notifications/done/<?=$notification->getID()?>"><i class="notif-close fa fa-times"></i></a>
 </li>
