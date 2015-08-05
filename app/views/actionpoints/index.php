@@ -1,3 +1,12 @@
+<!-- If isset delete, display panel to revert delete -->
+<?php if(isset($data['delete'])): ?>
+    <div class="alert-box info large-12 columns text-center">
+        <a class="button warning tiny" href="<?=SITE_URL?>actionpoints/revertRemoval/<?=$data['delete']?>">Cancel removal</a>
+        <a class="button success tiny" href="<?=SITE_URL?>actionpoints">Ok</a><br>
+        Action Point has been removed
+    </div>
+<?php endif; ?>
+
 <!-- LIST OF ACTION POINTS -->
 <div class="large-8 columns action-points">
     <ul class="action-points">
@@ -109,9 +118,6 @@
 
             <form action="<?=SITE_URL;?>actionpoints/editPost" method="post" name="addActionPoint" data-abide>
 
-                <!-- hidden input to tell router that it's a post request -->
-                <input name="action" type="hidden">
-
                 <input name="id" type="hidden" value="<?=$data['id']->getID();?>">
 
                 <div class="large-12 columns">
@@ -210,9 +216,6 @@
 
         <form action="<?=SITE_URL;?>actionpoints/addPost" method="post" name="addActionPoint" data-abide>
 
-            <!-- hidden input to tell router that it's a post request -->
-            <input name="action" type="hidden">
-
             <div class="large-12 columns">
                 <label>Choose deadline date and time: <small>required</small>
                     <input name="deadline" placeholder="Choose date" type="text" id="dp1" required pattern="date_friendly">
@@ -273,8 +276,6 @@ if(isset($data['id']))
 
 <!-- DATE PICKER SCRIPT -->
 <script type="text/javascript">
-
-    alert('ready');
 
     $(document).ready(function() {
 

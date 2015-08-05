@@ -7,7 +7,7 @@ class Meetings extends Controller
      * @param null $month
      * @param null $year
      */
-    public function index($id = null, $month = null, $year = null)
+    public function index($id = null, $delete = null)
     {
         $meetings = $this->model('MeetingFactory');
         $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID);
@@ -30,7 +30,15 @@ class Meetings extends Controller
             # Check access rights in a project scope
             $this->checkAuthProjectScope($id->getProjectId());
 
-        $this->view('meetings/index', ['meetings'=>$meetings, 'id'=>$id]);
+        # Set values
+        $data['meetings'] = $meetings;
+        $data['id'] = $id;
+
+        # If delete is set
+        if($delete)
+            $data['delete'] = $id->getID();
+
+        $this->view('meetings/index', $data);
         #$this->view('meetings/index', ['month'=>$month, 'year'=>$year]);
     }
 
@@ -45,6 +53,10 @@ class Meetings extends Controller
 
     public function addPost($post = null)
     {
+        # Define default header, if it's not repeating meeting, we'll change it afterwards
+        # in order to be redirected to a meeting we've created
+        $header = 'Location: ' . SITE_URL . 'meetings';
+
         # If it's a post request, we'll have parameters passed
         if($post)
         {
@@ -173,11 +185,15 @@ class Meetings extends Controller
             # Save the meeting
             $meeting->Save();
 
+            if(!$isRepeating)
+                # If it's not repeating meeting, we wanna display the only meeting we've created
+                $header = 'Location: ' . SITE_URL . 'meetings/' . $meeting->getID();
 
         }
 
         # Redirect back to action points
-        Header('Location: ' . SITE_URL . 'meetings');
+        header($header);
+        die();
     }
 
     public function edit($id = null)
@@ -326,7 +342,7 @@ class Meetings extends Controller
         $meeting->Delete();
 
         # Redirect back to meetings
-        header('Location: ' . SITE_URL . 'meetings');
+        header('Location: ' . SITE_URL . 'meetings/' . $id . '/deleted');
     }
 
     public function cancel($id = null)
@@ -383,6 +399,22 @@ class Meetings extends Controller
         else
             # Redirect back to meetings
             header('Location: ' . SITE_URL . 'meetings');
+    }
+
+    public function revertRemoval($id)
+    {
+        $meeting = $this->model('Meeting',$id);
+
+        # Check if user is allowed to perform this action
+        $this->checkAuthIsApproved($meeting);
+        $this->checkAuthProjectScope($meeting->getProjectId());
+
+        $meeting->setIsDeleted(0);
+
+        $meeting->Save();
+
+        # Redirect back to actionpoints
+        header('Location: ' . SITE_URL . 'meetings');
     }
 
     protected function checkAuthIsApproved($meeting)

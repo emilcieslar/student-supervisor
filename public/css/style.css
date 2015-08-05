@@ -11,6 +11,10 @@ body {
     line-height: 41px;
 }
 
+p {
+    font-size: 0.9rem;
+}
+
 .inline {
     display: inline;
 }

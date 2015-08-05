@@ -14,9 +14,21 @@ else
 
 <li class="notif">
     <div class="large-<?=$large?> columns">
-        <?=$notification->getObjectType()?> <a class="notification-object" href="<?=$notification->getController()?>/<?=$notification->getObjectId()?>"><?=$text?></a>
+        <?=$notification->getObjectType()?>
+        <strong>
+            <!-- Display link to the action point only if it wasn't removed -->
+            <?php if(!$notification->getObject()->getIsDeleted()): ?>
+                <a class="notification-object" href="<?=$notification->getController()?>/<?=$notification->getObjectId()?>"><?=$text?></a>
+            <?php else: ?>
+                <?=$text?>
+            <?php endif; ?>
+        </strong>
         has been <?=$notification::getActionText($notification->getAction())?> by <?=$notification->getUsername()?>
-        <br><span class="label info round"><?=$notification->getDatetimeCreated()?></span>
+        <br><span class="label info round"><?=DatetimeConverter::getUserFriendlyDateTimeFormat($notification->getDatetimeCreated())?></span>
+        <!-- If the action point is deleted, display a warning -->
+        <?php if($notification->getObject()->getIsDeleted()): ?>
+            <span class="label alert round">deleted</span>
+        <?php endif; ?>
     </div>
 
     <div class="large-4 columns right">

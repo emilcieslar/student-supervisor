@@ -53,7 +53,7 @@ class App
         $this->params = $url ? array_values($url) : [];
 
         # Check whether it's a POST request and handle it
-        if(isset($_POST['action']))
+        if($_SERVER['REQUEST_METHOD'] == 'POST')
             $this->handlePOSTRequest();
 
         # Call the method in the specified controller and pass parameters if any

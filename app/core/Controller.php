@@ -34,6 +34,17 @@ class Controller
      */
     protected function view($view, $data = [], $dashboard = true)
     {
+        if($dashboard)
+        {
+            # Get info about the project if we are displaying dashboard
+            $project = $this->model('Project',HTTPSession::getInstance()->PROJECT_ID);
+            $projectUsers = $this->model('ProjectFactory')->getAllUsersForProject(HTTPSession::getInstance()->PROJECT_ID);
+
+            $data['project'] = $project;
+            $data['projectUsers'] = $projectUsers;
+        }
+
+
         require_once 'public/header.php';
 
         if($dashboard)

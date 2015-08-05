@@ -37,17 +37,30 @@
                 </li>
                 <!-- Only supervisor can choose from different projects -->
                 <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
-                <li class="has-dropdown">
-                    <a href="#">Project</a>
-                    <ul class="dropdown">
-                        <?php foreach(ProjectFactory::getAllProjectsForUser(HTTPSession::getInstance()->GetUserID()) as $project): ?>
-                        <li><a href="<?=SITE_URL.'projects/'.$project->getID();?>"><?=$project->getName();?></a></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </li>
+                    <li class="has-dropdown">
+                        <a href="#">Project</a>
+                        <ul class="dropdown">
+                            <?php foreach(ProjectFactory::getAllProjectsForUser(HTTPSession::getInstance()->GetUserID()) as $project): ?>
+                                <?php $active = (HTTPSession::getInstance()->PROJECT_ID == $project->getID()) ? ' class="active"' : ''; ?>
+                                <li<?=$active?>><a href="<?=SITE_URL.'projects/'.$project->getID();?>"><?=$project->getName();?></a></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
                 <?php endif; ?>
+                <li><a data-dropdown="drop-project" aria-controls="drop-project" aria-expanded="false"><i class="fa fa-info-circle"></i></a></li>
             <?php endif; ?>
         </ul>
+
+        <div id="drop-project" data-dropdown-content class="f-dropdown content small" aria-hidden="true" tabindex="-1">
+            <h5>Project information</h5>
+            <h6><?=$data['project']->getName()?></h6>
+            <p><?=$data['project']->getDescription()?></p>
+            <hr>
+            <h5>Participants</h5>
+            <?php foreach($data['projectUsers'] as $user): ?>
+                <?=$user->getFirstName() . " " . $user->getLastName() . " (" . $user->getTypeText($user->getType()) . ")"?><br>
+            <?php endforeach; ?>
+        </div>
 
     </section>
 </nav>

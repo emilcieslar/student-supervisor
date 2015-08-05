@@ -12,7 +12,6 @@
 
         <input type="submit" class="button small success" value="Save changes">
 
-        <input type="hidden" name="action" value="post">
         <input type="hidden" name="id" value="<?=$data['note']->getID()?>">
 
         <!-- display only if it's agenda note being created -->

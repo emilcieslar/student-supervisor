@@ -44,8 +44,17 @@ class MeetingFactory
         # Get project ID from session
         $projectId = HTTPSession::getInstance()->PROJECT_ID;
 
-        # Get the next meeting
-        $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id AND datetime > NOW() AND is_deleted = 0 LIMIT 1";
+        # Get the next meeting, which we can recognize by
+        # 1. datetime of that meeting is bigger than now
+        # 2. it's the first next meeting therefore LIMIT 1
+        # 3. it hasn't been cancelled
+        # 4. it is approved
+        $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id
+                      AND datetime > NOW()
+                      AND is_deleted = 0
+                      AND is_cancelled = 0
+                      AND is_approved
+                      LIMIT 1";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();

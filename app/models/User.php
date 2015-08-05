@@ -41,4 +41,14 @@ class User extends DataBoundObject
         return null;
     }
 
+    public function getTypeText($type)
+    {
+        switch($type)
+        {
+            case self::USER_TYPE_STUDENT: return "Student";
+            case self::USER_TYPE_SUPERVISOR: return "Supervisor";
+            case self::USER_TYPE_ADMIN: return "Administrator";
+        }
+    }
+
 }

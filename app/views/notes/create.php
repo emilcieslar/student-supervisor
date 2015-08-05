@@ -9,8 +9,6 @@
 
         <input type="submit" class="button small success" name="save" value="Save changes">
 
-        <input type="hidden" name="action" value="post">
-
         <!-- display only if it's agenda note being created -->
         <?php if(isset($data['agenda'])): ?>
             <input type="hidden" name="isAgenda" value="1">

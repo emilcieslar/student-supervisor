@@ -8,7 +8,6 @@
     <?php endif; ?>
 
     <form action="<?=SITE_URL;?>login/generatePass" method="post" name="loginForm" class="top-20">
-        <input type="hidden" name="action">
         <label>Username: <input name="user" type="text"></label>
         <input type="submit" class="button" value="Generate new password" name="newPass">
     </form>

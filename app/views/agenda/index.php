@@ -1,16 +1,3 @@
-<!-- PROJECT INFO -->
-<div class="large-12 columns agenda-statistics">
-    <h5>Project <?=$data['project']->getName()?></h5>
-    <p><?=$data['project']->getDescription()?></p>
-    <ul>
-        <?php foreach($data['projectUsers'] as $user): ?>
-            <li><?=$user->getFirstName() . " " . $user->getLastName()?></li>
-        <?php endforeach; ?>
-    </ul>
-</div>
-
-<hr>
-
 <!-- ACTION POINTS AND MEETINGS STATISTICS + RAG -->
 <div class="large-12 columns agenda-statistics">
     <h5>Red amber green status</h5>
@@ -107,9 +94,22 @@
     </div>
 </div>
 
-
 <hr>
 
+<!-- NEXT MEETING -->
+<div class="large-6 columns">
+    <h5>Your next meeting</h5>
+    <div class="panel top-10">
+        <?php if($data['nextMeeting']): ?>
+            <?=$data['nextMeeting']->getDatetimeUserFriendly()?>
+            <br>
+            <a class="button small top-10" href="<?=SITE_URL?>meetings/<?=$data['nextMeeting']->getID()?>">Edit meeting</a>
+        <?php else: ?>
+            <p>You have no schedulled meeting</p>
+            <a class="button small" href="<?=SITE_URL?>meetings/add">Add a new one</a>
+        <?php endif; ?>
+    </div>
+</div>
 
 <!-- LIST OF ACTION POINTS -->
 <div class="large-6 columns">
@@ -144,29 +144,13 @@
         </ul>
     <?php else: ?>
         <div class="panel top-10">
-            <p>There are no Action Points for the next meeting</p>
+            <p>You have no Action Points for the next meeting</p>
             <a class="button small" href="<?=SITE_URL?>actionpoints/add">Add a new one</a>
         </div>
     <?php endif; ?>
 </div>
 
-<div class="large-6 columns">
-    <h5>Your next meeting</h5>
-    <div class="panel top-10">
-        <?php if($data['nextMeeting']): ?>
-            <?=$data['nextMeeting']->getDatetimeUserFriendly()?>
-            <br>
-            <a class="button small top-10" href="<?=SITE_URL?>meetings/<?=$data['nextMeeting']->getID()?>">Edit meeting</a>
-        <?php else: ?>
-            <p>You have no schedulled meeting.</p>
-            <a class="button small" href="<?=SITE_URL?>meetings/add">Add a new one</a>
-        <?php endif; ?>
-    </div>
-</div>
-
-
 <hr>
-
 
 <div class="large-12 columns">
 
@@ -181,38 +165,44 @@
         </div>
     <?php endif; ?>
 
-    <!-- DISPLAY ALL THE NOTES -->
-    <div class="clearfix">
-        <a class="button small" href="<?=SITE_URL?>notes/create/agenda">Add new agenda</a>
-    </div>
+    <!-- Display button to create new agenda and all the notes only if there's a next meeting scheduled -->
+    <?php if($data['nextMeeting']): ?>
+        <div class="clearfix">
+            <a class="button small" href="<?=SITE_URL?>notes/create/agenda">Add new agenda</a>
+        </div>
 
-    <?php if($data['notes']): ?>
-    <?php foreach($data['notes'] as $note): ?>
+        <!-- Display all the notes -->
+        <?php if($data['notes']): ?>
+            <?php foreach($data['notes'] as $note): ?>
 
-        <a href="<?=SITE_URL?>notes/note/<?=$note->getID()?>/agenda">
-            <div class="note-wrapper large-4 medium-6 small-12 columns">
-                <div class="note">
-                    <div>
-                        <h4>
-                            <?php if(!$note->getTitle() && $note->getMeetingId() != 0): ?>
-                                Note from meeting of <?=$note->getMeetingDatetime()?>
-                            <?php elseif(($note->getMeetingId() == 0) && !$note->getTitle()): ?>
-                                Untitled note
-                            <?php else: ?>
-                                <?=$note->getTitle()?>
-                            <?php endif; ?>
-                        </h4>
-                        <p><?=$note->getExcerpt()?></p>
+                <a href="<?=SITE_URL?>notes/note/<?=$note->getID()?>/agenda">
+                    <div class="note-wrapper large-4 medium-6 small-12 columns">
+                        <div class="note">
+                            <div>
+                                <h4>
+                                    <?php if(!$note->getTitle() && $note->getMeetingId() != 0): ?>
+                                        Note from meeting of <?=$note->getMeetingDatetime()?>
+                                    <?php elseif(($note->getMeetingId() == 0) && !$note->getTitle()): ?>
+                                        Untitled note
+                                    <?php else: ?>
+                                        <?=$note->getTitle()?>
+                                    <?php endif; ?>
+                                </h4>
+                                <p><?=$note->getExcerpt()?></p>
+                            </div>
+                            <hr>
+                            <span class="created">Created by <?=$note->getUsername()?> on <?=DatetimeConverter::getUserFriendlyDateTimeFormat($note->getDatetimeCreated())?></span>
+                        </div><!-- note -->
                     </div>
-                    <hr>
-                    <span class="created">Created by <?=$note->getUsername()?> on <?=DatetimeConverter::getUserFriendlyDateTimeFormat($note->getDatetimeCreated())?></span>
-                </div><!-- note -->
-            </div>
-        </a>
+                </a>
 
-    <?php endforeach; ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p>You have no agenda notes for the next meeting</p>
+        <?php endif; ?>
+
     <?php else: ?>
-        <p>No notes to display</p>
+        <p>You have no meeting scheduled, therefore you cannot add any agenda notes at the moment</p>
     <?php endif; ?>
 
 </div>

@@ -9,7 +9,7 @@ TODO: Check in all methods if a user is authorized to edit/remove action points 
 
 class ActionPoints extends Controller
 {
-    public function index($id = null)
+    public function index($id = null, $delete = null)
     {
         $actionPoints = $this->model('ActionPointFactory');
         $actionPoints = $actionPoints->getActionPointsForProject(HTTPSession::getInstance()->PROJECT_ID);
@@ -36,7 +36,16 @@ class ActionPoints extends Controller
         # Get meeting associated with action point
         $meeting = $this->model('Meeting',$id->getMeetingId());
 
-        $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'id'=>$id, 'meeting'=>$meeting]);
+        # Set values
+        $data['actionpoints'] = $actionPoints;
+        $data['id'] = $id;
+        $data['meeting'] = $meeting;
+
+        # If delete is set
+        if($delete)
+            $data['delete'] = $id->getID();
+
+        $this->view('actionpoints/index', $data);
     }
 
     public function add()
@@ -138,7 +147,7 @@ class ActionPoints extends Controller
         */
 
         # Redirect back to action points
-        Header('Location: ' . SITE_URL . 'actionpoints');
+        Header('Location: ' . SITE_URL . 'actionpoints/' . $id . '/deleted');
     }
 
     public function edit($id)
@@ -321,6 +330,21 @@ class ActionPoints extends Controller
 
         # Redirect back to action points
         Header('Location: ' . SITE_URL . 'actionpoints/' . $id);
+    }
+
+    public function revertRemoval($id)
+    {
+        $actionPoint = $this->model('ActionPoint',$id);
+
+        # Check if user is allowed to perform this action
+        $this->checkAuth($actionPoint);
+
+        $actionPoint->setIsDeleted(0);
+
+        $actionPoint->Save();
+
+        # Redirect back to actionpoints
+        header('Location: ' . SITE_URL . 'actionpoints');
     }
 
     protected function checkAuthSentForApproval($actionPointSentForApproval)

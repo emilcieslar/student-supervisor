@@ -1,6 +1,19 @@
+<!-- If isset delete, display panel to revert delete -->
+<?php if(isset($data['delete'])): ?>
+    <div class="alert-box info large-12 columns text-center">
+        <a class="button warning tiny" href="<?=SITE_URL?>meetings/revertRemoval/<?=$data['delete']?>">Cancel removal</a>
+        <a class="button success tiny" href="<?=SITE_URL?>meetings">Ok</a><br>
+        Meeting has been removed
+    </div>
+<?php endif; ?>
+
 <!-- LIST OF MEETINGS -->
 <div class="large-8 columns action-points">
     <ul class="action-points">
+
+        <!-- Add a new meeting -->
+        <li class="add-new-action-point<?php if(isset($data['add'])) echo ' active';?>"><a class="fa fa-plus" href="<?=SITE_URL;?>meetings/add">&nbsp;&nbsp;Add a new meeting</a></li>
+
         <!-- If there are any meetings.. -->
         <?php if($data['meetings']): ?>
         <!-- Display a list of meetings -->
@@ -35,8 +48,6 @@
         <?php endforeach; ?>
         <?php endif; ?>
 
-        <!-- Add a new meeting -->
-        <li class="add-new-action-point<?php if(isset($data['add'])) echo ' active';?>"><a class="fa fa-plus" href="<?=SITE_URL;?>meetings/add">&nbsp;&nbsp;Add a new meeting</a></li>
     </ul>
 </div>
 
@@ -144,9 +155,6 @@
 
             <form action="<?=SITE_URL;?>meetings/addPost" method="post" name="addMeeting" data-abide>
 
-                <!-- hidden input to tell router that it's a post request -->
-                <input name="action" type="hidden">
-
                 <div class="large-12 columns">
                     <label>Choose date and time: <small>required</small>
                         <input name="deadline" placeholder="Choose date" type="text" id="dp1" required pattern="date_friendly">
@@ -225,9 +233,6 @@
             </div>
 
             <form action="<?=SITE_URL;?>meetings/editPost" method="post" name="editMeeting" data-abide>
-
-                <!-- hidden input to tell router that it's a post request -->
-                <input name="action" type="hidden">
 
                 <input name="id" type="hidden" value="<?=$data['id']->getID()?>">
 
@@ -315,9 +320,6 @@
             </div>
 
             <form action="<?=SITE_URL;?>meetings/cancelPost" method="post" name="cancelMeeting" data-abide>
-
-                <!-- hidden input to tell router that it's a post request -->
-                <input name="action" type="hidden" value="cancel">
 
                 <!-- hidden input with ID -->
                 <input name="id" type="hidden" value="<?=$data['id']->getID()?>">

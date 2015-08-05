@@ -21,10 +21,6 @@ switch($page)
 
 ?>
 
-<div class="large-12 columns">
-    <h3>Dashboard</h3>
-</div>
-
 <div class="large-12 columns dashboard-links">
     <ul class="inline-list">
         <li <?=$activeAg?>><a href="<?=SITE_URL;?>agenda">Agenda</a></li>
@@ -32,7 +28,11 @@ switch($page)
         <li <?=$activeN?>><a href="<?=SITE_URL;?>notes">Notes</a></li>
         <li <?=$activeM?>><a href="<?=SITE_URL;?>meetings">Meetings</a></li>
         <li <?=$activeNo?>><a href="<?=SITE_URL;?>notifications">Notifications</a></li>
+
+        <li class="right"><a><i class="fa fa-question-circle"></i></a></li>
+
     </ul>
+
 </div>
 
 <div class="large-12 columns dashboard-main">
