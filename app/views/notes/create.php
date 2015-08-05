@@ -2,7 +2,11 @@
 
     <div class="note-wrapper large-12 columns">
 
-        <a href="<?=SITE_URL?>notes" class="button small info">&larr;</a>
+        <!-- If it's agenda, we want to go back to agenda, not to notes -->
+        <?php $agenda = (isset($data['agenda'])) ? "agenda" : "notes"; ?>
+
+        <a href="<?=SITE_URL?><?=$agenda?>" class="button small info">&larr;</a>
+
         <input type="submit" class="button small success" name="save" value="Save changes">
 
         <input type="hidden" name="action" value="post">

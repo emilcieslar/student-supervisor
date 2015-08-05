@@ -1,3 +1,116 @@
+<!-- PROJECT INFO -->
+<div class="large-12 columns agenda-statistics">
+    <h5>Project <?=$data['project']->getName()?></h5>
+    <p><?=$data['project']->getDescription()?></p>
+    <ul>
+        <?php foreach($data['projectUsers'] as $user): ?>
+            <li><?=$user->getFirstName() . " " . $user->getLastName()?></li>
+        <?php endforeach; ?>
+    </ul>
+</div>
+
+<hr>
+
+<!-- ACTION POINTS AND MEETINGS STATISTICS + RAG -->
+<div class="large-12 columns agenda-statistics">
+    <h5>Red amber green status</h5>
+
+    <div class="large-6 medium-6 columns">
+        <h6>Action Points</h6>
+
+        <div class="large-6 columns">
+            <div class="number">
+                <span class="number"><?=$data['rag']->getActionPointsToBeDone()?></span>
+                <span class="text">to be done</span>
+            </div>
+        </div>
+
+        <div class="large-6 columns">
+            <div class="number">
+                <span class="number"><?=$data['rag']->getActionPointsRunningOverDeadline()?></span>
+                <span class="text">running over<br>deadline</span>
+            </div>
+        </div>
+
+        <div class="large-6 columns">
+            <div class="number">
+                <span class="number"><?=$data['rag']->getActionPointsFinished()?></span>
+                <span class="text">finished</span>
+            </div>
+        </div>
+
+        <div class="large-6 columns">
+            <div class="number">
+                <span class="number"><?=$data['rag']->getActionPointsFinishedAfterDeadline()?></span>
+                <span class="text">finished after<br>deadline</span>
+            </div>
+        </div>
+
+        <div class="large-6 columns left">
+            <div class="number">
+                <span class="number"><?=$data['rag']->getActionPointsAvgGrade()?></span>
+                <span class="text">average grade</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="large-6 medium-6 columns">
+        <h6>Meetings</h6>
+
+        <div class="large-6 columns">
+            <div class="number">
+                <span class="number"><?=$data['rag']->getMeetingsTakenPlace()?></span>
+                <span class="text">taken place</span>
+            </div>
+        </div>
+
+        <div class="large-6 columns">
+            <div class="number">
+                <span class="number"><?=$data['rag']->getMeetingsStudentArrivedOnTime()?></span>
+                <span class="text">student arrived<br>on time</span>
+            </div>
+        </div>
+
+        <div class="large-6 columns">
+            <div class="number">
+                <span class="number"><?=$data['rag']->getMeetingsCancelled()?></span>
+                <span class="text">cancelled</span>
+            </div>
+        </div>
+
+        <div class="large-6 columns">
+            <div class="number">
+                <span class="number"><?=$data['rag']->getMeetingsNoShow()?></span>
+                <span class="text">no show</span>
+            </div>
+        </div>
+
+        <div class="large-6 columns left">
+            <div class="number">
+                <span class="number"><?=$data['rag']->getMeetingsTotal()?></span>
+                <span class="text">in total</span>
+            </div>
+        </div>
+    </div>
+
+    <?php
+        $status = $data['rag']->getStatus();
+    ?>
+
+    <div class="large-12 columns top-20">
+        <h6 class="text-center">Project is running on</h6>
+        <div class="rag-status">
+            <span><?=$status['percentage']?>%</span>
+            <div class="rag-status-p" style="width: <?=$status['percentage']?>%; background: <?=$status['color']?>"></div>
+        </div>
+    </div>
+</div>
+
+
+<hr>
+
+
 <!-- LIST OF ACTION POINTS -->
 <div class="large-6 columns">
     <h5>Action Points to be finished by the next meeting</h5>
@@ -51,6 +164,7 @@
     </div>
 </div>
 
+
 <hr>
 
 
@@ -68,6 +182,10 @@
     <?php endif; ?>
 
     <!-- DISPLAY ALL THE NOTES -->
+    <div class="clearfix">
+        <a class="button small" href="<?=SITE_URL?>notes/create/agenda">Add new agenda</a>
+    </div>
+
     <?php if($data['notes']): ?>
     <?php foreach($data['notes'] as $note): ?>
 
@@ -95,7 +213,6 @@
     <?php endforeach; ?>
     <?php else: ?>
         <p>No notes to display</p>
-        <a class="button small" href="<?=SITE_URL?>notes/create/agenda">Add new agenda</a>
     <?php endif; ?>
 
 </div>

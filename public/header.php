@@ -41,7 +41,7 @@
                     <a href="#">Project</a>
                     <ul class="dropdown">
                         <?php foreach(ProjectFactory::getAllProjectsForUser(HTTPSession::getInstance()->GetUserID()) as $project): ?>
-                        <li><a href="<?=SITE_URL.'project/'.$project->getID();?>"><?=$project->getName();?></a></li>
+                        <li><a href="<?=SITE_URL.'projects/'.$project->getID();?>"><?=$project->getName();?></a></li>
                         <?php endforeach; ?>
                     </ul>
                 </li>

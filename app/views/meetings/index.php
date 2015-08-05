@@ -1,47 +1,47 @@
 <!-- LIST OF MEETINGS -->
 <div class="large-8 columns action-points">
     <ul class="action-points">
+        <!-- If there are any meetings.. -->
+        <?php if($data['meetings']): ?>
+        <!-- Display a list of meetings -->
         <?php foreach ($data['meetings'] as $meeting): ?>
 
-            <?php if(isset($data['id'])): ?>
+            <!-- get the ID and decide which one should be active -->
+            <?php $active = (isset($data['id']) && $meeting->getID() == $data['id']->getID()) ? 'class="active"' : ''; ?>
 
-                <?php if($meeting->getID() == $data['id']->getID()): ?>
-                <li class="active">
-                    <a href="<?=SITE_URL;?>meetings/<?=$meeting->getID();?>">
+            <li <?=$active?>>
+                <a href="<?=SITE_URL;?>meetings/<?=$meeting->getID();?>">
 
-                        <!-- If meeting has taken place -->
-                        <?php if($meeting->getTakenPlace()): ?>
-                            <i class="fa fa-check inline"></i>&nbsp;&nbsp;
-                        <?php endif; ?>
+                    <!-- If meeting has taken place -->
+                    <?php if($meeting->getTakenPlace()): ?>
+                        <i class="fa fa-check inline"></i>&nbsp;&nbsp;
+                    <?php endif; ?>
 
-                        <?=$meeting->getDatetimeUserFriendly();?>
-                    </a>
-                </li>
-                <?php else: ?>
-                <li>
-                    <a href="<?=SITE_URL;?>meetings/<?=$meeting->getID();?>">
-                        <!-- If action point is set to done -->
-                        <?php if($meeting->getTakenPlace()): ?>
-                            <i class="fa fa-check inline"></i>&nbsp;&nbsp;
-                        <?php endif; ?>
+                    <!-- Display date and time of the meeting -->
+                    <?=$meeting->getDatetimeUserFriendly();?>
 
-                        <?=$meeting->getDatetimeUserFriendly();?>
-                    </a>
-                </li>
-                <?php endif; ?>
+                    <!-- If the meeting is not approved, display a notice -->
+                    <?php if(!$meeting->getIsApproved()): ?>
+                        &nbsp;<span class="label warning round no-indent">Not approved yet</span>
+                    <?php endif; ?>
 
-            <?php else: ?>
-                <li><a href="<?=SITE_URL;?>meetings/<?=$meeting->getID();?>"><?=$meeting->getDatetimeUserFriendly();?></a></li>
-            <?php endif; ?>
+                    <!-- If the meeting has been cancelled, display a notice -->
+                    <?php if($meeting->getIsCancelled()): ?>
+                        &nbsp;<span class="label alert round no-indent">Cancelled</span>
+                    <?php endif; ?>
+                </a>
+            </li>
 
         <?php endforeach; ?>
+        <?php endif; ?>
 
+        <!-- Add a new meeting -->
         <li class="add-new-action-point<?php if(isset($data['add'])) echo ' active';?>"><a class="fa fa-plus" href="<?=SITE_URL;?>meetings/add">&nbsp;&nbsp;Add a new meeting</a></li>
     </ul>
 </div>
 
 <!-- DETAIL OF MEETING -->
-<?php if(!isset($data['add']) AND !isset($data['edit'])): ?>
+<?php if(!isset($data['add']) AND !isset($data['edit']) AND !isset($data['cancel'])): ?>
 <div class="large-4 columns action-point">
     <div class="row action-point-detail">
         <div class="large-12 columns">
@@ -74,28 +74,60 @@
             </div>
         <?php endif; ?>
 
+        <?php if($data['id']->getIsCancelled()): ?>
+            <div class="large-12 columns">
+                <i class="fa fa-times icon" title="Cancelled"></i>
+                <span class="reason-for-cancel">
+                    This meeting has been cancelled:<br>
+                    <em>"<?=$data['id']->getReasonForCancel()?>"</em>
+                </span>
+            </div>
+        <?php endif; ?>
+
         <?php if(!$data['id']->getIsApproved()): ?>
             <div class="large-12 columns">
-                <div class="panel">This meeting hasn't been approved yet.</div>
+                <div class="panel">
+                    This meeting is waiting for approval.
+                    <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+                        <!-- If it's the supervisor, display approve button -->
+                        <br><a href="<?=SITE_URL?>meetings/approve/<?=$data['id']->getID()?>" class="fa fa-check button tiny success top-10"> Approve</a>
+                    <?php endif; ?>
+                </div>
             </div>
         <?php endif; ?>
 
-        <?php if($data['id']->getTakenPlace() && HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT): ?>
-            <!-- If a user is a student and this meeting has already taken place, don't allow to edit or remove -->
-            <div class="large-12 columns left top-20"></div>
 
-        <?php else: ?>
-            <!-- Otherwise display editing and canceling options -->
-            <div class="large-12 columns left top-20">
-                <a href="<?=SITE_URL;?>meetings/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"> Edit</a>
-                <a href="<?=SITE_URL;?>meetings/cancel/<?=$data['id']->getID();?>" class="fa fa-times button alert"> Cancel</a>
+        <div class="large-12 columns left top-20">
+        <!-- Don't allow to edit or remove if:
+             1. User is a student and this meeting has been approved
+             2. User is a student and this meeting hasn't been approved, however waiting for approval because of cancellation
+             3. User is a student and this meeting hasn't been approved, however waiting for approval because of setting as done
+             4. Meeting is cancelled and cancellation is approved
+             5. Meeting has taken place -->
+        <?php if(!((HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && $data['id']->getIsApproved())
+                || (HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getIsApproved() && !$data['id']->getIsCancelled())
+                || (HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getIsApproved() && !$data['id']->getIsDone())
+                || ($data['id']->getIsCancelled())
+                || ($data['id']->getTakenPlace()))): ?>
 
-                <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
-                    <!-- Supervisor can remove a meeting -->
-                    <a href="<?=SITE_URL;?>meetings/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
-                <?php endif; ?>
-            </div>
+            <a href="<?=SITE_URL;?>meetings/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"></a>
+            <a href="<?=SITE_URL;?>meetings/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
+
+            <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+
+            <?php endif; ?>
+
         <?php endif; ?>
+
+        <!-- User can cancel a meeting anytime apart from:
+             1. when it has already taken place
+             2. hasn't been approved yet
+             3. is not already cancelled -->
+        <?php if(!$data['id']->getTakenPlace() && $data['id']->getIsApproved() && !$data['id']->getIsCancelled()): ?>
+            <a href="<?=SITE_URL;?>meetings/cancel/<?=$data['id']->getID();?>" class="fa fa-times button alert"> Cancel a meeting</a>
+        <?php endif; ?>
+
+        </div>
 
     </div>
 </div>
@@ -250,9 +282,9 @@
 
                 <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
                     <!-- If we're logged in as a supervisor -->
-                    <div class="large-12 columns">
+                    <!--<div class="large-12 columns">
                         <input name="isApproved" id="checkbox1" type="checkbox" <?=($data['id']->getIsApproved()) ? "checked" : ""?>><label for="checkbox1">Is this meeting approved?</label>
-                    </div>
+                    </div>-->
 
                     <div class="large-12 columns">
                         <input name="arrivedOnTime" id="checkbox2" type="checkbox" <?=($data['id']->getArrivedOnTime()) ? "checked" : ""?>><label for="checkbox2">Has student arrived on time?</label>
@@ -265,6 +297,40 @@
 
                 <div class="large-12 columns top-10">
                     <input class="button" type="submit" name="editMeeting" value="Save changes">
+                </div>
+            </form>
+        </div><!-- row -->
+    </div>
+
+<?php endif; ?>
+
+
+<!-- FORM FOR CANCELLING A MEETING -->
+<?php if(isset($data['cancel'])): ?>
+
+    <div class="large-4 columns action-point">
+        <div class="row">
+            <div class="large-12 columns">
+                <h3>Cancel Meeting</h3>
+            </div>
+
+            <form action="<?=SITE_URL;?>meetings/cancelPost" method="post" name="cancelMeeting" data-abide>
+
+                <!-- hidden input to tell router that it's a post request -->
+                <input name="action" type="hidden" value="cancel">
+
+                <!-- hidden input with ID -->
+                <input name="id" type="hidden" value="<?=$data['id']->getID()?>">
+
+                <div class="large-12 columns">
+                    <label>Provide a reason: <small>required</small>
+                        <textarea name="reason" rows="3" placeholder="Provide a reason..." required></textarea>
+                    </label>
+                    <small class="error">Please provide a reason</small>
+                </div>
+
+                <div class="large-12 columns top-10">
+                    <input class="button alert" type="submit" name="cancelMeeting" value="Cancel Meeting">
                 </div>
             </form>
         </div><!-- row -->

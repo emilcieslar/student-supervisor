@@ -9,4 +9,12 @@ class Notifications extends Controller
 
         $this->view('notifications/index', ['notifications'=>$notifications]);
     }
+
+    public function done($id)
+    {
+        $notif = new Notification($id);
+        $notif->Delete();
+
+        header('Location: '.SITE_URL.'notifications');
+    }
 }

@@ -72,7 +72,13 @@ class Notes extends Controller
             if(isset($post['isAgenda']))
             {
                 $note->setIsAgenda(1);
-                $note->setMeetingId($this->model('MeetingFactory')->getNextMeeting()->getID());
+                $nextMeeting = $this->model('MeetingFactory')->getNextMeeting();
+                if($nextMeeting)
+                    $nextMeeting = $nextMeeting->getID();
+                else
+                    $nextMeeting = 0;
+
+                $note->setMeetingId($nextMeeting);
             } else
             # If it's a normal note
             {

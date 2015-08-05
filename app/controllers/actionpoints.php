@@ -87,16 +87,9 @@ class ActionPoints extends Controller
             # Save the action point
             $actionPoint->Save();
 
-            # Create a new notification
-            $notif = new Notification();
-            $notif->setController("actionpoints");
-            $notif->setObjectType("Action Point");
-            $notif->setObjectId($actionPoint->getID());
-            $notif->setAction(Notification::ADD);
-            $notif->setProjectId(HTTPSession::getInstance()->PROJECT_ID);
-            $notif->setCreatorUserId(HTTPSession::getInstance()->GetUserID());
-            # Save notification
-            $notif->Save();
+            # Create a notification only if it's supervisor who removes
+            if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
+                new NotificationAP($actionPoint->getID(),NotificationAP::ADDED);
 
             # Redirect back to action points
             Header('Location: ' . SITE_URL . 'actionpoints/' . $actionPoint->getID());
@@ -118,6 +111,10 @@ class ActionPoints extends Controller
         # Action point will never actually be removed from database, we will keep it
         # for reference, it is only flagged as removed
         $actionPoint->Delete();
+
+        # Create a notification only if it's supervisor who removes
+        if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
+            new NotificationAP($id,NotificationAP::REMOVED);
 
         # Save the existing actionPoint to the temporary table
         # in order to retrieve it if not approved by supervisor
@@ -163,7 +160,7 @@ class ActionPoints extends Controller
 
         # Get meetings for the add form
         $meetings = $this->model('MeetingFactory');
-        $meetings = $meetings->getMeetingsForProject(1, true);
+        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
 
         $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'id'=>$id, 'edit'=>true, 'datetime'=>$data, 'meetings'=>$meetings]);
     }
@@ -191,6 +188,11 @@ class ActionPoints extends Controller
         if(isset($post['isDone']))
             $isDone = 1;
 
+        # If it's the supervisor who edits, he/she can provide a grade
+        $grade = 0;
+        if(isset($post['grade']))
+            $grade = $post['grade'];
+
         # Default is 0 because default is student and every time student
         # edits action point, isApproved must be set to 0
         $isApproved = 0;
@@ -210,6 +212,8 @@ class ActionPoints extends Controller
         $actionPoint->setMeetingId($meetingId);
         $actionPoint->setProjectId(HTTPSession::getInstance()->PROJECT_ID);
         $actionPoint->setIsDone($isDone);
+        if($grade)
+            $actionPoint->setGrade($grade);
 
         $actionPoint->setIsApproved($isApproved);
         # If the action point is approved, we must delete the temporary one from temp table
@@ -250,6 +254,9 @@ class ActionPoints extends Controller
 
             # Save the action point
             $actionPoint->Save();
+
+            # Create a notification
+            new NotificationAP($id,NotificationAP::APPROVED);
         }
 
         # Redirect back to action points
@@ -288,6 +295,9 @@ class ActionPoints extends Controller
         # Save the action point
         $actionPoint->Save();
 
+        # Create a notification (it's automatically saved)
+        new NotificationAP($id,NotificationAP::DONE);
+
         # Redirect back to action points
         Header('Location: ' . SITE_URL . 'actionpoints/' . $id);
     }
@@ -305,6 +315,9 @@ class ActionPoints extends Controller
 
         # Save the action point
         $actionPoint->Save();
+
+        # Create a notification
+        new NotificationAP($id,NotificationAP::SENT_FOR_APPROVAL);
 
         # Redirect back to action points
         Header('Location: ' . SITE_URL . 'actionpoints/' . $id);

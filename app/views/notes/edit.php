@@ -3,7 +3,13 @@
     <input type="hidden" name="id" value="<?=$data['note']->getID()?>">
 
     <div class="note-wrapper large-12 columns">
-        <a href="<?=SITE_URL?>notes/note/<?=$data['note']->getID()?>" class="button small info">&larr;</a>
+
+        <!-- If it's agenda, we want to go back to agenda, not to notes -->
+        <?php $agenda = ($data['note']->getIsAgenda()) ? "/agenda" : ""; ?>
+
+        <a href="<?=SITE_URL?>notes/note/<?=$data['note']->getID()?><?=$agenda?>" class="button small info">&larr;</a>
+
+
         <input type="submit" class="button small success" value="Save changes">
 
         <input type="hidden" name="action" value="post">

@@ -10,6 +10,9 @@ $config = json_decode($file);
 # Define site URL
 define('SITE_URL',$config->{'site_url'});
 
+# Set time zone
+date_default_timezone_set($config->{'timezone'});
+
 require_once 'core/DatetimeConverter.php';
 require_once 'core/App.php';
 require_once 'core/Controller.php';
@@ -18,6 +21,7 @@ require_once 'models/DataBoundObject.php';
 require_once 'models/ProjectFactory.php';
 require_once 'models/HTTPSession.php';
 require_once 'models/Notification.php';
+require_once 'models/NotificationAP.php';
 
 # Start a more secure session
 $objSession = HTTPSession::getInstance();

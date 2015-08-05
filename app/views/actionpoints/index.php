@@ -1,67 +1,43 @@
 <!-- LIST OF ACTION POINTS -->
 <div class="large-8 columns action-points">
     <ul class="action-points">
+        <!-- Add a new action point -->
+        <li class="add-new-action-point<?php if(isset($data['add'])) echo ' active';?>"><a class="fa fa-plus" href="<?=SITE_URL;?>actionpoints/add">&nbsp;&nbsp;Add a new action point</a></li>
+
+        <!-- If there are action points to display.. -->
         <?php if($data['actionpoints']): ?>
+        <!-- Display a list of action points -->
         <?php foreach ($data['actionpoints'] as $actionpoint): ?>
 
-            <!-- If it's the action point in the URL or default one -->
-            <?php if(isset($data['id'])): ?>
+            <!-- get the ID and decide which one should be active -->
+            <?php $active = (isset($data['id']) && $actionpoint->getID() == $data['id']->getID()) ? 'class="active"' : ''; ?>
 
-                <!-- get the ID and decide which one should be active -->
-                <?php $active = ($actionpoint->getID() == $data['id']->getID()) ? 'class="active"' : ''; ?>
+            <!-- display one line which contains name of the action point with a link to it -->
+            <li <?=$active?>>
+                <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
+                    <!-- If action point is set to done, display a tick -->
+                    <?php if($actionpoint->getIsDone()): ?>
+                        <i class="fa fa-check inline"></i>&nbsp;&nbsp;
+                    <?php endif; ?>
 
-                <!-- display one line which contains name of the action point with a link to it -->
-                <li <?=$active?>>
-                    <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
-                        <!-- If action point is set to done, display a tick -->
-                        <?php if($actionpoint->getIsDone()): ?>
-                            <i class="fa fa-check inline"></i>&nbsp;&nbsp;
-                        <?php endif; ?>
+                    <!-- Display text of the action point -->
+                    <?=$actionpoint->getText();?>
 
-                        <!-- Display text of the action point -->
-                        <?=$actionpoint->getText();?>
+                    <!-- If the action point is not approved, display a notice -->
+                    <?php if(!$actionpoint->getIsApproved()): ?>
+                        &nbsp;<span class="label warning round no-indent">Not approved yet</span>
+                    <?php endif; ?>
 
-                        <!-- If the action point is not approved, display a notice -->
-                        <?php if(!$actionpoint->getIsApproved()): ?>
-                            &nbsp;<span class="label warning round no-indent">Not approved yet</span>
-                        <?php endif; ?>
-
-                        <!-- If the action point has run over deadline, display a notice -->
-                        <?php if($actionpoint->hasRunOverDeadline()): ?>
-                            &nbsp;<span class="label alert round no-indent">Deadline passed</span>
-                        <?php endif; ?>
-                    </a>
-                </li>
-
-            <!-- Otherwise we have no active (Add Action Point will be selected) -->
-            <?php else: ?>
-                <li>
-                    <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
-                        <!-- If action point is set to done, display a tick -->
-                        <?php if($actionpoint->getIsDone()): ?>
-                            <i class="fa fa-check inline"></i>&nbsp;&nbsp;
-                        <?php endif; ?>
-
-                        <!-- Display text of the action point -->
-                        <?=$actionpoint->getText();?>
-
-                        <!-- If the action point is not approved, display a notice -->
-                        <?php if(!$actionpoint->getIsApproved()): ?>
-                            &nbsp;<span class="label warning round no-indent">Not approved yet</span>
-                        <?php endif; ?>
-
-                        <!-- If the action point has run over deadline, display a notice -->
-                        <?php if($actionpoint->hasRunOverDeadline()): ?>
-                            &nbsp;<span class="label alert round no-indent">Deadline passed</span>
-                        <?php endif; ?>
-                    </a>
-                </li>
-            <?php endif; ?>
+                    <!-- If the action point has run over deadline, display a notice -->
+                    <?php if($actionpoint->hasRunOverDeadline()): ?>
+                        &nbsp;<span class="label alert round no-indent">Deadline passed</span>
+                    <?php endif; ?>
+                </a>
+            </li>
 
         <?php endforeach; ?>
         <?php endif; ?>
 
-        <li class="add-new-action-point<?php if(isset($data['add'])) echo ' active';?>"><a class="fa fa-plus" href="<?=SITE_URL;?>actionpoints/add">&nbsp;&nbsp;Add a new action point</a></li>
     </ul>
 </div>
 
@@ -95,7 +71,7 @@
 
         <?php if(!$data['id']->getIsApproved()): ?>
             <div class="large-12 columns">
-                <div class="panel">This action point hasn't been approved yet.
+                <div class="panel">This action point is waiting for approval.
                     <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
                         <!-- If it's the supervisor, display approve button -->
                         <br><a href="<?=SITE_URL?>actionpoints/approve/<?=$data['id']->getID()?>" class="fa fa-check button tiny success top-10"> Approve</a>
@@ -192,6 +168,17 @@
                     <small class="error">Every action point has to be agreed on a certain meeting</small>
                 </div>
 
+                <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR && $data['id']->getIsApproved()): ?>
+                    <div class="large-12 columns">
+                        <label>Choose a grade: <span class="slider-value"></span></label>
+                        <div class="range-slider" data-slider data-options="start: 1; end: 22;">
+                            <span class="range-slider-handle" role="slider" tabindex="0"></span>
+                            <span class="range-slider-active-segment"></span>
+                            <input type="hidden" name="grade">
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <div class="large-12 columns">
                     <input name="isDone" id="checkbox1" type="checkbox" <?php if($data['id']->getIsDone()) echo "checked";?>><label for="checkbox1">Is this action point done?</label>
                 </div>
@@ -267,6 +254,7 @@
                 </label>
                 <small class="error">Every action point has to be agreed on a certain meeting</small>
             </div>
+
             <div class="large-12 columns top-10">
                 <input class="button" type="submit" name="addActionPoint" value="Add">
             </div>
@@ -276,9 +264,17 @@
 
 <?php endif; ?>
 
+<?php
+# Set value for grade before assigning it in jQuery below
+$grade = 0;
+if(isset($data['id']))
+    $grade = $data['id']->getGrade();
+?>
 
 <!-- DATE PICKER SCRIPT -->
 <script type="text/javascript">
+
+    alert('ready');
 
     $(document).ready(function() {
 
@@ -286,6 +282,10 @@
         nowTemp = new Date();
         // Advance the date by 7 days
         nowTemp.setDate(nowTemp.getDate() + 7);
+
+        $('#dp1').click(function() {
+            alert('jj');
+        });
 
         // Run datepicker
         $('#dp1, #dp_deadline').fdatepicker({
@@ -300,6 +300,17 @@
         // Update datepicker
         $('#dp1').fdatepicker("update");
 
+
+        // Slider for setting up a grade
+        $('[data-slider]').on('change.fndtn.slider', function(){
+            $('.slider-value').text($(this).attr('data-slider'));
+        });
+
+        // Set value for a slider that's retrieved from DB
+        var new_value = <?=$grade?>;
+        if(new_value == 0)
+            new_value = 22;
+        $('.range-slider').foundation('slider', 'set_value', new_value);
 
     });
 

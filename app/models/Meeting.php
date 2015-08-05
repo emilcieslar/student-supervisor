@@ -6,6 +6,8 @@ class Meeting extends DataBoundObject
     protected $IsRepeating;
     protected $RepeatUntil;
     protected $IsApproved;
+    protected $IsCancelled;
+    protected $ReasonForCancel;
     protected $TakenPlace;
     protected $ArrivedOnTime;
 
@@ -26,6 +28,8 @@ class Meeting extends DataBoundObject
             "is_repeating" => "IsRepeating",
             "repeat_until" => "RepeatUntil",
             "is_approved" => "IsApproved",
+            "is_cancelled" => "IsCancelled",
+            "reason_for_cancel" => "ReasonForCancel",
             "taken_place" => "TakenPlace",
             "arrived_on_time" => "ArrivedOnTime",
             "google_event_id" => "GoogleEventId",

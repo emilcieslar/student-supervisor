@@ -2,6 +2,7 @@
 
 <script src="<?=SITE_URL;?>public/js/foundation.min.js"></script>
 <script src="<?=SITE_URL;?>public/js/foundation/foundation.abide.js"></script>
+<script src="<?=SITE_URL;?>public/js/foundation/foundation.slider.js"></script>
 
 <script>
     $(document).foundation(

@@ -16,7 +16,7 @@ class MeetingFactory
             $untilNowDatetime = "";
 
         # Get all meetings associated with the $projectId from a database
-        $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id" . $untilNowDatetime . " ORDER BY datetime DESC";
+        $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id" . $untilNowDatetime . " AND is_deleted = 0 ORDER BY datetime DESC";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();
@@ -61,5 +61,41 @@ class MeetingFactory
         }
 
         return $nextMeeting;
+    }
+
+    public static function getMeetingsCount($factor)
+    {
+        # Get database connection
+        $objPDO = PDOFactory::get();
+
+        # Get project ID from session
+        $projectId = HTTPSession::getInstance()->PROJECT_ID;
+
+        $select = "COUNT(id) AS m_count";
+
+        # Decide what count to get from DB
+        switch($factor)
+        {
+            case RedAmberGreen::TAKEN_PLACE: $factor = " AND taken_place = 1";
+                break;
+            case RedAmberGreen::STUDENT_ARRIVED_ON_TIME: $factor = " AND taken_place = 1 AND arrived_on_time = 1";
+                break;
+            case RedAmberGreen::CANCELLED: $factor = " AND is_cancelled = 1";
+                break;
+            case RedAmberGreen::NO_SHOW: $factor = " AND datetime < NOW() AND taken_place = 0 AND is_cancelled = 0";
+                break;
+            case RedAmberGreen::M_TOTAL: $factor = " AND datetime < NOW()";
+                break;
+            default: $factor = "";
+        }
+
+        # Get number of action points that are not finished yet and are approved
+        $strQuery = "SELECT ".$select." FROM Meeting WHERE project_id = :project_id AND is_approved = 1".$factor." AND is_deleted = 0";
+        $objStatement = $objPDO->prepare($strQuery);
+        $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
+        $objStatement->execute();
+
+        # Return the value
+        return $objStatement->fetch()['m_count'];
     }
 }

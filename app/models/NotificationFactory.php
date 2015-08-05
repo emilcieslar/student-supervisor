@@ -7,7 +7,7 @@ class NotificationFactory
         $objPDO = PDOFactory::get();
 
         # Get all action points associated with the $projectId from a database
-        $strQuery = "SELECT id FROM Notification WHERE project_id = :project_id ORDER BY datetime_created DESC";
+        $strQuery = "SELECT id, object_type FROM Notification WHERE project_id = :project_id ORDER BY datetime_created DESC";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();
@@ -20,7 +20,13 @@ class NotificationFactory
         {
             foreach($result as $row)
             {
-                $myArr[$row["id"]] = new Notification($row["id"]);
+                switch($row["object_type"])
+                {
+                    case "Action Point": $myArr[$row["id"]] = new NotificationAP(null, null, $row["id"]);
+                        break;
+                    default: $myArr[$row["id"]] = new Notification(null, null, $row["id"]);
+                }
+
             }
         }
 

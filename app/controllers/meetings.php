@@ -26,7 +26,9 @@ class Meetings extends Controller
         {
             $this->add();
             die();
-        }
+        } else
+            # Check access rights in a project scope
+            $this->checkAuthProjectScope($id->getProjectId());
 
         $this->view('meetings/index', ['meetings'=>$meetings, 'id'=>$id]);
         #$this->view('meetings/index', ['month'=>$month, 'year'=>$year]);
@@ -189,6 +191,10 @@ class Meetings extends Controller
             # Create Meeting from provided ID
             $id = new Meeting($id);
 
+            # Check if we have access to editing
+            $this->checkAuthIsApproved($id);
+            $this->checkAuthProjectScope($id->getProjectId());
+
             # Set correct format of provided date
             $date = DateTime::createFromFormat('Y-m-d H:i:s', $id->getDatetime());
             $data['date'] = $date->format('d-m-Y');
@@ -212,6 +218,10 @@ class Meetings extends Controller
             # Create an object of existing meeting
             $meeting = $this->model('Meeting',$post['id']);
 
+            # Check if we have access to editing
+            $this->checkAuthIsApproved($meeting);
+            $this->checkAuthProjectScope($meeting->getProjectId());
+
             # Set googleEventId to the value provided from database (if any)
             $googleEventId = $meeting->getGoogleEventId();
 
@@ -226,6 +236,9 @@ class Meetings extends Controller
 
             $isApproved = 0;
             if(isset($post['isApproved']))
+                $isApproved = 1;
+            # If it's the supervisor who edits, it's automatically approved
+            if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
                 $isApproved = 1;
 
             $arrivedOnTime = 0;
@@ -272,8 +285,132 @@ class Meetings extends Controller
         }
 
         # Redirect back to meetings
-        header('Location: '.SITE_URL.'meetings');
+        header('Location: '.SITE_URL.'meetings/'.$post['id']);
 
         die();
     }
+
+    public function approve($id)
+    {
+        # Only supervisor can approve, no one else has access to this page
+        if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
+        {
+            # Retrieve action point from database based on provided id
+            $meeting = $this->model('Meeting',$id);
+
+            # Check action point project scope access
+            $this->checkAuthProjectScope($meeting->getProjectId());
+
+            # Approve the action point
+            $meeting->setIsApproved(1);
+
+            # Save the action point
+            $meeting->Save();
+        }
+
+        # Redirect back to action points
+        header('Location: ' . SITE_URL . 'meetings/' . $id);
+    }
+
+    public function remove($id)
+    {
+        # Retrieve a meeting from database based on provided id
+        $meeting = $this->model('Meeting',$id);
+
+        # Check access rights for user
+        $this->checkAuthIsApproved($meeting);
+        $this->checkAuthProjectScope($meeting->getProjectId());
+
+        # Meeting will never actually be removed from database, we will keep it
+        # for reference, it is only flagged as removed
+        $meeting->Delete();
+
+        # Redirect back to meetings
+        header('Location: ' . SITE_URL . 'meetings');
+    }
+
+    public function cancel($id = null)
+    {
+        if($id)
+        {
+            # Get list of all meetings to display them in the left side list
+            $meetings = $this->model('MeetingFactory');
+            $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID);
+
+            # Create Meeting from provided ID
+            $id = $this->model('Meeting',$id);
+
+            # Check if we have access to cancelling
+            $this->checkAuthIsNotApproved($id);
+            $this->checkAuthProjectScope($id->getProjectId());
+
+            $this->view('meetings/index', ['id'=>$id, 'cancel'=>true, 'meetings'=>$meetings]);
+        }
+        else
+            # Redirect back to meetings
+            header('Location: ' . SITE_URL . 'meetings');
+    }
+
+    public function cancelPost($post = null)
+    {
+        if($post)
+        {
+            # Retrieve values from post request
+            $id = $post['id'];
+            $reason = $post['reason'];
+
+            # Retrieve meeting from provided ID
+            $meeting = $this->model('Meeting',$id);
+
+            # Check if we have access to cancelling
+            $this->checkAuthIsNotApproved($meeting);
+            $this->checkAuthProjectScope($meeting->getProjectId());
+
+            # Set values
+            $meeting->setIsCancelled(1);
+            $meeting->setReasonForCancel($reason);
+
+            # If it's a student, it needs approval from a supervisor
+            if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT)
+                $meeting->setIsApproved(0);
+
+            $meeting->Save();
+
+            # Redirect back to meetings
+            header('Location: ' . SITE_URL . 'meetings/' . $id);
+            die();
+        }
+        else
+            # Redirect back to meetings
+            header('Location: ' . SITE_URL . 'meetings');
+    }
+
+    protected function checkAuthIsApproved($meeting)
+    {
+        # No access if:
+        # 1. User is a student and a meeting has been approved
+        # 2. Meeting has taken place
+        if(($meeting->getIsApproved() && HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT) || $meeting->getTakenPlace())
+        {
+            header('Location: ' . SITE_URL . 'meetings');
+            # Do not execute code any longer
+            die();
+        } else
+            return true;
+    }
+
+    protected function checkAuthIsNotApproved($meeting)
+    {
+        # No access if:
+        # 1. Meeting is not approved
+        # 2. Meeting has taken place
+        if(!$meeting->getIsApproved() || $meeting->getTakenPlace())
+        {
+            header('Location: ' . SITE_URL . 'meetings');
+            # Do not execute code any longer
+            die();
+        } else
+            return true;
+    }
+
 }
