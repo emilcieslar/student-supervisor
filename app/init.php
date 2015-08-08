@@ -35,5 +35,5 @@ $objSession->Impress();
 # Check if user is NOT logged in
 if(!$objSession->IsLoggedIn())
     # Redirect to login page only if we're not already on login page
-    if(!(strpos($_GET['url'],'login') !== false))
+    if(isset($_GET['url']) && !(strpos($_GET['url'],'login') !== false))
         header("Location: " . SITE_URL . "login");

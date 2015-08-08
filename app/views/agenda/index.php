@@ -1,6 +1,6 @@
 <!-- ACTION POINTS AND MEETINGS STATISTICS + RAG -->
 <div class="large-12 columns agenda-statistics">
-    <h5>Red amber green status</h5>
+    <h5>Project progress</h5>
 
     <div class="large-6 medium-6 columns">
         <h6>Action Points</h6>

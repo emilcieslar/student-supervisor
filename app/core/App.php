@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Class App
+ * This class takes care of basic routing.
+ * It is inspired by PHP Academy build a basic PHP MVC APP
+ * that is available here https://www.youtube.com/watch?v=OsCTzGASImQ
+ */
+
 class App
 {
     # Default controller
@@ -9,16 +16,12 @@ class App
     # Default params
     protected $params = [];
 
+    # Constants to avoid magic numbers - they define position
+    # in an array that parsed from URL
     const CONTROLLER = 0;
     const METHOD = 1;
 
     public function __construct()
-    {
-        # Handle GET request every time
-        $this->handleGETRequest();
-    }
-
-    protected function handleGETRequest()
     {
         # Get sanitized URL
         $url = $this->parseUrl();
@@ -53,23 +56,29 @@ class App
         $this->params = $url ? array_values($url) : [];
 
         # Check whether it's a POST request and handle it
+        # The post request is different in that it passes the whole POST array as a parameter
         if($_SERVER['REQUEST_METHOD'] == 'POST')
-            $this->handlePOSTRequest();
-
-        # Call the method in the specified controller and pass parameters if any
-        call_user_func_array([$this->controller, $this->method], $this->params);
+            call_user_func([$this->controller, $this->method], $_POST);
+        else
+            # Call the method in the specified controller and pass parameters if any (this is a GET request)
+            # This will be performed only if it wasn't a POST request
+            call_user_func_array([$this->controller, $this->method], $this->params);
     }
 
+    /**
+     * Gets the URL and explodes it by '/' into an array
+     * If the url is empty, empty array is returned
+     * @return array the sanitized URL
+     */
     protected function parseUrl()
     {
         if(isset($_GET['url']))
         {
             return $url = explode('/',filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
         }
+
+        # If there's nothing, return an empty array and default will take place
+        return array();
     }
 
-    protected function handlePOSTRequest()
-    {
-        call_user_func([$this->controller, $this->method], $_POST);
-    }
 }
