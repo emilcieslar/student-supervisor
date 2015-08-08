@@ -3,10 +3,9 @@
 /**
  * Class App
  * This class takes care of basic routing.
- * It is inspired by PHP Academy build a basic PHP MVC APP
+ * It is inspired by PHP Academy build PHP MVC APP
  * that is available here https://www.youtube.com/watch?v=OsCTzGASImQ
  */
-
 class App
 {
     # Default controller

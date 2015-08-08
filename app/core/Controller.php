@@ -1,17 +1,19 @@
 <?php
 
+/**
+ * Class Controller
+ * This class handles what view should be displayed,
+ * or what model should be loaded, all controllers extend this class
+ * It is inspired by PHP Academy build PHP MVC APP
+ * that is available here https://www.youtube.com/watch?v=OsCTzGASImQ
+ */
 class Controller
 {
-    public function __construct()
-    {
-
-    }
-
     /**
      * Generate a new model object
-     * @param $model
-     * @param $param
-     * @return mixed
+     * @param $model the name of the model
+     * @param $param the id of the object to be instantiated
+     * @return mixed the instantiated object
      */
     protected function model($model, $param = null)
     {
@@ -28,13 +30,14 @@ class Controller
     }
 
     /**
-     * Display a view
-     * @param $view
-     * @param array $data
+     * Display a view and provide it with a $data array that can be
+     * accessed in the html template
+     * @param $view the html template
+     * @param array $data the data that are fed into the template
+     * @param dashboard whether display a dashboard or not
      */
     protected function view($view, $data = [], $dashboard = true)
     {
-
         if($dashboard)
         {
             # Get info about the project if we are displaying dashboard
@@ -45,16 +48,21 @@ class Controller
             $data['projectUsers'] = $projectUsers;
         }
 
+        # Display header
         require_once 'public/header.php';
 
+        # Display header of the dashboard
         if($dashboard)
             require_once 'public/dashboard_header.php';
 
+        # Display the actual view
         require_once 'app/views/' . $view . '.php';
 
+        # Display footer of the dashboard
         if($dashboard)
             require_once 'public/dashboard_footer.php';
 
+        # Display footer
         require_once 'public/footer.php';
     }
 
