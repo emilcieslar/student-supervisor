@@ -1,7 +1,6 @@
 <?php
 
 /**
- * Class Controller
  * This class handles what view should be displayed,
  * or what model should be loaded, all controllers extend this class
  * It is inspired by PHP Academy build PHP MVC APP

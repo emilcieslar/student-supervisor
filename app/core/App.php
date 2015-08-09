@@ -1,23 +1,22 @@
 <?php
 
 /**
- * Class App
  * This class takes care of basic routing.
  * It is inspired by PHP Academy build PHP MVC APP
  * that is available here https://www.youtube.com/watch?v=OsCTzGASImQ
  */
 class App
 {
-    # Default controller
+    /** Default controller */
     protected $controller = 'home';
-    # Default method
+    /** Default method */
     protected $method = 'index';
-    # Default params
+    /** Default params */
     protected $params = [];
 
-    # Constants to avoid magic numbers - they define position
-    # in an array that parsed from URL
+    /** Constant to avoid magic numbers - they define position in an array that parsed from URL */
     const CONTROLLER = 0;
+    /** Constant to avoid magic numbers - they define position in an array that parsed from URL */
     const METHOD = 1;
 
     public function __construct()

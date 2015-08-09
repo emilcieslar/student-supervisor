@@ -1,16 +1,18 @@
 <?php
 
-/*
-
-TODO: Check in all methods if a user is authorized to edit/remove action points (same for meetings) because user can change the ID in GET request
-
-*/
-
-
+/**
+ * Controls all the functionality associated with Action Points
+ */
 class ActionPoints extends Controller
 {
+    /**
+     * Default view that displays list of APs with one specific AP selected
+     * @param null $id int the ID of the AP (if we want to display specific AP)
+     * @param null $delete boolean defines whether to display a revert removal message
+     */
     public function index($id = null, $delete = null)
     {
+        # Get action points from DB
         $actionPoints = $this->model('ActionPointFactory');
         $actionPoints = $actionPoints->getActionPointsForProject(HTTPSession::getInstance()->PROJECT_ID);
 
@@ -23,7 +25,7 @@ class ActionPoints extends Controller
             # Get the first item from the array
             $id = reset($actionPoints);
 
-        # If we have nothing to display we instead call add()
+        # If we have nothing to display (there are no APs in DB) we instead call add()
         if(!$id)
         {
             $this->add();
@@ -36,7 +38,7 @@ class ActionPoints extends Controller
         # Get meeting associated with action point
         $meeting = $this->model('Meeting',$id->getMeetingId());
 
-        # Set values
+        # Set values that will be passed to a view
         $data['actionpoints'] = $actionPoints;
         $data['id'] = $id;
         $data['meeting'] = $meeting;
@@ -45,12 +47,16 @@ class ActionPoints extends Controller
         if($delete)
             $data['delete'] = $id->getID();
 
+        # Display the view
         $this->view('actionpoints/index', $data);
     }
 
+    /**
+     * Displays a list of action points and a form to Add AP
+     */
     public function add()
     {
-        # Get action points for the list
+        # Get action points from DB
         $actionPoints = $this->model('ActionPointFactory');
         $actionPoints = $actionPoints->getActionPointsForProject(HTTPSession::getInstance()->PROJECT_ID);
 
@@ -58,8 +64,10 @@ class ActionPoints extends Controller
         $meetings = $this->model('MeetingFactory');
         $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
 
+        # Display the view
         $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'meetings'=>$meetings, 'add'=>true]);
     }
+
 
     public function addPost($post = null)
     {
