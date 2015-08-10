@@ -88,6 +88,10 @@ class Notes extends Controller
 
             $note->Save();
 
+            # If it's not a private note, create a notification
+            if(!$isPrivate)
+                new NotificationNote($note->getID(),NotificationNote::ADDED);
+
             if(isset($post['isAgenda']))
                 # Redirect back to agenda
                 header('Location: ' . SITE_URL . 'agenda');

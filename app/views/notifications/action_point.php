@@ -3,6 +3,16 @@
 $object = $notification->getObject();
 # Get text from the object
 $text = $object->getText();
+$deadline = DatetimeConverter::getUserFriendlyDateTimeFormat($object->getDeadline());
+
+# If it's amended, we need to get data from original object that has been amended
+if($notification->getAction() == NotificationAP::AMENDED)
+{
+    $objectOriginal = $notification->getObject(true);
+    # Get text from the object
+    $textOriginal = $objectOriginal->getText();
+    $deadlineOriginal = DatetimeConverter::getUserFriendlyDateTimeFormat($objectOriginal->getDeadline());
+}
 
 # If action is not done or sent_for_approval, then we can have larger field for text
 if($notification->getAction() != NotificationAP::SENT_FOR_APPROVAL && $notification->getAction() != NotificationAP::DONE)
@@ -23,7 +33,14 @@ else
                 <?=$text?>
             <?php endif; ?>
         </strong>
-        has been <?=$notification::getActionText($notification->getAction())?> by <?=$notification->getUsername()?>
+        <?php if($notification->getAction() == NotificationAP::AMENDED): ?>
+        with deadline on <strong><?=$deadline?></strong>
+        <?php endif; ?>
+        has been <?=$notification::getActionText($notification->getAction())?>
+        <?php if($notification->getAction() == NotificationAP::AMENDED): ?>
+            from <strong><?=$textOriginal?></strong> with deadline on <strong><?=$deadlineOriginal?></strong>
+        <?php endif; ?>
+        by <?=$notification->getUsername()?>
         <br><span class="label info round"><?=DatetimeConverter::getUserFriendlyDateTimeFormat($notification->getDatetimeCreated())?></span>
         <!-- If the action point is deleted, display a warning -->
         <?php if($notification->getObject()->getIsDeleted()): ?>

@@ -31,9 +31,9 @@ class Controller
     /**
      * Display a view and provide it with a $data array that can be
      * accessed in the html template
-     * @param $view the html template
+     * @param string $view the html template
      * @param array $data the data that are fed into the template
-     * @param dashboard whether display a dashboard or not
+     * @param boolean $dashboard whether display a dashboard or not
      */
     protected function view($view, $data = [], $dashboard = true)
     {

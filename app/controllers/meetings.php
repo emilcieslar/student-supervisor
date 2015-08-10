@@ -186,8 +186,15 @@ class Meetings extends Controller
             $meeting->Save();
 
             if(!$isRepeating)
+            {
                 # If it's not repeating meeting, we wanna display the only meeting we've created
                 $header = 'Location: ' . SITE_URL . 'meetings/' . $meeting->getID();
+
+                # Create a new notification only if it's not repeating meeting, creating a notification
+                # for repeated meeting would be a future work
+                new NotificationMeeting($meeting->getID(),NotificationMeeting::ADDED);
+            }
+
 
         }
 
@@ -298,6 +305,10 @@ class Meetings extends Controller
 
             # Save changes
             $meeting->Save();
+
+            # If meeting has taken place, create a notification
+            if($takenPlace)
+                new NotificationMeeting($meeting->getID(),NotificationMeeting::TAKEN_PLACE);
         }
 
         # Redirect back to meetings
@@ -393,6 +404,9 @@ class Meetings extends Controller
                 $meeting->setIsApproved(0);
 
             $meeting->Save();
+
+            # Create a new notification
+            new NotificationMeeting($meeting->getID(),NotificationMeeting::CANCELLED);
 
             # Redirect back to meetings
             header('Location: ' . SITE_URL . 'meetings/' . $id);

@@ -49,6 +49,9 @@ class ActionPoints extends Controller
 
         # Display the view
         $this->view('actionpoints/index', $data);
+
+        # Return data for PHPUnit test
+        return $data;
     }
 
     /**
@@ -133,27 +136,6 @@ class ActionPoints extends Controller
         if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
             new NotificationAP($id,NotificationAP::REMOVED);
 
-        # Save the existing actionPoint to the temporary table
-        # in order to retrieve it if not approved by supervisor
-        # Delete operation will appear in the supervisor's notification
-        # and supervisor and cancel the action if necessary
-        /*$actionPoint->SaveTemporary();
-
-        $actionPoint->MarkForDeletion();
-
-        # Create a new notification
-        $notif = new Notification();
-        $notif->setController("actionpoints");
-        $notif->setObjectType("Action Point");
-        $notif->setObjectId($actionPoint->getID());
-        $notif->setAction(Notification::DELETE);
-        $notif->setProjectId(HTTPSession::getInstance()->PROJECT_ID);
-        $notif->setCreatorUserId(HTTPSession::getInstance()->GetUserID());
-        # Save notification
-        $notif->Save();
-
-        */
-
         # Redirect back to action points
         Header('Location: ' . SITE_URL . 'actionpoints/' . $id . '/deleted');
     }
@@ -193,6 +175,10 @@ class ActionPoints extends Controller
         # Save the existing actionPoint to the temporary table
         # in order to retrieve it if not approved by supervisor
         $actionPoint->SaveTemporary();
+
+        # Get original text and deadline of the action point
+        $originalText = $actionPoint->getText();
+        $originalDeadline = DatetimeConverter::getUserFriendlyDateTimeFormat($actionPoint->getDeadline());
 
         # Get details from post request
         $deadline = $post['deadline'];
@@ -234,11 +220,16 @@ class ActionPoints extends Controller
 
         $actionPoint->setIsApproved($isApproved);
         # If the action point is approved, we must delete the temporary one from temp table
-        if($isApproved)
-            $actionPoint->RemoveTemporary();
+        # However we want to retrieve it for the notification, so I'll just keep it here for future reference
+        #if($isApproved)
+        #    $actionPoint->RemoveTemporary();
 
         # Save the action point
         $actionPoint->Save();
+
+        # Create a notification
+        new NotificationAP($actionPoint->getID(),NotificationAP::AMENDED);
+
 
         # Redirect back to action points
         header('Location: ' . SITE_URL . 'actionpoints/' . $post['id']);

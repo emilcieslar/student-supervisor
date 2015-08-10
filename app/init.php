@@ -1,5 +1,9 @@
 <?php
 
+# Do a check for PHP version
+if(!version_compare(PHP_VERSION,'5.4.38','>='))
+    die('The version of PHP must be larger or same as 5.4.38');
+
 # Display errors
 ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
@@ -24,6 +28,8 @@ require_once 'models/ProjectFactory.php';
 require_once 'models/HTTPSession.php';
 require_once 'models/Notification.php';
 require_once 'models/NotificationAP.php';
+require_once 'models/NotificationMeeting.php';
+require_once 'models/NotificationNote.php';
 
 # Start a more secure session
 $objSession = HTTPSession::getInstance();

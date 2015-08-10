@@ -24,6 +24,10 @@ class NotificationFactory
                 {
                     case "Action Point": $myArr[$row["id"]] = new NotificationAP(null, null, $row["id"]);
                         break;
+                    case "Meeting": $myArr[$row['id']] = new NotificationMeeting(null, null, $row['id']);
+                        break;
+                    case "Note": $myArr[$row['id']] = new NotificationNote(null, null, $row['id']);
+                        break;
                     default: $myArr[$row["id"]] = new Notification(null, null, $row["id"]);
                 }
 

@@ -12,6 +12,10 @@
                 {
                     case "Action Point": include('action_point.php');
                         break;
+                    case "Meeting": include('meeting.php');
+                        break;
+                    case "Note": include('note.php');
+                        break;
                     default:
                         break;
                 }

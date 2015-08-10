@@ -16,10 +16,15 @@ abstract class DataBoundObject {
     abstract protected function DefineTableName();
     abstract protected function DefineRelationMap();
 
-    public function __construct($id = NULL)
+    public function __construct($id = NULL, $temp = false)
     {
+        # If we want to retrieve an object from temporary table
+        if($temp)
+            $temp = 'Temp';
+        else
+            $temp = '';
 
-        $this->strTableName = $this->DefineTableName();
+        $this->strTableName = $this->DefineTableName() . $temp;
         $this->arRelationMap = $this->DefineRelationMap();
         $this->objPDO = PDOFactory::get();
         $this->blIsLoaded = false;

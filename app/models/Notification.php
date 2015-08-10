@@ -53,12 +53,12 @@ class Notification extends DataBoundObject
         return $user->getUsername();
     }
 
-    public function getObject()
+    public function getObject($temp = false)
     {
         # Get object type without spaces
         $objectType = str_replace(' ', '', $this->ObjectType);
         require_once($objectType.".php");
-        $object = new $objectType($this->ObjectId);
+        $object = new $objectType($this->ObjectId, $temp);
         return $object;
     }
 }
