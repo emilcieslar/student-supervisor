@@ -19,7 +19,11 @@
 <nav class="top-bar" data-topbar role="navigation">
     <ul class="title-area">
         <li class="name">
-            <h1><a href="<?=SITE_URL?>" class="fa fa-comment"> &nbsp;<strong>s</strong>tudent<strong>s</strong>upervisor</a></h1>
+            <h1><a href="<?=SITE_URL?>" class="fa fa-comment"> &nbsp;
+                    <?php if(HTTPSession::getInstance()->IsLoggedIn()): ?>
+                        <?=$data['project']->getName()?>
+                    <?php endif; ?>
+                </a></h1>
         </li>
         <?php if(HTTPSession::getInstance()->IsLoggedIn()): ?>
             <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>

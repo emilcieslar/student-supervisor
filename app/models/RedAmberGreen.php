@@ -106,31 +106,38 @@ class RedAmberGreen
 
     public function getActionPointsPercentage()
     {
-        $AP[] = 0;
+        $AP = array();
 
-        if($this->toBeDone != 0)
+        if($this->toBeDone != 0 && $this->runningOverDeadline != 0)
             $AP[] = 100*$this->runningOverDeadline/$this->toBeDone;
-        if($this->finished != 0)
+        if($this->finished != 0 && $this->finishedAfterDeadline != 0)
             $AP[] = 100*$this->finishedAfterDeadline/$this->finished;
         if($this->avgGrade != 0)
             # It's reversed, because the bigger the mark, the better
             $AP[] = abs(100*$this->avgGrade/self::MAX_GRADE - 100);
 
-        return array_sum($AP) / count($AP);
+        if(count($AP) == 0)
+            $AP[] = 0;
+
+        return abs(array_sum($AP) / count($AP) - 100);
+
     }
 
     public function getMeetingsPercentage()
     {
-        $M[] = 0;
+        $M = array();
 
-        if($this->mTotal != 0)
+        if($this->mTotal != 0 && $this->cancelled != 0)
             $M[] = 100*$this->cancelled/$this->mTotal;
-        if($this->mTotal != 0)
+        if($this->mTotal != 0 && $this->noShow != 0)
             $M[] = 100*$this->noShow/$this->mTotal;
-        if($this->takenPlace != 0)
-            $M[] = 100*$this->studentArrivedOnTime/$this->takenPlace;
+        if($this->takenPlace != 0 && $this->studentArrivedOnTime != 0)
+            $M[] = abs(100*$this->studentArrivedOnTime/$this->takenPlace - 100);
 
-        return array_sum($M) / count($M);
+        if(count($M) == 0)
+            $M[] = 0;
+
+        return abs(array_sum($M) / count($M) - 100);
     }
 
     public function getStatus()
@@ -138,7 +145,7 @@ class RedAmberGreen
         $final[] = $this->getActionPointsPercentage();
         $final[] = $this->getMeetingsPercentage();
 
-        $finalAvg = abs(array_sum($final) / count($final) - 100);
+        $finalAvg = abs(array_sum($final) / count($final));
 
         $color = 'red';
 

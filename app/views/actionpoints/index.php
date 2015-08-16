@@ -90,18 +90,20 @@
         <?php endif; ?>
 
         <div class="large-12 columns left top-20">
+            <ul class="stack-for-small button-group">
             <?php if(!$data['id']->getIsDone() && $data['id']->getIsApproved()): ?>
                 <!-- display only if the action point hasn't been marked as done and has been approved -->
-                <a href="<?=SITE_URL?>actionpoints/done/<?=$data['id']->getID();?>" class="fa fa-check button success"></a>
+                <li><a href="<?=SITE_URL?>actionpoints/done/<?=$data['id']->getID();?>" class="fa fa-check button success"></a></li>
             <?php endif; ?>
 
             <?php if((!$data['id']->getIsDone() || !$data['id']->getIsApproved()) && ((HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getSentForApproval())
                     || HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)): ?>
                 <!-- display only if the action point hasn't been sent for approval (in case of a student) OR in case of a supervisor display anytime -->
                 <!-- also doesn't display to any user when an action point has been set as done and the operation has been approved -->
-                <a href="<?=SITE_URL?>actionpoints/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"></a>
-                <a href="<?=SITE_URL?>actionpoints/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
+                <li><a href="<?=SITE_URL?>actionpoints/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"></a></li>
+                <li><a href="<?=SITE_URL?>actionpoints/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a></li>
             <?php endif; ?>
+            </ul>
         </div>
     </div>
 </div>

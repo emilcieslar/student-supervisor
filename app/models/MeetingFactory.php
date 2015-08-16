@@ -128,7 +128,8 @@ class MeetingFactory
                 break;
             case RedAmberGreen::NO_SHOW: $factor = " AND datetime < NOW() AND taken_place = 0 AND is_cancelled = 0";
                 break;
-            case RedAmberGreen::M_TOTAL: $factor = " AND datetime < NOW()";
+            # Cancelled can be in the future and we want to include it in the total
+            case RedAmberGreen::M_TOTAL: $factor = " AND (datetime < NOW() OR is_cancelled = 1)";
                 break;
             default: $factor = "";
         }

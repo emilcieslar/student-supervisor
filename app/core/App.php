@@ -25,7 +25,7 @@ class App
         $url = $this->parseUrl();
 
         # Check if controller that's in the URL exists
-        if (file_exists('app/controllers/' . $url[self::CONTROLLER] . '.php')) {
+        if (isset($url[self::CONTROLLER]) && file_exists('app/controllers/' . $url[self::CONTROLLER] . '.php')) {
             # Set controller to the one provided by the user
             $this->controller = $url[self::CONTROLLER];
             # Unset the controller from the array so we can later pass only

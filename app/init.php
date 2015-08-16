@@ -1,8 +1,8 @@
 <?php
 
 # Do a check for PHP version
-if(!version_compare(PHP_VERSION,'5.4.38','>='))
-    die('The version of PHP must be larger or same as 5.4.38');
+if(!version_compare(PHP_VERSION,'5.4.37','>='))
+    die('The version of PHP must be larger or same as 5.4.37');
 
 # Display errors
 ini_set('display_errors',1);
