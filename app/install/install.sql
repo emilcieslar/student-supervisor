@@ -281,6 +281,45 @@ VALUES("Issues & Problems", "<p>Donec commodo odio in molestie tincidunt. Etiam 
 
 ##################################### SCENARIO FOR A SUPERVISOR
 ######### USERS
+/*INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('student','76a2173be6393254e72ffa4d6df1030a','Emil','Cieslar',0,'email1@gmail.com');
+INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('student2','76a2173be6393254e72ffa4d6df1030a','Joe','Doe',0,'email2@email.com');
+INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('supervisor','76a2173be6393254e72ffa4d6df1030a','Rosanne','English',1,'email3@gmail.com');
+
+######### PROJECTS
+INSERT INTO Project(short_name, name,description) VALUES('SP1', 'Sample Project 1','Web-based application with a database back end which allows a supervisor to monitor the progress of their student and the students to engage with the supervisor');
+INSERT INTO Project(short_name, name,description) VALUES('SP2','Sample Project 2','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut leo lorem, blandit vitae turpis non, fermentum faucibus massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim, massa ac bibendum maximus, velit tortor lobortis libero, at congue ex lorem nec erat. Ut vel lobortis purus. Proin sit amet risus consequat, varius diam vehicula, iaculis est.');
+
+######### ASSIGNING USERS TO PROJECTS
+INSERT INTO UserProject(user_id,project_id) VALUES(5,3);
+INSERT INTO UserProject(user_id,project_id) VALUES(7,3);
+
+INSERT INTO UserProject(user_id,project_id) VALUES(6,4);
+INSERT INTO UserProject(user_id,project_id) VALUES(7,4);
+
+# Function to get the last monday date
+CREATE FUNCTION `LastMonday`() RETURNS DATE
+  RETURN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY);
+
+SET @now_meeting = CONCAT(DATE_FORMAT(LastMonday(),'%Y-%m-%d'),' 11:00:00');
+
+######### MEETINGS
+INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
+VALUES(@now_meeting,0,0,1,1,1,3);
+
+######### ACTION POINTS
+INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, sent_for_approval, grade, meeting_id, user_id, project_id)
+VALUES(@now_meeting + INTERVAL 7 DAY,@now_meeting,'Market research',0,0,1,0,13,5,3);
+INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, sent_for_approval, grade, meeting_id, user_id, project_id)
+VALUES(@now_meeting + INTERVAL 7 DAY,@now_meeting,'Read articles',0,0,1,0,13,5,3);
+
+######### AGENDA NOTE
+INSERT INTO Note(title, text, is_agenda, datetime_created, meeting_id, user_id, project_id)
+VALUES("Issues & Problems", "<p>Donec commodo odio in molestie tincidunt. Etiam sit amet facilisis arcu, ac fringilla risus. Praesent eget elit at sapien vulputate euismod ac a arcu. Phasellus lacus ante, finibus nec dolor non, mollis hendrerit sem. Cras dictum sed felis et tincidunt. Curabitur ullamcorper rhoncus nisi id blandit. Fusce dolor risus, elementum in augue vitae, ultrices rutrum lorem. Etiam gravida volutpat urna in porttitor. Mauris condimentum dolor dolor, et facilisis velit dictum vitae. Nullam sit amet lorem non dolor hendrerit pellentesque. Praesent mollis tempor orci nec interdum. Morbi a imperdiet eros. Vivamus nec enim vel odio fringilla rhoncus sed eu nisi. Donec ultrices in eros non mattis. Duis nec efficitur ante, ut ornare risus. Ut mi libero, mattis eget leo sed, accumsan venenatis lacus.</p><p>&nbsp;</p><p>Donec commodo odio in molestie tincidunt. Etiam sit amet facilisis arcu, ac fringilla risus. Praesent eget elit at sapien vulputate euismod ac a arcu. Phasellus lacus ante, finibus nec dolor non, mollis hendrerit sem. Cras dictum sed felis et tincidunt. Curabitur ullamcorper rhoncus nisi id blandit. Fusce dolor risus, elementum in augue vitae, ultrices rutrum lorem. Etiam gravida volutpat urna in porttitor. Mauris condimentum dolor dolor, et facilisis velit dictum vitae. Nullam sit amet lorem non dolor hendrerit pellentesque. Praesent mollis tempor orci nec interdum. Morbi a imperdiet eros. Vivamus nec enim vel odio fringilla rhoncus sed eu nisi. Donec ultrices in eros non mattis. Duis nec efficitur ante, ut ornare risus. Ut mi libero, mattis eget leo sed, accumsan venenatis lacus.</p>",1,NOW(),14,5,3);
+*/
+
+
+##################################### SCENARIO FOR A STUDENT
+######### USERS
 INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('student','76a2173be6393254e72ffa4d6df1030a','Emil','Cieslar',0,'email1@gmail.com');
 INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('student2','76a2173be6393254e72ffa4d6df1030a','Joe','Doe',0,'email2@email.com');
 INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('supervisor','76a2173be6393254e72ffa4d6df1030a','Rosanne','English',1,'email3@gmail.com');
@@ -305,16 +344,9 @@ SET @now_meeting = CONCAT(DATE_FORMAT(LastMonday(),'%Y-%m-%d'),' 11:00:00');
 ######### MEETINGS
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
 VALUES(@now_meeting,0,0,1,1,1,3);
-# Scenario for student has one more next meeting
+# Scenario for student has two more next meetings since one of them will be cancelled in the scenario and there
+# must be at least one more approved to be able to add agenda for the next meeting
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
 VALUES(@now_meeting + INTERVAL 7 DAY,0,0,1,0,0,3);
-
-######### ACTION POINTS
-#INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, sent_for_approval, grade, meeting_id, user_id, project_id)
-#VALUES(@now_meeting + INTERVAL 7 DAY,@now_meeting,'Market research',0,0,1,0,13,5,3);
-#INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, sent_for_approval, grade, meeting_id, user_id, project_id)
-#VALUES(@now_meeting + INTERVAL 7 DAY,@now_meeting,'Read articles',0,0,1,0,13,5,3);
-
-######### AGENDA NOTE
-#INSERT INTO Note(title, text, is_agenda, datetime_created, meeting_id, user_id, project_id)
-#VALUES("Issues & Problems", "<p>Donec commodo odio in molestie tincidunt. Etiam sit amet facilisis arcu, ac fringilla risus. Praesent eget elit at sapien vulputate euismod ac a arcu. Phasellus lacus ante, finibus nec dolor non, mollis hendrerit sem. Cras dictum sed felis et tincidunt. Curabitur ullamcorper rhoncus nisi id blandit. Fusce dolor risus, elementum in augue vitae, ultrices rutrum lorem. Etiam gravida volutpat urna in porttitor. Mauris condimentum dolor dolor, et facilisis velit dictum vitae. Nullam sit amet lorem non dolor hendrerit pellentesque. Praesent mollis tempor orci nec interdum. Morbi a imperdiet eros. Vivamus nec enim vel odio fringilla rhoncus sed eu nisi. Donec ultrices in eros non mattis. Duis nec efficitur ante, ut ornare risus. Ut mi libero, mattis eget leo sed, accumsan venenatis lacus.</p><p>&nbsp;</p><p>Donec commodo odio in molestie tincidunt. Etiam sit amet facilisis arcu, ac fringilla risus. Praesent eget elit at sapien vulputate euismod ac a arcu. Phasellus lacus ante, finibus nec dolor non, mollis hendrerit sem. Cras dictum sed felis et tincidunt. Curabitur ullamcorper rhoncus nisi id blandit. Fusce dolor risus, elementum in augue vitae, ultrices rutrum lorem. Etiam gravida volutpat urna in porttitor. Mauris condimentum dolor dolor, et facilisis velit dictum vitae. Nullam sit amet lorem non dolor hendrerit pellentesque. Praesent mollis tempor orci nec interdum. Morbi a imperdiet eros. Vivamus nec enim vel odio fringilla rhoncus sed eu nisi. Donec ultrices in eros non mattis. Duis nec efficitur ante, ut ornare risus. Ut mi libero, mattis eget leo sed, accumsan venenatis lacus.</p>",1,NOW(),14,5,3);
+INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
+VALUES(@now_meeting + INTERVAL 14 DAY,0,0,1,0,0,3);

@@ -29,7 +29,7 @@
 
         <!-- display only if it's not an agenda note being created -->
         <?php if(!isset($data['agenda'])): ?>
-            <label>Associate the note with a meeting:
+            <label>Choose a meeting this note has been taken on:
                 <select name="meetingId" required>
                     <option value="0">Choose a meeting</option>
                     <?php foreach($data["meetings"] as $meeting): ?>

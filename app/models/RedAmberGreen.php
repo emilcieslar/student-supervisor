@@ -108,18 +108,30 @@ class RedAmberGreen
     {
         $AP = array();
 
+        # Add the following results to the array only if the number is not 0
+
+        # To be done compared with running over deadline
+        # The smaller the percentage is, the better (we don't want too many APs to be running over deadline)
         if($this->toBeDone != 0 && $this->runningOverDeadline != 0)
             $AP[] = 100*$this->runningOverDeadline/$this->toBeDone;
+
+        # Finished compared with finished after deadline
+        # The smaller the percentage is, the better (we don't want too many APs to be finished after deadline)
         if($this->finished != 0 && $this->finishedAfterDeadline != 0)
             $AP[] = 100*$this->finishedAfterDeadline/$this->finished;
+
+        # Average grade compared with maximum grade
+        # The bigger the percentage is (the bigger the average mark), the better, therefore it has to be reversed
         if($this->avgGrade != 0)
-            # It's reversed, because the bigger the mark, the better
             $AP[] = abs(100*$this->avgGrade/self::MAX_GRADE - 100);
 
+        # If there's nothing in the array, add one item that is 0
         if(count($AP) == 0)
             $AP[] = 0;
 
-        return abs(array_sum($AP) / count($AP) - 100);
+        # Return average percentage, which is sum of the array divided by its count
+        # So if there are for example, (20% + 20% + 20%) / 3, the average will be 20%
+        return array_sum($AP) / count($AP);
 
     }
 
@@ -127,30 +139,51 @@ class RedAmberGreen
     {
         $M = array();
 
+        # Add the following results to the array only if the number is not 0
+
+        # Total number of meetings compared with number of cancelled meetings
+        # The smaller the percentage is, the better (we don't want student or supervisor to cancel meetings very often)
         if($this->mTotal != 0 && $this->cancelled != 0)
             $M[] = 100*$this->cancelled/$this->mTotal;
+
+        # Total number of meetings compared with number of no shows
+        # The smaller the percentage is, the better (we don't want student not showing up at meetings)
         if($this->mTotal != 0 && $this->noShow != 0)
             $M[] = 100*$this->noShow/$this->mTotal;
+
+        # The number of meetings that has taken place compared with how many times a student arrived on time
+        # The bigger the number is, the better (we want student coming on time every time), therefore it has to be reversed
         if($this->takenPlace != 0 && $this->studentArrivedOnTime != 0)
             $M[] = abs(100*$this->studentArrivedOnTime/$this->takenPlace - 100);
 
+        # If there's nothing in the array, add one item that is 0
         if(count($M) == 0)
             $M[] = 0;
 
-        return abs(array_sum($M) / count($M) - 100);
+        # Return average percentage, which is sum of the array divided by its count
+        return array_sum($M) / count($M);
     }
 
     public function getStatus()
     {
+        # Get avg APs percentage
         $final[] = $this->getActionPointsPercentage();
+        # Get avg Meetings percentage
         $final[] = $this->getMeetingsPercentage();
 
-        $finalAvg = abs(array_sum($final) / count($final));
+        # Count the final percentage
+        # The final percentage has to be reversed, since the lower the percentage we get from APs and Meetings,
+        # the better, however the percentage bar is displayed in reversed manner, which means, the bigger the percentage
+        # the project is running better
+        $finalAvg = abs(array_sum($final) / count($final) - 100);
 
+        # Set default colour for the progress bar
         $color = 'red';
 
+        # If the average is bigger than 80, we have green status
         if($finalAvg >= 80)
             $color = 'green';
+        # If the average is bigger than 60 and smaller than 80, it's orange status
         elseif($finalAvg >= 60 && $finalAvg < 80)
             $color = 'orange';
 

@@ -15,6 +15,8 @@ class Meeting extends DataBoundObject
 
     protected $ProjectId;
 
+    protected $IsNext;
+
     protected function DefineTableName()
     {
         return("Meeting");
@@ -53,6 +55,25 @@ class Meeting extends DataBoundObject
         require_once 'MeetingFactory.php';
         $prevMeeting = MeetingFactory::getPreviousMeeting($this);
         return $prevMeeting;
+    }
+
+    public function getIsNoShow()
+    {
+        $currentDate = new DateTime();
+        # No show will be displayed after 7 days because we want to allow some time
+        # for supervisor to decide whether the meeting has really taken place or not
+        $currentDate->sub(new DateInterval('P7D'));
+        $meetingDateTime = DateTime::createFromFormat('Y-m-d H:i:s', $this->Datetime);
+
+        return ($meetingDateTime < $currentDate && !$this->TakenPlace && !$this->IsCancelled);
+    }
+
+    public function getIsNext()
+    {
+        if(!$this->IsNext)
+            $this->IsNext = $this->ID == MeetingFactory::getNextMeeting()->getID();
+
+        return $this->IsNext;
     }
 
 }

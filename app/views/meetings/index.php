@@ -38,6 +38,16 @@
                         &nbsp;<span class="label warning round no-indent">Not approved yet</span>
                     <?php endif; ?>
 
+                    <!-- If the student hasn't arrived on meeting (no show), display a notice -->
+                    <?php if($meeting->getIsNoShow()): ?>
+                        &nbsp;<span class="label alert round no-indent">No show</span>
+                    <?php endif; ?>
+
+                    <!-- If the meeting is the next meeting, display a notice -->
+                    <?php if($meeting->getIsNext()): ?>
+                        &nbsp;<span class="label info round no-indent">Next meeting</span>
+                    <?php endif; ?>
+
                     <!-- If the meeting has been cancelled, display a notice -->
                     <?php if($meeting->getIsCancelled()): ?>
                         &nbsp;<span class="label alert round no-indent">Cancelled</span>
@@ -60,14 +70,14 @@
         </div>
 
         <div class="large-12 columns">
-            <i class="fa fa-calendar icon" title="This meeting was scheduled to"></i>
-            <span><?=$data['id']->getDatetimeUserFriendly();?></span>
+            <span data-tooltip aria-haspopup="true" class="has-tip" title="This meeting was scheduled to"><i class="fa fa-calendar icon" title="This meeting was scheduled to"></i>
+            <span><?=$data['id']->getDatetimeUserFriendly();?></span></span>
         </div>
 
         <?php if($data['id']->getIsRepeating()): ?>
             <div class="large-12 columns">
-                <i class="fa fa-repeat icon" title="This meeting is repeating every week until"></i>
-                <span><?=$data['id']->getRepeatUntilUserFriendly()?></span>
+                <span data-tooltip aria-haspopup="true" class="has-tip" title="This meeting is repeating every week until"><i class="fa fa-repeat icon" title="This meeting is repeating every week until"></i>
+                <span><?=$data['id']->getRepeatUntilUserFriendly()?></span></span>
             </div>
         <?php endif; ?>
 
@@ -109,34 +119,41 @@
 
 
         <div class="large-12 columns left top-20">
-        <!-- Don't allow to edit or remove if:
-             1. User is a student and this meeting has been approved
-             2. User is a student and this meeting hasn't been approved, however waiting for approval because of cancellation
-             3. User is a student and this meeting hasn't been approved, however waiting for approval because of setting as done
-             4. Meeting is cancelled and cancellation is approved
-             5. Meeting has taken place -->
-        <?php if(!((HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && $data['id']->getIsApproved())
-                || (HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getIsApproved() && !$data['id']->getIsCancelled())
-                || (HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getIsApproved() && !$data['id']->getIsDone())
-                || ($data['id']->getIsCancelled())
-                || ($data['id']->getTakenPlace()))): ?>
+            <!-- Don't allow to edit or remove if:
+                 1. User is a student and this meeting has been approved
+                 2. User is a student and this meeting hasn't been approved, however waiting for approval because of cancellation
+                 3. User is a student and this meeting hasn't been approved, however waiting for approval because of setting as done
+                 4. Meeting is cancelled and cancellation is approved
+                 5. Meeting has taken place
+                 6. Meeting is no show -->
+            <?php if(!((HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && $data['id']->getIsApproved())
+                    || (HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getIsApproved() && !$data['id']->getIsCancelled())
+                    || (HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getIsApproved() && !$data['id']->getIsDone())
+                    || ($data['id']->getIsCancelled())
+                    || ($data['id']->getTakenPlace())
+                    || $data['id']->getIsNoShow())): ?>
 
-            <a href="<?=SITE_URL;?>meetings/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"></a>
-            <a href="<?=SITE_URL;?>meetings/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
+                <a href="<?=SITE_URL;?>meetings/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"></a>
+                <a href="<?=SITE_URL;?>meetings/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
 
-            <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+                <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+
+                <?php endif; ?>
 
             <?php endif; ?>
 
-        <?php endif; ?>
+            <!-- User can cancel a meeting anytime apart from:
+                 1. when it has already taken place
+                 2. hasn't been approved yet
+                 3. is not already cancelled
+                 4. is no show -->
+            <?php if(!$data['id']->getTakenPlace() && $data['id']->getIsApproved() && !$data['id']->getIsCancelled() && !$data['id']->getIsNoShow()): ?>
+                <a href="<?=SITE_URL;?>meetings/cancel/<?=$data['id']->getID();?>" class="fa fa-times button alert"> Cancel a meeting</a>
+            <?php endif; ?>
 
-        <!-- User can cancel a meeting anytime apart from:
-             1. when it has already taken place
-             2. hasn't been approved yet
-             3. is not already cancelled -->
-        <?php if(!$data['id']->getTakenPlace() && $data['id']->getIsApproved() && !$data['id']->getIsCancelled()): ?>
-            <a href="<?=SITE_URL;?>meetings/cancel/<?=$data['id']->getID();?>" class="fa fa-times button alert"> Cancel a meeting</a>
-        <?php endif; ?>
+            <?php if($data['id']->getIsNext()): ?>
+                <a href="<?=SITE_URL;?>agenda#agenda-notes" class="fa fa-briefcase info button"> Show agenda</a>
+            <?php endif; ?>
 
         </div>
 
@@ -157,7 +174,7 @@
 
                 <div class="large-12 columns">
                     <label>Choose date and time: <small>required</small>
-                        <input name="deadline" placeholder="Choose date" type="text" id="dp1" required pattern="date_friendly">
+                        <input name="deadline" placeholder="Choose date" type="text" id="dp1" required pattern="date_friendly" readonly>
                     </label>
                     <small class="error">Incorrect format</small>
                 </div>
@@ -238,7 +255,7 @@
 
                 <div class="large-12 columns">
                     <label>Choose date and time: <small>required</small>
-                        <input name="deadline" placeholder="Choose date and time" type="text" id="dp1" value="<?=$data['datetime']['date']?>" required pattern="date_friendly">
+                        <input name="deadline" placeholder="Choose date and time" type="text" id="dp1" value="<?=$data['datetime']['date']?>" required pattern="date_friendly" readonly>
                     </label>
                     <small class="error">Incorrect format</small>
                 </div>
@@ -351,12 +368,23 @@
 <script type="text/javascript">
     $(document).ready(function() {
 
+        // Get current date
+        nowTemp = new Date();
+        // Advance the date by 7 days
+        nowTemp.setDate(nowTemp.getDate() + 1);
+
         // Display date picker on click of the input
         $('#dp1, #dp2').fdatepicker({
             format: 'dd-mm-yyyy',
             disableDblClickSelection: true,
-            closeButton: true
+            closeButton: true,
+            startDate: '+1d'
         });
+
+        // Set default selected date to current + 7 days
+        $('#dp1').fdatepicker("setDate", nowTemp);
+        // Update datepicker
+        $('#dp1').fdatepicker("update");
 
         // Display repeat until input field only if isRepeating input is checked
         $('input[name=isRepeating]').change(function()
@@ -365,4 +393,5 @@
         });
 
     });
+
 </script>

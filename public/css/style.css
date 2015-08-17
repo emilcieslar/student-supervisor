@@ -35,6 +35,20 @@ p {
     display: none !important;
 }
 
+.has-tip {
+    font-weight: inherit;
+    border-bottom: none;
+}
+
+.has-tip:hover, .has-tip:focus {
+    border-bottom: none;
+}
+
+input[type="text"][readonly] {
+    background: #ffffff;
+    cursor: pointer;
+}
+
 /* GENERAL STYLES */
 
 h3 {

@@ -62,13 +62,13 @@
             <?php endif; ?>
         </div>
         <div class="large-12 columns">
-            <i class="fa fa-calendar icon" title="This action point was agreed at this meeting"></i>
-            <span id="dp2"><?=DatetimeConverter::getUserFriendlyDateTimeFormat($data['meeting']->getDatetime());?></span>
+            <span data-tooltip aria-haspopup="true" class="has-tip" title="This action point was agreed at this meeting"><i class="fa fa-calendar icon" title="This action point was agreed at this meeting"></i>
+            <span id="dp2"><?=DatetimeConverter::getUserFriendlyDateTimeFormat($data['meeting']->getDatetime());?></span></span>
         </div>
 
         <div class="large-12 columns">
-            <i class="fa fa-thumb-tack icon" title="Deadline"></i>
-            <span><?=$data['id']->getDeadlineUserFriendly();?></span>
+            <span data-tooltip aria-haspopup="true" class="has-tip" title="Deadline"><i class="fa fa-thumb-tack icon" title="Deadline"></i>
+            <span><?=$data['id']->getDeadlineUserFriendly();?></span></span>
         </div>
 
         <?php if($data['id']->getIsDone()): ?>
@@ -90,20 +90,18 @@
         <?php endif; ?>
 
         <div class="large-12 columns left top-20">
-            <ul class="stack-for-small button-group">
             <?php if(!$data['id']->getIsDone() && $data['id']->getIsApproved()): ?>
                 <!-- display only if the action point hasn't been marked as done and has been approved -->
-                <li><a href="<?=SITE_URL?>actionpoints/done/<?=$data['id']->getID();?>" class="fa fa-check button success"></a></li>
+                <a href="<?=SITE_URL?>actionpoints/done/<?=$data['id']->getID();?>" class="fa fa-check button success"></a>
             <?php endif; ?>
 
             <?php if((!$data['id']->getIsDone() || !$data['id']->getIsApproved()) && ((HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getSentForApproval())
                     || HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)): ?>
                 <!-- display only if the action point hasn't been sent for approval (in case of a student) OR in case of a supervisor display anytime -->
                 <!-- also doesn't display to any user when an action point has been set as done and the operation has been approved -->
-                <li><a href="<?=SITE_URL?>actionpoints/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"></a></li>
-                <li><a href="<?=SITE_URL?>actionpoints/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a></li>
+                <a href="<?=SITE_URL?>actionpoints/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"></a>
+                <a href="<?=SITE_URL?>actionpoints/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
             <?php endif; ?>
-            </ul>
         </div>
     </div>
 </div>
@@ -124,7 +122,7 @@
 
                 <div class="large-12 columns">
                     <label>Choose deadline: <small>required</small>
-                        <input name="deadline" placeholder="Choose deadline" type="text" id="dp_deadline" value="<?=$data['datetime']['date'];?>" required pattern="date_friendly">
+                        <input name="deadline" placeholder="Choose deadline" type="text" id="dp_deadline" value="<?=$data['datetime']['date'];?>" required pattern="date_friendly" readonly>
                     </label>
                     <small class="error">Incorrect format of deadline</small>
                 </div>
@@ -161,7 +159,7 @@
                     <small class="error">Name of the action point is required</small>
                 </div>
                 <div class="large-12 columns">
-                    <label>Associate the action point with a meeting:
+                    <label>This action point has been agreed on a meeting:
                         <select name="meetingId" required>
                             <option value>Choose a meeting</option>
                             <?php foreach($data["meetings"] as $meeting): ?>
@@ -220,7 +218,7 @@
 
             <div class="large-12 columns">
                 <label>Choose deadline date and time: <small>required</small>
-                    <input name="deadline" placeholder="Choose date" type="text" id="dp1" required pattern="date_friendly">
+                    <input name="deadline" placeholder="Choose date" type="text" id="dp1" required pattern="date_friendly" readonly>
                 </label>
                 <small class="error">Incorrect format of a deadline</small>
             </div>
@@ -249,7 +247,7 @@
                 <small class="error">Name of the action point is required</small>
             </div>
             <div class="large-12 columns">
-                <label>Associate the action point with a meeting: <small>required</small>
+                <label>This action point has been agreed on a meeting: <small>required</small>
                     <select name="meetingId" required>
                         <option value>Choose a meeting</option>
                         <?php foreach($data["meetings"] as $meeting): ?>

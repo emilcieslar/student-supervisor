@@ -55,7 +55,7 @@
         <div class="large-6 columns">
             <div class="number">
                 <span class="number"><?=$data['rag']->getMeetingsStudentArrivedOnTime()?></span>
-                <span class="text">student arrived<br>on time</span>
+                <span class="text">on time arrivals</span>
             </div>
         </div>
 
@@ -154,7 +154,7 @@
 
 <div class="large-12 columns">
 
-    <h5>Agenda notes for the next meeting</h5>
+    <h5 id="agenda-notes">Agenda notes for the next meeting</h5>
 
     <!-- If isset delete, display panel to revert delete -->
     <?php if(isset($data['delete'])): ?>
