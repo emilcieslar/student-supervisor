@@ -1,3 +1,6 @@
+# It is inspired by PHP Academy build PHP MVC APP
+# that is available here https://www.youtube.com/watch?v=OsCTzGASImQ
+
 Options -MultiViews
 
 RewriteEngine on

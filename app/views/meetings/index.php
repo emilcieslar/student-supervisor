@@ -306,17 +306,28 @@
                         <input name="isApproved" id="checkbox1" type="checkbox" <?=($data['id']->getIsApproved()) ? "checked" : ""?>><label for="checkbox1">Is this meeting approved?</label>
                     </div>-->
 
-                    <div class="large-12 columns">
-                        <input name="arrivedOnTime" id="checkbox2" type="checkbox" <?=($data['id']->getArrivedOnTime()) ? "checked" : ""?>><label for="checkbox2">Has student arrived on time?</label>
-                    </div>
+                    <!-- Display only if the meeting was in the past -->
+                    <?php
+                        $thisMeetingDatetime = DateTime::createFromFormat('Y-m-d H:i:s', $data['id']->getDatetime());
+                        $timeNow = new DateTime();
+                    ?>
+                    <?php if($thisMeetingDatetime < $timeNow): ?>
 
-                    <div class="large-12 columns">
-                        <input name="takenPlace" id="checkbox3" type="checkbox" <?=($data['id']->getTakenPlace()) ? "checked" : ""?>><label for="checkbox3">Has meeting taken place?</label>
-                    </div>
+                        <div class="large-12 columns">
+                            <input name="arrivedOnTime" id="checkbox2" type="checkbox" <?=($data['id']->getArrivedOnTime()) ? "checked" : ""?>><label for="checkbox2">Has student arrived on time?</label>
+                        </div>
 
-                    <div class="large-12 columns">
-                        <input name="isCancelled" id="checkbox4" type="checkbox" <?=($data['id']->getIsCancelled()) ? "checked" : ""?>><label for="checkbox4">Is the meeting cancelled?</label>
-                    </div>
+                        <div class="large-12 columns">
+                            <input name="takenPlace" id="checkbox3" type="checkbox" <?=($data['id']->getTakenPlace()) ? "checked" : ""?>><label for="checkbox3">Has meeting taken place?</label>
+                        </div>
+
+                    <?php endif; ?>
+
+                    <?php if($data['id']->getIsCancelled() && !$data['id']->getIsApproved()): ?>
+                        <div class="large-12 columns">
+                            <input name="isCancelled" id="checkbox4" type="checkbox" <?=($data['id']->getIsCancelled()) ? "checked" : ""?>><label for="checkbox4">Is the meeting cancelled?</label>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
 
                 <div class="large-12 columns top-10">

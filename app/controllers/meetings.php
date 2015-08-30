@@ -1,12 +1,10 @@
 <?php
 
+/**
+ * Controls all the functionality associated with Meetings
+ */
 class Meetings extends Controller
 {
-    /**
-     * @param null $id
-     * @param null $month
-     * @param null $year
-     */
     public function index($id = null, $delete = null)
     {
         $meetings = $this->model('MeetingFactory');

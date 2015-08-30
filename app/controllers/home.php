@@ -1,10 +1,13 @@
 <?php
 
+/**
+ * Controls all the functionality associated with default home page
+ */
 class Home extends Controller
 {
     public function index()
     {
-        // Default is actionpoints
+        # Default is agenda
         header('Location: ' . SITE_URL . 'agenda');
     }
 

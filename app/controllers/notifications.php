@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Controls all the functionality associated with Notifications
+ */
 class Notifications extends Controller
 {
     public function index()

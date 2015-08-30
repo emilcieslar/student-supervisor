@@ -1,13 +1,15 @@
 <?php
 
+# Initial steps performed before the application is started
 require_once 'app/init.php';
 
 # Check whether code was passed back
+# This happens when user tries to login using GoogleAuth and
+# code is passed back, which is processed in the GoogleAuth class afterwards
 if(isset($_GET['code']))
-{
     # If it was, pass it to the class
     GoogleAuth::getInstance()->checkCode($_GET['code']);
-}
 
-# Start up the app
+
+### Start up the App class which takes care of routing ###
 $app = new App;

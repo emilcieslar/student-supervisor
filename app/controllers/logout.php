@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Controls all the functionality associated with Logout
+ */
 class Logout extends Controller
 {
     public function index()

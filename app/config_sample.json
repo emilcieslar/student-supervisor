@@ -1,6 +1,8 @@
-/*
- * This is a sample config, to make it work, edit details
- * and save it as config.json
+/**
+ * This is a sample config, to make the app work,
+ * edit details and save it as config.json
+ *
+ * ALSO REMOVE THIS COMMENT
  */
 
 {
@@ -19,5 +21,7 @@
     "client_secret":"",
     "developer_key":"",
     "redirect_uri":"index.php"
-  }
+  },
+
+  "timezone" : "Europe/London"
 }

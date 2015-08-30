@@ -4,7 +4,7 @@
 if(!version_compare(PHP_VERSION,'5.4.37','>='))
     die('The version of PHP must be larger or same as 5.4.37');
 
-# Display errors
+# Display errors for testing purposes
 ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
 error_reporting(-1);
@@ -13,12 +13,13 @@ error_reporting(-1);
 $file = file_get_contents("app/config.json");
 $config = json_decode($file);
 
-# Define site URL
+# Define site URL constant, which is further used in controllers
 define('SITE_URL',$config->{'site_url'});
 
 # Set time zone
 date_default_timezone_set($config->{'timezone'});
 
+# Include essential classes
 require_once 'core/DatetimeConverter.php';
 require_once 'core/App.php';
 require_once 'core/Controller.php';
@@ -33,14 +34,16 @@ require_once 'models/NotificationNote.php';
 
 # Start a more secure session
 $objSession = HTTPSession::getInstance();
+# Update the inactivity time on every reload of the page
 $objSession->Impress();
 
 # Start up a GoogleAuth
-# This must be commented out for ssms.emilc.cz, because there's wrong redirect_uri
+# TODO: This must be commented out for ssms.emilc.cz, because there's wrong redirect_uri
 GoogleAuth::getInstance();
 
 # Check if user is NOT logged in
 if(!$objSession->IsLoggedIn())
     # Redirect to login page only if we're not already on login page
+    # otherwise we would get a redirect loop
     if(isset($_GET['url']) && !(strpos($_GET['url'],'login') !== false))
         header("Location: " . SITE_URL . "login");

@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Controls all the functionality associated with Project
+ */
 class Projects extends Controller
 {
     public function index($id = null)

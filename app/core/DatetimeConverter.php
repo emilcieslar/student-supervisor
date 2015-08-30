@@ -1,7 +1,6 @@
 <?php
 
 /**
- * Class DatetimeConverter
  * This class is used to convert datetime into a specific formats
  */
 class DatetimeConverter

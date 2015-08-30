@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Controls all the functionality associated with Notes
+ */
 class Notes extends Controller
 {
     public function index($id = null, $delete = null)
