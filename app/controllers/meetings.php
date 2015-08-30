@@ -160,6 +160,8 @@ class Meetings extends Controller
 
             # If the meeting is repeating we have to create more than one record in the database
             # in order to display them in the list
+            # However other meetings won't be added to google since in this version only a single meeting
+            # can be added to the google calendar
             if($isRepeating)
             {
                 # Array of meetings
@@ -272,6 +274,10 @@ class Meetings extends Controller
             if(isset($post['takenPlace']))
                 $takenPlace = 1;
 
+            $isCancelled = 0;
+            if(isset($post['isCancelled']))
+                $isCancelled = 1;
+
             # Set correct format of provided date
             $dateTime = DateTime::createFromFormat('d-m-Y H:i', $deadline . " " . $deadline_time_hours . ":" . $deadline_time_minutes);
             $date = $dateTime->format('Y-m-d H:i:s');
@@ -281,6 +287,7 @@ class Meetings extends Controller
             $meeting->setIsApproved($isApproved);
             $meeting->setTakenPlace($takenPlace);
             $meeting->setArrivedOnTime($arrivedOnTime);
+            $meeting->setIsCancelled($isCancelled);
 
             # Check if meeting is approved by a supervisor and user is logged in as google user
             # Also check if googleEventId exists for this meeting

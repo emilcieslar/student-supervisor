@@ -70,13 +70,13 @@
         </div>
 
         <div class="large-12 columns">
-            <span data-tooltip aria-haspopup="true" class="has-tip" title="This meeting was scheduled to"><i class="fa fa-calendar icon" title="This meeting was scheduled to"></i>
+            <span data-tooltip aria-haspopup="true" class="has-tip" title="This meeting was scheduled to"><i class="fa fa-calendar icon"></i>
             <span><?=$data['id']->getDatetimeUserFriendly();?></span></span>
         </div>
 
         <?php if($data['id']->getIsRepeating()): ?>
             <div class="large-12 columns">
-                <span data-tooltip aria-haspopup="true" class="has-tip" title="This meeting is repeating every week until"><i class="fa fa-repeat icon" title="This meeting is repeating every week until"></i>
+                <span data-tooltip aria-haspopup="true" class="has-tip" title="This meeting is repeating every week until"><i class="fa fa-repeat icon"></i>
                 <span><?=$data['id']->getRepeatUntilUserFriendly()?></span></span>
             </div>
         <?php endif; ?>
@@ -122,14 +122,12 @@
             <!-- Don't allow to edit or remove if:
                  1. User is a student and this meeting has been approved
                  2. User is a student and this meeting hasn't been approved, however waiting for approval because of cancellation
-                 3. User is a student and this meeting hasn't been approved, however waiting for approval because of setting as done
                  4. Meeting is cancelled and cancellation is approved
                  5. Meeting has taken place
                  6. Meeting is no show -->
             <?php if(!((HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && $data['id']->getIsApproved())
-                    || (HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getIsApproved() && !$data['id']->getIsCancelled())
-                    || (HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getIsApproved() && !$data['id']->getIsDone())
-                    || ($data['id']->getIsCancelled())
+                    || (HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT && !$data['id']->getIsApproved() && $data['id']->getIsCancelled())
+                    || ($data['id']->getIsCancelled() && $data['id']->getIsApproved())
                     || ($data['id']->getTakenPlace())
                     || $data['id']->getIsNoShow())): ?>
 
@@ -148,7 +146,7 @@
                  3. is not already cancelled
                  4. is no show -->
             <?php if(!$data['id']->getTakenPlace() && $data['id']->getIsApproved() && !$data['id']->getIsCancelled() && !$data['id']->getIsNoShow()): ?>
-                <a href="<?=SITE_URL;?>meetings/cancel/<?=$data['id']->getID();?>" class="fa fa-times button alert"> Cancel a meeting</a>
+                <a href="<?=SITE_URL;?>meetings/cancel/<?=$data['id']->getID();?>" class="fa fa-times button alert"> Cancel meeting</a>
             <?php endif; ?>
 
             <?php if($data['id']->getIsNext()): ?>
@@ -203,7 +201,7 @@
                     <hr>
 
                     <div class="large-12 columns">
-                        <input name="isRepeating" id="checkbox0" type="checkbox"><label for="checkbox0">Shoult this meeting repeat?</label>
+                        <input name="isRepeating" id="checkbox0" type="checkbox"><label for="checkbox0">Should this meeting repeat?</label>
                     </div>
 
                     <div class="large-12 columns hide repeatUntil">
@@ -255,7 +253,7 @@
 
                 <div class="large-12 columns">
                     <label>Choose date and time: <small>required</small>
-                        <input name="deadline" placeholder="Choose date and time" type="text" id="dp1" value="<?=$data['datetime']['date']?>" required pattern="date_friendly" readonly>
+                        <input name="deadline" placeholder="Choose date and time" type="text" id="dp2" value="<?=$data['datetime']['date']?>" required pattern="date_friendly" readonly>
                     </label>
                     <small class="error">Incorrect format</small>
                 </div>
@@ -314,6 +312,10 @@
 
                     <div class="large-12 columns">
                         <input name="takenPlace" id="checkbox3" type="checkbox" <?=($data['id']->getTakenPlace()) ? "checked" : ""?>><label for="checkbox3">Has meeting taken place?</label>
+                    </div>
+
+                    <div class="large-12 columns">
+                        <input name="isCancelled" id="checkbox4" type="checkbox" <?=($data['id']->getIsCancelled()) ? "checked" : ""?>><label for="checkbox4">Is the meeting cancelled?</label>
                     </div>
                 <?php endif; ?>
 

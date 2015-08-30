@@ -4,8 +4,14 @@
 require_once 'ActionPointFactory.php';
 require_once 'MeetingFactory.php';
 
+/**
+ * This class takes care of calculations associated with
+ * red-amber-green algorithm
+ */
 class RedAmberGreen
 {
+    # Using the following constants, the data are retrieved
+    # from ActionPointFactory and MeetingFactory
     # Action Point constants
     const TO_BE_DONE = 1;
     const RUNNING_OVER_DEADLINE = 2;
@@ -38,19 +44,79 @@ class RedAmberGreen
 
     public function __construct()
     {
-        # Action points
+        # Get the action points values
         $this->toBeDone = ActionPointFactory::getActionPointsCount(self::TO_BE_DONE);
         $this->runningOverDeadline = ActionPointFactory::getActionPointsCount(self::RUNNING_OVER_DEADLINE);
         $this->finished = ActionPointFactory::getActionPointsCount(self::FINISHED);
         $this->finishedAfterDeadline = ActionPointFactory::getActionPointsCount(self::FINISHED_AFTER_DEADLINE);
         $this->avgGrade = ActionPointFactory::getActionPointsCount(self::AVG_GRADE);
 
-        # Meetings
+        # Get the meetings values
         $this->takenPlace = MeetingFactory::getMeetingsCount(self::TAKEN_PLACE);
         $this->studentArrivedOnTime = MeetingFactory::getMeetingsCount(self::STUDENT_ARRIVED_ON_TIME);
         $this->cancelled = MeetingFactory::getMeetingsCount(self::CANCELLED);
         $this->noShow = MeetingFactory::getMeetingsCount(self::NO_SHOW);
         $this->mTotal = MeetingFactory::getMeetingsCount(self::M_TOTAL);
+
+        ### Code for testing the algorithm ###
+        # First test
+        # Action points
+        /*$this->toBeDone = 4;
+        $this->runningOverDeadline = 2;
+        $this->finished = 4;
+        $this->finishedAfterDeadline = 2;
+        $this->avgGrade = 11;
+        # Meetings
+        $this->takenPlace = 4;
+        $this->studentArrivedOnTime = 2;
+        $this->cancelled = 2;
+        $this->mTotal = 4;
+        $this->noShow = 2;*/
+
+        # Second test
+        # Action points
+        /*$this->toBeDone = 0;
+        $this->runningOverDeadline = 0;
+        $this->finished = 0;
+        $this->finishedAfterDeadline = 0;
+        $this->avgGrade = 0;
+        # Meetings
+        $this->takenPlace = 0;
+        $this->studentArrivedOnTime = 0;
+        $this->cancelled = 0;
+        $this->mTotal = 0;
+        $this->noShow = 0;*/
+
+        # Third test
+        # Action points
+        /*$this->toBeDone = 4;
+        $this->runningOverDeadline = 0;
+        $this->finished = 4;
+        $this->finishedAfterDeadline = 0;
+        $this->avgGrade = 22;
+        # Meetings
+        $this->takenPlace = 4;
+        $this->studentArrivedOnTime = 4;
+        $this->cancelled = 0;
+        $this->mTotal = 4;
+        $this->noShow = 0;*/
+
+        # Forth test
+        # Action points
+        /*$this->toBeDone = 2;
+        $this->runningOverDeadline = 2;
+        $this->finished = 2;
+        $this->finishedAfterDeadline = 2;
+        $this->avgGrade = 1;
+        # Meetings
+        $this->takenPlace = 2;
+        $this->studentArrivedOnTime = 0;
+        $this->cancelled = 2;
+        $this->mTotal = 2;
+        $this->noShow = 2;*/
+
+        ### End of the code for testing ###
+
     }
 
     public function getActionPointsToBeDone()
@@ -103,7 +169,11 @@ class RedAmberGreen
         return $this->mTotal;
     }
 
-
+    /**
+     * The method to count the action points percentage, which is returned
+     * reversed, that means the smaller percentage, the better.
+     * @return float the action point percentage
+     */
     public function getActionPointsPercentage()
     {
         $AP = array();
@@ -122,7 +192,7 @@ class RedAmberGreen
 
         # Average grade compared with maximum grade
         # The bigger the percentage is (the bigger the average mark), the better, therefore it has to be reversed
-        if($this->avgGrade != 0)
+        if($this->avgGrade > 1)
             $AP[] = abs(100*$this->avgGrade/self::MAX_GRADE - 100);
 
         # If there's nothing in the array, add one item that is 0
@@ -135,6 +205,11 @@ class RedAmberGreen
 
     }
 
+    /**
+     * The method to count the meetings percentage, which is returned
+     * reversed, that means the smaller percentage, the better.
+     * @return float the action point percentage
+     */
     public function getMeetingsPercentage()
     {
         $M = array();
@@ -164,12 +239,29 @@ class RedAmberGreen
         return array_sum($M) / count($M);
     }
 
+    /**
+     * The function to return the final status of the project represented
+     * by colour and rounded percentage.
+     * @return array containing rounded final percentage and colour of the status
+     */
     public function getStatus()
     {
         # Get avg APs percentage
         $final[] = $this->getActionPointsPercentage();
         # Get avg Meetings percentage
         $final[] = $this->getMeetingsPercentage();
+
+        ### Code for final testing ###
+        # First test
+        #$final[0] = 0;
+        #$final[1] = 50;
+        # Second test
+        #$final[0] = 100;
+        #$final[1] = 100;
+        # Third test
+        #$final[0] = 0;
+        #$final[1] = 0;
+        ### End of final testing ###
 
         # Count the final percentage
         # The final percentage has to be reversed, since the lower the percentage we get from APs and Meetings,

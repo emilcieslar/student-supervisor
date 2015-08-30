@@ -62,12 +62,12 @@
             <?php endif; ?>
         </div>
         <div class="large-12 columns">
-            <span data-tooltip aria-haspopup="true" class="has-tip" title="This action point was agreed at this meeting"><i class="fa fa-calendar icon" title="This action point was agreed at this meeting"></i>
+            <span data-tooltip aria-haspopup="true" class="has-tip" title="This action point was agreed at this meeting"><i class="fa fa-calendar icon"></i>
             <span id="dp2"><?=DatetimeConverter::getUserFriendlyDateTimeFormat($data['meeting']->getDatetime());?></span></span>
         </div>
 
         <div class="large-12 columns">
-            <span data-tooltip aria-haspopup="true" class="has-tip" title="Deadline"><i class="fa fa-thumb-tack icon" title="Deadline"></i>
+            <span data-tooltip aria-haspopup="true" class="has-tip" title="Deadline"><i class="fa fa-thumb-tack icon"></i>
             <span><?=$data['id']->getDeadlineUserFriendly();?></span></span>
         </div>
 
@@ -185,9 +185,12 @@
                     </div>
                 <?php endif; ?>
 
+                <!-- Display only if it's waiting for approval and has been set as done (this way a supervisor can disaprove it's been done) -->
+                <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR && !$data['id']->getIsApproved() && $data['id']->getIsDone()): ?>
                 <div class="large-12 columns">
                     <input name="isDone" id="checkbox1" type="checkbox" <?php if($data['id']->getIsDone()) echo "checked";?>><label for="checkbox1">Is this action point done?</label>
                 </div>
+                <?php endif; ?>
 
                 <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR && !$data['id']->getIsApproved()): ?>
                     <!-- If we're logged in as a supervisor and the changes hasn't been approved yet

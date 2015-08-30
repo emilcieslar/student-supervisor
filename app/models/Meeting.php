@@ -71,7 +71,8 @@ class Meeting extends DataBoundObject
     public function getIsNext()
     {
         if(!$this->IsNext)
-            $this->IsNext = $this->ID == MeetingFactory::getNextMeeting()->getID();
+            if(MeetingFactory::getNextMeeting())
+                $this->IsNext = $this->ID == MeetingFactory::getNextMeeting()->getID();
 
         return $this->IsNext;
     }

@@ -51,7 +51,9 @@ class Notes extends Controller
         {
             # Get values from post
             $title = $post['title'];
-            $meetingId = $post['meetingId'];
+            # If we're adding agenda note, we don't have a meeting id
+            if(!isset($post['isAgenda']))
+                $meetingId = $post['meetingId'];
 
             $isPrivate = 0;
             if(isset($post['isPrivate']))

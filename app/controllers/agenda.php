@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Controls all the functionality associated with Agenda
+ */
 class Agenda extends Controller
 {
     public function index($delete = false)

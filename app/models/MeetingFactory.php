@@ -9,7 +9,7 @@ class MeetingFactory
 
         $objPDO = PDOFactory::get();
 
-        # Find out whether we want only future meetings
+        # Find out whether we want only past meetings
         if($untilNow)
             $untilNowDatetime = " AND datetime < '" . date("Y-m-d H:i:s") . "'";
         else
@@ -53,7 +53,8 @@ class MeetingFactory
                       AND datetime > NOW()
                       AND is_deleted = 0
                       AND is_cancelled = 0
-                      AND is_approved
+                      AND is_approved = 1
+                      ORDER BY datetime
                       LIMIT 1";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
@@ -87,7 +88,7 @@ class MeetingFactory
         $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id
                       AND datetime < (SELECT datetime FROM Meeting WHERE id = ".$meeting->getID().")
                       AND is_deleted = 0
-                      AND is_approved
+                      AND is_approved = 1
                       ORDER BY datetime DESC
                       LIMIT 1";
         $objStatement = $objPDO->prepare($strQuery);

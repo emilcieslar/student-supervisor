@@ -7,16 +7,15 @@
  */
 class App
 {
-    /** Default controller */
+    # Default controller
     protected $controller = 'home';
-    /** Default method */
+    # Default method
     protected $method = 'index';
-    /** Default params */
+    # Default params
     protected $params = [];
 
-    /** Constant to avoid magic numbers - they define position in an array that parsed from URL */
+    # Constants to avoid magic numbers - they define position in an array that parsed from URL
     const CONTROLLER = 0;
-    /** Constant to avoid magic numbers - they define position in an array that parsed from URL */
     const METHOD = 1;
 
     public function __construct()

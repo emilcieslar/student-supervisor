@@ -71,7 +71,10 @@ class ActionPoints extends Controller
         $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'meetings'=>$meetings, 'add'=>true]);
     }
 
-
+    /**
+     * A method to process POST request for adding a new AP
+     * @param null $post the $_POST array
+     */
     public function addPost($post = null)
     {
         if($post)
@@ -120,6 +123,10 @@ class ActionPoints extends Controller
         Header('Location: ' . SITE_URL . 'actionpoints');
     }
 
+    /**
+     * A method to remove an AP
+     * @param int $id the id used to identify the AP to be removed
+     */
     public function remove($id)
     {
         # Retrieve action point from database based on provided id
@@ -140,6 +147,10 @@ class ActionPoints extends Controller
         Header('Location: ' . SITE_URL . 'actionpoints/' . $id . '/deleted');
     }
 
+    /**
+     * A method to edit an AP
+     * @param int $id the id used to identify the AP to be edited
+     */
     public function edit($id)
     {
         $actionPoints = $this->model('ActionPointFactory');
@@ -164,6 +175,10 @@ class ActionPoints extends Controller
         $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'id'=>$id, 'edit'=>true, 'datetime'=>$data, 'meetings'=>$meetings]);
     }
 
+    /**
+     * A method to process POST request for editing an existing AP
+     * @param null $post the $_POST array
+     */
     public function editPost($post)
     {
         # Retrieve action point from database based on provided id
@@ -236,6 +251,10 @@ class ActionPoints extends Controller
         die();
     }
 
+    /**
+     * A method to approve an AP
+     * @param int $id the id used to identify the AP to be approved
+     */
     public function approve($id)
     {
         # Only supervisor can approve, no one else has access to this page
@@ -261,6 +280,10 @@ class ActionPoints extends Controller
         Header('Location: ' . SITE_URL . 'actionpoints/' . $id);
     }
 
+    /**
+     * A method to set an AP as done (accomplished)
+     * @param int $id the id used to identify the AP to be set as done
+     */
     public function done($id)
     {
         # Retrieve action point from database based on provided id
@@ -300,6 +323,10 @@ class ActionPoints extends Controller
         Header('Location: ' . SITE_URL . 'actionpoints/' . $id);
     }
 
+    /**
+     * A method to send an AP for approval
+     * @param int $id the id used to identify the AP to be marked as sent for approval
+     */
     public function send($id)
     {
         # Retrieve action point from database based on provided id
@@ -321,6 +348,11 @@ class ActionPoints extends Controller
         Header('Location: ' . SITE_URL . 'actionpoints/' . $id);
     }
 
+    /**
+     * A method to revert removal of an AP
+     * Note: After the AP is deleted, an option to revert the action is given to the user
+     * @param int $id the id used to identify the AP to be reverted
+     */
     public function revertRemoval($id)
     {
         $actionPoint = $this->model('ActionPoint',$id);
@@ -336,6 +368,10 @@ class ActionPoints extends Controller
         header('Location: ' . SITE_URL . 'actionpoints');
     }
 
+    /**
+     * @param $actionPointSentForApproval
+     * @return bool
+     */
     protected function checkAuthSentForApproval($actionPointSentForApproval)
     {
         # If the action point hasn't been sent for approval and logged in user is supervisor, the supervisor

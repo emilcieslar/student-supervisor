@@ -36,7 +36,8 @@ $objSession = HTTPSession::getInstance();
 $objSession->Impress();
 
 # Start up a GoogleAuth
-#GoogleAuth::getInstance();
+# This must be commented out for ssms.emilc.cz, because there's wrong redirect_uri
+GoogleAuth::getInstance();
 
 # Check if user is NOT logged in
 if(!$objSession->IsLoggedIn())

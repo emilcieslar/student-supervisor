@@ -1,7 +1,9 @@
 <?php
 
+# We need a user in order to log in
+require_once('User.php');
+
 /**
- * Class HTTPSession
  * Used for more secure session management than the default one in PHP
  * Uses database to store session instead of a file
  *
@@ -9,18 +11,21 @@
  * 2. Impress the session (for session timeout purposes) – $objSession->Impress();
  * 3. Create new session variable – $objSession->TESTVAR = 'valuegoeshere';
  */
-require_once('User.php');
-
 class HTTPSession
 {
+    # Session id related variables
     private $php_session_id;
     private $native_session_id;
+    # DB connection
     private $objPDO;
+    # User related variables
     private $logged_in;
     private $user_id;
+    # Timeouts
     private $session_timeout = 3600;      # 1 hour inactivity timeout
     private $session_lifespan = 86400;    # 1 day session duration
 
+    # At the beginning the instance is empty
     private static $instance = null;
 
     /**
@@ -30,7 +35,8 @@ class HTTPSession
      */
     public static function getInstance()
     {
-        if(!isset(HTTPSession::$instance ))
+        # If the session doesn't exist yet, created it
+        if(!isset(HTTPSession::$instance))
             HTTPSession::$instance = new HTTPSession();
 
         return HTTPSession::$instance;
@@ -53,10 +59,10 @@ class HTTPSession
         # Get the user agent string
         $strUserAgent = $_SERVER["HTTP_USER_AGENT"];
 
-        # Check if cookie has passed
+        # Check if session cookie has passed
         if (isset($_COOKIE["PHPSESSID"]))
         {
-            # Get the cookie
+            # Save the cookie
             $this->php_session_id = $_COOKIE["PHPSESSID"];
 
             # This statement gets the session from database under following conditions:
@@ -73,7 +79,7 @@ class HTTPSession
             # Fetch it from the database
             $row = $objStatement->fetch(PDO::FETCH_ASSOC);
 
-            # If such row doesn't exist..
+            # If such row doesn't exist
             if (!$row)
             {
                 # Delete from database - we do garbage cleanup at the same time
@@ -104,67 +110,109 @@ class HTTPSession
      */
     public function Impress()
     {
-        if ($this->native_session_id) {
+        # If we have an existing session in the database
+        if ($this->native_session_id)
+        {
+            # Update the last_impression in database
             $strQuery = "UPDATE http_session SET last_impression = now() WHERE id = " . $this->native_session_id;
             $this->objPDO->query($strQuery);
         }
     }
 
+    /**
+     * A method to return whether a user is logged in
+     * @return boolean
+     */
     public function IsLoggedIn()
     {
-        return($this->logged_in);
+        return $this->logged_in;
     }
 
+    /**
+     * A method to return either UserID (if user is logged in),
+     * otherwise false
+     * @return mixed the UserID or false
+     */
     public function GetUserID()
     {
         if ($this->logged_in)
-            return($this->user_id);
+            return $this->user_id;
         else
-            return(false);
+            return false;
     }
 
+    /**
+     * A method to return the currently logged in user object or false
+     * if no one is logged in
+     * @return mixed the User object or false
+     */
     public function GetUserObject()
     {
         if ($this->logged_in)
         {
             $objUser = new User($this->user_id);
-            return($objUser);
-        }
+            return $objUser;
+        } else
+            return false;
     }
 
+    /**
+     * A method to return the session id
+     * @return String
+     */
     public function GetSessionIdentifier()
     {
-        return($this->php_session_id);
+        return $this->php_session_id;
     }
 
+    /**
+     * A method to login a user using provided username and password
+     * @param $strUsername
+     * @param $strPlainPassword
+     * @return bool if it was successful or not
+     */
     public function Login($strUsername, $strPlainPassword)
     {
+        # Generate md5 hash from the plain password
         $strMD5Password = md5($strPlainPassword);
+        # Prepare the query for the database
         $strQuery = "SELECT id FROM User WHERE username = :username AND password = :pass";
         $objStatement = $this->objPDO->prepare($strQuery);
 
+        # Bind the username and password values
         $objStatement->bindValue(':username', $strUsername, PDO::PARAM_STR);
         $objStatement->bindValue(':pass', $strMD5Password, PDO::PARAM_STR);
 
+        # Execute the query
         $objStatement->execute();
 
+        # Fetch the row if there's any
         $row = $objStatement->fetch(PDO::FETCH_ASSOC);
 
-        if ($row) {
-
+        # If there's a row available, continue
+        if($row)
+        {
+            # Set the user ID and logged_in variable
             $this->user_id = $row["id"];
             $this->logged_in = true;
 
             unset($objStatement);
+
+            # Update the session, because user is not logged in
             $strQuery = "UPDATE http_session SET logged_in = 1, user_id = " . $this->user_id . " WHERE id = " . $this->native_session_id;
             $objStatement = $this->objPDO->prepare($strQuery);
             $objStatement->execute();
-            return(true);
-        } else {
-            return(false);
-        }
+            return true;
+        } else
+            return false;
+
     }
 
+    /**
+     * A method to login a user using google auth with a provided email
+     * - this method is used from within the GoogleAuth class
+     * @param $email
+     */
     public function LoginGoogle($email)
     {
         # Check if Google User is in the database
@@ -173,6 +221,7 @@ class HTTPSession
         $objStatement->bindValue(':email',$email,PDO::PARAM_STR);
         $objStatement->execute();
 
+        # Get the user
         $row = $objStatement->fetch(PDO::FETCH_ASSOC);
 
         # If there's a record with this user
@@ -200,22 +249,10 @@ class HTTPSession
         # If there's no record with such user
         else
         {
-            # Create it in the database
-            /*$strQuery = "INSERT INTO User(username, first_name, last_name, type, email) VALUES(:username,:first_name,:last_name,:user_type,:email)";
-            unset($objStatement);
-            $objStatement = $this->objPDO->prepare($strQuery);
-            $objStatement->bindValue(':username',$email,PDO::PARAM_STR);
-            $objStatement->bindValue(':first_name',$email,PDO::PARAM_STR);
-            $objStatement->bindValue(':last_name',$email,PDO::PARAM_STR);
-            $objStatement->bindValue(':user_type',1,PDO::PARAM_INT);
-            $objStatement->bindValue(':email',$email,PDO::PARAM_STR);
-            $objStatement->execute();
-
-            $this->user_id = $this->objPDO->lastInsertId("User_id_seq");
-            $this->logged_in = true;*/
-
-
-            # OR Let user know that he/she doesn't have permissions to enter the site
+            # Let user know that he/she doesn't have permissions to enter the site
+            # - only users added by admin have access
+            # Also set google ACCESS_TOKEN to null (which is it's starting position)
+            # - ACCESS_TOKEN variable is handled in GoogleAuth class
             HTTPSession::getInstance()->ACCESS_TOKEN = null;
             header("Location: ".SITE_URL."login/permissionDenied");
         }
@@ -223,9 +260,16 @@ class HTTPSession
 
     }
 
+    /**
+     * A method to logout a user
+     * @return bool
+     */
     public function LogOut()
     {
-        if ($this->logged_in == true) {
+        # If user is logged in
+        if ($this->logged_in == true)
+        {
+            # Update the session accordingly
             $strQuery = "UPDATE http_session SET logged_in = 0, user_id = 0 WHERE id = " . $this->native_session_id;
             $objStatement = $this->objPDO->prepare($strQuery);
             $objStatement->execute();
@@ -235,31 +279,47 @@ class HTTPSession
                 # Unset access token
                 HTTPSession::getInstance()->ACCESS_TOKEN = null;
 
+            # Update instance variables
             $this->logged_in = false;
             $this->user_id = 0;
-            return(true);
-        } else {
-            return(false);
-        };
+
+            return true;
+        } else
+            return false;
     }
 
+    /**
+     * A magic method __get is used to retrieve data from inaccessible properties,
+     * which in this case are properties created using __set method and these doesn't
+     * exist until we create them (this way we create the session variables)
+     * @param $nm String the name of the variable
+     * @return bool|mixed either the content of the required variable or false if it doesn't exist
+     */
     public function __get($nm)
     {
+        # Get the content of the variable from database
         $strQuery = "SELECT variable_value FROM session_variable WHERE session_id = " . $this->native_session_id . " AND variable_name = '" . $nm . "'";
-
         $objStatement = $this->objPDO->prepare($strQuery);
-
         $objStatement->execute();
 
         $row = $objStatement->fetch(PDO::FETCH_ASSOC);
 
-        if ($row) {
-            return(unserialize(base64_decode($row["variable_value"])));
-        } else {
-            return(false);
-        }
+        # If there is such a session variable, return its content
+        if($row)
+            return unserialize(base64_decode($row["variable_value"]));
+        else
+            return false;
+
     }
 
+    /**
+     * A magic method __set is used to write data into inaccessible properties,
+     * which in this case are properties that doesn't exist yet, because we
+     * can create any number of properties we like using this method
+     * This way we basically create session variables
+     * @param $nm String the name of the variable
+     * @param $val String the value that we want to store
+     */
     public function __set($nm, $val)
     {
         # First remove existing value (if it has the same variable name during the same session)
@@ -268,6 +328,11 @@ class HTTPSession
         unset($objStatement);
 
         # Then insert it
+        # Serialize method is used because there can be basically anything stored in the session
+        # and therefore we need to convert it into a format that can be saved in the database
+        # and retrieved afterwards.
+        # Also base64_encode is used here, because there were some issues with the serialize method
+        # encoding and base64_encode mitigated those issues (according to http://davidwalsh.name/php-serialize-unserialize-issues)
         $strSer = base64_encode(serialize($val));
         $strQuery = "INSERT INTO session_variable(session_id, variable_name, variable_value) VALUES(" . $this->native_session_id . ", '$nm', '$strSer')";
         $objStatement = $this->objPDO->query($strQuery);
@@ -276,13 +341,13 @@ class HTTPSession
     public function _session_open_method($save_path, $session_name)
     {
         # Do nothing
-        return(true);
+        return true;
     }
 
     public function _session_close_method()
     {
         $this->objPDO = NULL;
-        return(true);
+        return true;
     }
 
     /**
@@ -292,68 +357,76 @@ class HTTPSession
      */
     public function _session_read_method($id)
     {
-        # We use this to determine whether or not our session actually exists.
+        # We use this to determine whether or not our session actually exists
         $strUserAgent = $_SERVER["HTTP_USER_AGENT"];
         $this->php_session_id = $id;
-        # Set failed flag to 1 for now
-        $failed = 1;
-        # See if this exists in the database or not.
-        $strQuery = "SELECT id, logged_in, user_id FROM http_session WHERE ascii_session_id = '$id'";
 
+        # Prepare the query in order to find out if this exists in the database or not
+        $strQuery = "SELECT id, logged_in, user_id FROM http_session WHERE ascii_session_id = '$id'";
         $objStatement = $this->objPDO->query($strQuery);
 
+        # Fetch the row
         $row = $objStatement->fetch(PDO::FETCH_ASSOC);
 
+        # If we have such session in the database
         if($row)
         {
+            # Set the ID by which this session is represented in the database
             $this->native_session_id = $row["id"];
 
+            # If user is logged in
             if ($row["logged_in"]==1)
             {
+                # Set variables accordingly
                 $this->logged_in = true;
                 $this->user_id = $row["user_id"];
             }
             else
-            {
+                # Otherwise make sure it's logged out
                 $this->logged_in = false;
-            }
 
         }
+        # We don't have such session in the database
         else
         {
+            # Make sure user is logged out
             $this->logged_in = false;
             # We need to create an entry in the database
             $strQuery = "INSERT INTO http_session(ascii_session_id, logged_in, user_id, created, user_agent) VALUES ('$id',0,0,now(),'$strUserAgent')";
             $objStatement = $this->objPDO->query($strQuery);
 
-            # Now get the true ID
+            # Now get the ID by which this session is represented in the database
             $strQuery = "SELECT id FROM http_session WHERE ascii_session_id = '$id'";
             unset($objStatement);
             $objStatement = $this->objPDO->query($strQuery);
 
+            # And set it to our instance variable
             $row = $objStatement->fetch(PDO::FETCH_ASSOC);
             $this->native_session_id = $row["id"];
         }
 
         # Just return empty string
-        return("");
+        return "";
     }
 
     public function _session_write_method($id, $sess_data)
     {
-        return(true);
+        # Just return true
+        return true;
     }
 
     public function _session_destroy_method($id)
     {
+        # Delete the session from database
         $strQuery = "DELETE FROM http_session WHERE ascii_session_id = '$id'";
         $objStatement = $this->objPDO->query($strQuery);
-        return($objStatement);
+        return $objStatement;
     }
 
     public function _session_gc_method($maxlifetime)
     {
-        return(true);
+        # Just return true
+        return true;
     }
 
 }
