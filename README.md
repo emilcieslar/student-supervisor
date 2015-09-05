@@ -1,5 +1,6 @@
 # Student Project Supervision Management System
 University of Glasgow Masters Project 2015
+https://github.com/emilcieslar/student-supervisor
 
 ## INSTALLATION GUIDE:
 
