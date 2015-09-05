@@ -169,8 +169,8 @@ CREATE TABLE session_variable (
 
 ######### USERS
 INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('emil','955db0b81ef1989b4a4dfeae8061a9a6','Emil','Cieslar',0,'emil.cieslar@gmail.com');
-INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('dimitrios','5f4dcc3b5aa765d61d8327deb882cf99','Dimitrios','Pezaros',1,'cieslaremil@gmail.com');
-#INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('rose','955db0b81ef1989b4a4dfeae8061a9a6','Rosanne','English',1,'cieslaremil@gmail.com');
+#INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('dimitrios','5f4dcc3b5aa765d61d8327deb882cf99','Dimitrios','Pezaros',1,'cieslaremil@gmail.com');
+INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('rose','955db0b81ef1989b4a4dfeae8061a9a6','Rosanne','English',1,'cieslaremil@gmail.com');
 INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('rose_gmail','955db0b81ef1989b4a4dfeae8061a9a6','Rosanne','English',1,'rosanneenglish@gmail.com');
 INSERT INTO User(username,password,first_name,last_name,type,email) VALUES('joe','955db0b81ef1989b4a4dfeae8061a9a6','Joe','Doe',0,'cieslar@webkreativ.cz');
 
@@ -213,6 +213,9 @@ INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_pla
     VALUES(@now_meeting - INTERVAL 14 DAY,1,@now_meeting + INTERVAL 21 DAY,1,1,1,1);
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
     VALUES(@now_meeting - INTERVAL 7 DAY,1,@now_meeting + INTERVAL 21 DAY,1,1,1,1);
+# One that tests no show, however it is not week after no show so the buttons should be still there
+INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
+  VALUES(@now_meeting - INTERVAL 2 DAY,1,@now_meeting + INTERVAL 21 DAY,1,0,0,1);
 INSERT INTO Meeting(datetime, is_repeating, repeat_until, is_approved, taken_place, arrived_on_time, project_id)
     VALUES(@now_meeting + INTERVAL 1 DAY,1,@now_meeting + INTERVAL 21 DAY,1,0,0,1);
 
@@ -272,6 +275,12 @@ INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, 
     VALUES(@now_meeting + INTERVAL 1 DAY,@now_meeting - INTERVAL 7 DAY,'Meeting filtering',1,0,1,0,6,1,1);
 
 
+
+# Testing different project scope of an action point
+INSERT INTO ActionPoint(deadline, datetime_created, text, is_approved, is_done, sent_for_approval, grade, meeting_id, user_id, project_id)
+  VALUES(@now_meeting + INTERVAL 1 DAY,@now_meeting - INTERVAL 7 DAY,'Meeting filtering (different project scope)',1,0,1,0,6,1,2);
+
+
 ######### NOTES
 # Texts
 SET @note1 = "<ol><li><p>Rose is allocated a student for a project</p></li><li><p>She sends him/her an email that informs the student that Rose is his/her project supervisor and that they need to set up a meeting<br />- meetings are set up using email<br />- Rose uses gmail calendar to manage meetings<br />- If the system had it&rsquo;s own meeting management module, Rose would check it daily to see what the student is up to, when is the next meeting, &hellip; &ndash;&gt; but it would be nice to add meetings automatically to google calendar [NICE TO HAVE] (app could possibly use google login which would make a lot of things easier)</p></li><li><p>Rose sets up a meeting with the student and the first meeting is a an overview of the masters project</p></li><li><p>In the meeting, Rose and the student agree on some action points that have to be done until the next time<br />For example:<br />- by this Friday, write up a requirements document<br />- writing up a specific chapter<br />- summarization of some literature<br />- implementation of a functionality</p></li><li><p>At the end of the meeting, there should be a list of points a student has to do by the next time<br />- if it&rsquo;s writing or similar, Rose would like to look at it before the following meeting (which means system could provide a functionality to share document &ndash;&gt; Google Drive?) and set a deadline which is closer than the next meeting<br />- Studentsupervisor.com has outcomes (and suboutcomes), Rose is not interested in such functionality, she just wants to know a list of tasks that have been agreed on the meeting<br />- at the end of the meeting, student should say, here&rsquo;s what we&rsquo;ve talked about and these are the action points; Rose will approve them or adjust them (sometimes there is a miscommunication)<br />- these actions points should be added to the system by the STUDENT (and will be shared with the supervisor)<br />- action points must have deadlines<br />- don&rsquo;t have to contain attachments (however we have to have documents to upload somewhere for the next meeting for Rose to check before the meeting)<br />- action points are very short (implement functionality 1;&nbsp;write chapter 2)<br />- Rose should be able to say whether these are the action points that they agreed on<br />- that means AGREE or AMEND them (when they are amended, they should flag up for student to see that this has been amended)<br />- each action point could be &ldquo;graded&rdquo; according to how it was accomplished (and this could be used for overview of the whole progress - red amber green)</p></li><li><p>During the meeting, Rose is taking notes as well (it would be NICE to have this on the system), she&rsquo;s just writing the notes on paper at the moment (doesn&rsquo;t use any cloud notes)<br />- Notes would be related to the particular student and a meeting as well in order to for supervisor see what has been discussed on a particular meeting (these notes could be sorted by date so it&rsquo;s easy to trace back what&rsquo;s happened)</p></li><li><p>Student should have their private notes (not shared with a supervisor) in the system as well (because a student should take notes during the meeting)</p></li><li><p>Agreeing on the meetings should be done through the system<br />- for example if the student wants to cancel the meeting (student cannot cancel two meetings in a row &ndash;&gt;&nbsp;system should show a warning when the student tries to do that);&nbsp;if there&rsquo;s nothing they want to talk about they can cancel<br />- initially, there should be a set up for a date and time for a regular meeting (this will be agreed on the first meeting and Rose will upload the regular meeting time afterwards)<br />- student can also request a different date and time different from the regular meeting time (so guess there could be a regular meeting time displayed at student page and when student clicks on it, a menu pops up with couple of options to change the meeting or cancel it); this request will be sent to Rose and she has to approve it</p></li><li><p>Scheduling system<br />- it&rsquo;s basically the action points that have deadlines (we pick a task and say when it&rsquo;s due)<br />- when the student finishes the action points, he ticks that he&rsquo;s finished<br />- in the next meeting, Rose will actually have a look at what he&rsquo;s done and review it (she can either say it&rsquo;s ok, or not ok and remove the finished flag off)</p></li><li><p>Current system<br />- current system just enables supervisor to tick whether the supervisor had a meeting with a student or not</p></li><li><p>Professionalism<br />- according to the Gethin Norman presentation, conduct is 10% of the mark<br />- visualisation of the progress of the student (Red, Amber, Green)<br />Green - turning up for meetings (regular enough), student meets action points and deadlines<br />- Rose should be able to override that if she thinks that doesn&rsquo;t really meets the reality</p></li><li><p>Before the meeting<br />- Rose ask a student to email her and say what it is they want to talk about<br />- it gives her an idea what student has been doing<br />- it also gives her time to clear if there are certain things to look up<br />- This should be in a little section on the dashboard<br />- your next meeting is at this date and time...<br />- the action points for that meeting are&hellip;<br />- progress of these action points is&hellip;<br />- agenda for the meeting is&hellip; (what they want to discuss, issues, ...)</p></li><li><p>Methodology<br />- agile<br />- figure out user stories (must, should, could, would)<br />- next sprint (what user stories will be in the next prototype, &hellip;)<br />- how long will be the sprints (2 weeks)<br />&nbsp;</p></li></ol><p><strong>FOR THE NEXT WEEK</strong></p><p>- Questionnaire</p><p>- Requirements draft (user stories, MoSCoW)</p><p>- What am I going to implement</p>";
@@ -287,6 +296,12 @@ INSERT INTO Note(title, text, is_agenda, datetime_created, meeting_id, user_id, 
 VALUES("Issues & Problems", "<p>Donec commodo odio in molestie tincidunt. Etiam sit amet facilisis arcu, ac fringilla risus. Praesent eget elit at sapien vulputate euismod ac a arcu. Phasellus lacus ante, finibus nec dolor non, mollis hendrerit sem. Cras dictum sed felis et tincidunt. Curabitur ullamcorper rhoncus nisi id blandit. Fusce dolor risus, elementum in augue vitae, ultrices rutrum lorem. Etiam gravida volutpat urna in porttitor. Mauris condimentum dolor dolor, et facilisis velit dictum vitae. Nullam sit amet lorem non dolor hendrerit pellentesque. Praesent mollis tempor orci nec interdum. Morbi a imperdiet eros. Vivamus nec enim vel odio fringilla rhoncus sed eu nisi. Donec ultrices in eros non mattis. Duis nec efficitur ante, ut ornare risus. Ut mi libero, mattis eget leo sed, accumsan venenatis lacus.</p><p>&nbsp;</p><p>Donec commodo odio in molestie tincidunt. Etiam sit amet facilisis arcu, ac fringilla risus. Praesent eget elit at sapien vulputate euismod ac a arcu. Phasellus lacus ante, finibus nec dolor non, mollis hendrerit sem. Cras dictum sed felis et tincidunt. Curabitur ullamcorper rhoncus nisi id blandit. Fusce dolor risus, elementum in augue vitae, ultrices rutrum lorem. Etiam gravida volutpat urna in porttitor. Mauris condimentum dolor dolor, et facilisis velit dictum vitae. Nullam sit amet lorem non dolor hendrerit pellentesque. Praesent mollis tempor orci nec interdum. Morbi a imperdiet eros. Vivamus nec enim vel odio fringilla rhoncus sed eu nisi. Donec ultrices in eros non mattis. Duis nec efficitur ante, ut ornare risus. Ut mi libero, mattis eget leo sed, accumsan venenatis lacus.</p>",1,NOW(),2,2,1);
 
 
+
+# Drop function
+DROP FUNCTION IF EXISTS `LastMonday`;
+# Function to get the last monday date
+CREATE FUNCTION `LastMonday`() RETURNS DATE
+  RETURN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY);
 
 ##################################### SCENARIO FOR A SUPERVISOR
 ######### USERS
@@ -304,10 +319,6 @@ INSERT INTO UserProject(user_id,project_id) VALUES(7,3);
 
 INSERT INTO UserProject(user_id,project_id) VALUES(6,4);
 INSERT INTO UserProject(user_id,project_id) VALUES(7,4);
-
-# Function to get the last monday date
-#CREATE FUNCTION `LastMonday`() RETURNS DATE
-#  RETURN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY);
 
 SET @now_meeting = CONCAT(DATE_FORMAT(LastMonday(),'%Y-%m-%d'),' 11:00:00');
 
@@ -347,9 +358,6 @@ INSERT INTO UserProject(user_id,project_id) VALUES(7,3);
 INSERT INTO UserProject(user_id,project_id) VALUES(6,4);
 INSERT INTO UserProject(user_id,project_id) VALUES(7,4);
 
-# Function to get the last monday date
-#CREATE FUNCTION `LastMonday`() RETURNS DATE
-#  RETURN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY);
 
 SET @now_meeting = CONCAT(DATE_FORMAT(LastMonday(),'%Y-%m-%d'),' 11:00:00');
 

@@ -216,6 +216,7 @@ class Meetings extends Controller
 
             # Check if we have access to editing
             $this->checkAuthIsApproved($id);
+            $this->checkAuthCancelled($id);
             $this->checkAuthProjectScope($id->getProjectId());
 
             # Set correct format of provided date
@@ -243,6 +244,7 @@ class Meetings extends Controller
 
             # Check if we have access to editing
             $this->checkAuthIsApproved($meeting);
+            $this->checkAuthCancelled($meeting);
             $this->checkAuthProjectScope($meeting->getProjectId());
 
             # Set googleEventId to the value provided from database (if any)
@@ -351,6 +353,7 @@ class Meetings extends Controller
 
         # Check access rights for user
         $this->checkAuthIsApproved($meeting);
+        $this->checkAuthCancelled($meeting);
         $this->checkAuthProjectScope($meeting->getProjectId());
 
         # Meeting will never actually be removed from database, we will keep it
@@ -464,6 +467,17 @@ class Meetings extends Controller
             die();
         } else
             return true;
+    }
+
+    protected function checkAuthCancelled($meeting)
+    {
+        # If a meeting was cancelled and cancellation approved, no access
+        if($meeting->getIsApproved() && $meeting->getIsCancelled())
+        {
+            header('Location: ' . SITE_URL . 'meetings');
+            # Do not execute code any longer
+            die();
+        }
     }
 
     protected function checkAuthTwoMeetingsInRow($meeting, $error = null)

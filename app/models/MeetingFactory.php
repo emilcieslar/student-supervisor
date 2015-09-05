@@ -4,7 +4,7 @@ require_once("Meeting.php");
 
 class MeetingFactory
 {
-    public static function getMeetingsForProject($projectId, $untilNow = false)
+    public static function getMeetingsForProject($projectId, $untilNow = false, $takenPlace = false)
     {
 
         $objPDO = PDOFactory::get();
@@ -15,8 +15,14 @@ class MeetingFactory
         else
             $untilNowDatetime = "";
 
+        # Find out whether we want only meetings that have taken place
+        if($takenPlace)
+            $takenPlaceText = " AND taken_place = 1 ";
+        else
+            $takenPlaceText = "";
+
         # Get all meetings associated with the $projectId from a database
-        $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id" . $untilNowDatetime . " AND is_deleted = 0 ORDER BY datetime DESC";
+        $strQuery = "SELECT id FROM Meeting WHERE project_id = :project_id" . $untilNowDatetime . $takenPlaceText . " AND is_deleted = 0 ORDER BY datetime DESC";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();

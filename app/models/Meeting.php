@@ -57,12 +57,15 @@ class Meeting extends DataBoundObject
         return $prevMeeting;
     }
 
-    public function getIsNoShow()
+    public function getIsNoShow($buttons = true)
     {
         $currentDate = new DateTime();
-        # No show will be displayed after 7 days because we want to allow some time
-        # for supervisor to decide whether the meeting has really taken place or not
-        $currentDate->sub(new DateInterval('P7D'));
+
+        # We want to hide the buttons after 7 days from no show (supervisor need some time to decide
+        # if it was no show or not)
+        if($buttons)
+            $currentDate->sub(new DateInterval('P7D'));
+
         $meetingDateTime = DateTime::createFromFormat('Y-m-d H:i:s', $this->Datetime);
 
         return ($meetingDateTime < $currentDate && !$this->TakenPlace && !$this->IsCancelled);

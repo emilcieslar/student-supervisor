@@ -65,7 +65,7 @@ class ActionPoints extends Controller
 
         # Get meetings for the add form
         $meetings = $this->model('MeetingFactory');
-        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
+        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true, true);
 
         # Display the view
         $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'meetings'=>$meetings, 'add'=>true]);
@@ -135,6 +135,9 @@ class ActionPoints extends Controller
         # Check access rights for user
         $this->checkAuth($actionPoint);
 
+        # Check if action point has been marked as done and it was approved (if so, no access)
+        $this->checkAuthDone($actionPoint);
+
         # Action point will never actually be removed from database, we will keep it
         # for reference, it is only flagged as removed
         $actionPoint->Delete();
@@ -162,15 +165,18 @@ class ActionPoints extends Controller
         # Check access rights for user
         $this->checkAuth($id);
 
+        # Check if action point has been marked as done and it was approved (if so, no access)
+        $this->checkAuthDone($id);
+
         # Set correct format of provided date
         $date = DateTime::createFromFormat('Y-m-d H:i:s', $id->getDeadline());
         $data['date'] = $date->format('d-m-Y');
         $data['hours'] = $date->format('H');
         $data['minutes'] = $date->format('i');
 
-        # Get meetings for the add form
+        # Get meetings for the edit form
         $meetings = $this->model('MeetingFactory');
-        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
+        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true, true);
 
         $this->view('actionpoints/index', ['actionpoints'=>$actionPoints, 'id'=>$id, 'edit'=>true, 'datetime'=>$data, 'meetings'=>$meetings]);
     }
@@ -186,6 +192,9 @@ class ActionPoints extends Controller
 
         # Check access rights for user
         $this->checkAuth($actionPoint);
+
+        # Check if action point has been marked as done and it was approved (if so, no access)
+        $this->checkAuthDone($actionPoint);
 
         # Save the existing actionPoint to the temporary table
         # in order to retrieve it if not approved by supervisor
@@ -402,6 +411,17 @@ class ActionPoints extends Controller
     {
         # If an action point hasn't been approved yet, no access (return back to action points)
         if(!$actionPointApproved)
+        {
+            header('Location: ' . SITE_URL . 'actionpoints');
+            # Do not execute code any longer
+            die();
+        }
+    }
+
+    protected function checkAuthDone($actionPoint)
+    {
+        # If an action point has been marked as done and approved, no access
+        if($actionPoint->getIsDone() && $actionPoint->getIsApproved())
         {
             header('Location: ' . SITE_URL . 'actionpoints');
             # Do not execute code any longer

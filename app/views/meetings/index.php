@@ -38,9 +38,13 @@
                         &nbsp;<span class="label warning round no-indent">Not approved yet</span>
                     <?php endif; ?>
 
-                    <!-- If the student hasn't arrived on meeting (no show), display a notice -->
+                    <!-- If the student hasn't arrived on meeting (no show), display a notice after a week -->
                     <?php if($meeting->getIsNoShow()): ?>
                         &nbsp;<span class="label alert round no-indent">No show</span>
+                    <!-- If it's not a week yet, display just that the meeting has not taken place
+                         (to remind user it's waiting for editing that it has actually taken place) -->
+                    <?php elseif($meeting->getIsNoShow(false)): ?>
+                        &nbsp;<span class="label alert round no-indent">Not taken place yet</span>
                     <?php endif; ?>
 
                     <!-- If the meeting is the next meeting, display a notice -->
@@ -206,7 +210,7 @@
 
                     <div class="large-12 columns hide repeatUntil">
                         <label>Choose repeat until date: <small>required</small>
-                            <input name="repeatUntil" placeholder="Choose date" type="text" id="dp2" required pattern="date_friendly">
+                            <input name="repeatUntil" placeholder="Choose date" type="text" id="dp2" required pattern="date_friendly" readonly>
                         </label>
                         <small class="error">Incorrect format</small>
                     </div>

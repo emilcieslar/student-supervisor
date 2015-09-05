@@ -10,8 +10,9 @@ class Notes extends Controller
         $notes = $this->model('NoteFactory');
         $notes = $notes->getNotes();
 
+        # Get meetings for the filtering feature (only those that taken place)
         $meetings = $this->model('MeetingFactory');
-        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
+        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true, true);
 
         $data = array();
         $data['notes'] = $notes;
@@ -30,7 +31,7 @@ class Notes extends Controller
         $notes = $notes->getNotes($id);
 
         $meetings = $this->model('MeetingFactory');
-        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
+        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true, true);
 
         $this->view('notes/index', ['notes'=>$notes, 'meeting'=>$id, 'meetings'=>$meetings]);
     }
@@ -38,7 +39,7 @@ class Notes extends Controller
     public function create($agenda = false)
     {
         $meetings = $this->model('MeetingFactory');
-        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
+        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true, true);
 
         $data['meetings'] = $meetings;
 
@@ -131,7 +132,7 @@ class Notes extends Controller
         $this->checkAuth($note->getUserId(), $note->getProjectId());
 
         $meetings = $this->model('MeetingFactory');
-        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true);
+        $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID, true, true);
 
         $data['note'] = $note;
         $data['meetings'] = $meetings;
@@ -148,7 +149,9 @@ class Notes extends Controller
         {
             # Get values from post
             $title = $post['title'];
-            $meetingId = $post['meetingId'];
+            # If we're adding agenda note, we don't have a meeting id
+            if(!isset($post['isAgenda']))
+                $meetingId = $post['meetingId'];
 
             $isPrivate = 0;
             if(isset($post['isPrivate']))
