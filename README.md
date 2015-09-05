@@ -20,3 +20,13 @@ University of Glasgow Masters Project 2015
 ### Minimal requirements:
 1. MySQL version 5.6.12 (might work in older versions, however not tested)
 2. PHP version 5.4.37 (again, might work in older versions, however not tested)
+
+
+### Folders and files that are not my work:
+1. CKEditor/
+2. google-api-php-client/
+3. docs/
+3. phpdoc.dist.xml
+4. .gitignore
+
+Other files might contain code that is not mine, however just parts of it and it is commented inside those files what is not my work.
