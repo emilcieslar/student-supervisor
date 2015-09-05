@@ -6,7 +6,7 @@ University of Glasgow Masters Project 2015
 1. Create a new database
 2. Modify config_sample.json and change the name to config.json
 3. Run install.sql in your database
-4. Change RewriteBase in .htaccess file according to your website, for example: http://mywebsite.co.uk/my-folder
+4. Change RewriteBase in .htaccess file according to your website, for example: /domains/spsms
    - In addition, if your server doesn't support -MultiViews, comment this option out, otherwise it won't work
 5. You're good to go
 
