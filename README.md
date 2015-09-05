@@ -15,3 +15,8 @@ University of Glasgow Masters Project 2015
 1. There are two default users: emil and rose, password for both is: heslo
    - emil is a student and rose is a supervisor
 2. Google login won't work unless you create your own google credentials and set up the correct redirect uri (guide for setting up the credentials can be found here: https://www.youtube.com/watch?v=oxa581kKBNg)
+
+
+### Minimal requirements:
+1. MySQL version 5.6.12 (might work in older versions, however not tested)
+2. PHP version 5.4.37 (again, might work in older versions, however not tested)
