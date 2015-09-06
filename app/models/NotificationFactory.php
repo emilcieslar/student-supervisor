@@ -2,8 +2,14 @@
 
 class NotificationFactory
 {
+    /**
+     * A method to get notification objects
+     * @param int $projectId the project id these notes are associated with
+     * @return array the notification objects
+     */
     public static function getNotificationsForProject($projectId)
     {
+        # Get db connection
         $objPDO = PDOFactory::get();
 
         # Get all notifications associated with the $projectId from a database
@@ -20,6 +26,7 @@ class NotificationFactory
         {
             foreach($result as $row)
             {
+                # Decide what kind of object should be created
                 switch($row["object_type"])
                 {
                     case "Action Point": $myArr[$row["id"]] = new NotificationAP(null, null, $row["id"]);
@@ -34,6 +41,7 @@ class NotificationFactory
             }
         }
 
+        # Return the array of notifications
         return $myArr;
 
     }

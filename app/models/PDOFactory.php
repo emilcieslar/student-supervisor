@@ -1,8 +1,18 @@
 <?php
 
+/**
+ * Generates PDO abstract layer to handle DB
+ * This is based on singleton instantiation, which can
+ * be found in Professional PHP6 book, p. 149, however I modified
+ * the version in book to suit my needs
+ */
 class PDOFactory
 {
 
+    /**
+     * A method to get PDO abstract layer to handle db queries
+     * @return PDO
+     */
     public static function get()
     {
         # Load config
@@ -12,6 +22,7 @@ class PDOFactory
         # Prepare connection string
         $strDSN = "mysql:host={$config->{'connect'}->{'host'}};dbname={$config->{'connect'}->{'dbname'}};charset={$config->{'connect'}->{'charset'}}";
 
+        # Default is nothing if it's unsuccessful
         $objPDO = null;
 
         # Create PDO object, if created before, just return it's instance
@@ -26,19 +37,27 @@ class PDOFactory
         return $objPDO;
     }
 
+    /**
+     * A method to create PDO instance
+     * @param string $strDSN db config string
+     * @param string $strUser the username
+     * @param string $strPass the password
+     * @param string $arParms additional parameters to be passed
+     * @return mixed
+     */
     public static function GetPDO($strDSN, $strUser, $strPass, $arParms)
     {
         $strKey = md5(serialize(array($strDSN, $strUser, $strPass, $arParms)));
 
-        if(!isset($GLOBALS["PDOS"][$strKey])) {
+        # If such instance doesn't exist, make sure it's NULL
+        if(!isset($GLOBALS["PDOS"][$strKey]))
             $GLOBALS["PDOS"][$strKey] = NULL;
-        }
 
+        # If the instance is not PDO, create it
         if(!($GLOBALS["PDOS"][$strKey] instanceof PDO))
-        {
             $GLOBALS["PDOS"][$strKey] = new PDO($strDSN, $strUser, $strPass, $arParms);
-        }
 
+        # Otherwise just return the instance
         return($GLOBALS["PDOS"][$strKey]);
     }
 

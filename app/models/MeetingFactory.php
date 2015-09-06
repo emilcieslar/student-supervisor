@@ -42,16 +42,17 @@ class MeetingFactory
 
         # Add all meetings associated with the $projectId to an array
         if($result = $objStatement->fetchAll(PDO::FETCH_ASSOC))
-        {
             foreach($result as $row)
-            {
                 $myArr[$row["id"]] = new Meeting($row["id"]);
-            }
-        }
 
+        # Return the meeting objects
         return $myArr;
     }
 
+    /**
+     * A method to return the next meeting's object
+     * @return Meeting|null the meeting object
+     */
     public static function getNextMeeting()
     {
         # Get database connection
@@ -76,19 +77,22 @@ class MeetingFactory
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();
 
-
         # Define empty variable
         $nextMeeting = null;
 
         # Get the next meeting
         if($row = $objStatement->fetch(PDO::FETCH_ASSOC))
-        {
             $nextMeeting = new Meeting($row['id']);
-        }
 
+        # The next meeting
         return $nextMeeting;
     }
 
+    /**
+     * A method to get a meeting that is before the one that is provided as a parameter
+     * @param Meeting $meeting the meeting after the one that should be returned
+     * @return Meeting|null the previous meeting
+     */
     public static function getPreviousMeeting($meeting)
     {
         # Get database connection
@@ -111,19 +115,22 @@ class MeetingFactory
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
         $objStatement->execute();
 
-
         # Define empty variable
         $prevMeeting = null;
 
         # Get the previous meeting if it exists
         if($row = $objStatement->fetch(PDO::FETCH_ASSOC))
-        {
             $prevMeeting = new Meeting($row['id']);
-        }
 
+        # The previous meeting
         return $prevMeeting;
     }
 
+    /**
+     * A method to return meetings' counts for RAG algorithm purposes
+     * @param int $factor what kind of count should be returned
+     * @return int the count
+     */
     public static function getMeetingsCount($factor)
     {
         # Get database connection
@@ -151,7 +158,7 @@ class MeetingFactory
             default: $factor = "";
         }
 
-        # Get number of action points that are not finished yet and are approved
+        # Get a certain number of meetings
         $strQuery = "SELECT ".$select." FROM Meeting WHERE project_id = :project_id AND is_approved = 1".$factor." AND is_deleted = 0";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);

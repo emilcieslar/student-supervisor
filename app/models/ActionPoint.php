@@ -52,31 +52,6 @@ class ActionPoint extends DataBoundObject
     }
 
     /**
-     * A method that adds a number of days to the current day and returns the date
-     * @param $numOfDays
-     * @return string the current date advanced by a provided number of days
-     */
-    public static function addDaysToCurrentDate($numOfDays)
-    {
-        $date = DateTime::createFromFormat('Y-m-d H:i:s', date("Y-m-d H:i:s"));
-        $date->modify('+' . $numOfDays . ' day');
-        return $date->format('Y-m-d H:i:s');
-    }
-
-    /**
-     * A method to set the deadline in more user friendly way
-     * @param $day
-     * @param $month
-     * @param $year
-     * @param $hours
-     * @param $minutes
-     */
-    public function setDeadlineUserFriendly($day, $month, $year, $hours, $minutes)
-    {
-        $this->setDeadline("$year-$month-$day $hours:$minutes:00");
-    }
-
-    /**
      * A method to return deadline in more user friendly way
      * @return string the deadline
      */

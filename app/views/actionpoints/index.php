@@ -1,4 +1,4 @@
-<!-- If isset delete, display panel to revert delete -->
+<!-- If delete is set (action point has been just deleted), display panel to revert delete -->
 <?php if(isset($data['delete'])): ?>
     <div class="alert-box info large-12 columns text-center">
         <a class="button warning tiny" href="<?=SITE_URL?>actionpoints/revertRemoval/<?=$data['delete']?>">Cancel removal</a>
@@ -10,41 +10,41 @@
 <!-- LIST OF ACTION POINTS -->
 <div class="large-8 columns action-points">
     <ul class="action-points">
-        <!-- Add a new action point -->
+        <!-- Add a new action point button -->
         <li class="add-new-action-point<?php if(isset($data['add'])) echo ' active';?>"><a class="fa fa-plus" href="<?=SITE_URL;?>actionpoints/add">&nbsp;&nbsp;Add a new action point</a></li>
 
         <!-- If there are action points to display.. -->
         <?php if($data['actionpoints']): ?>
-        <!-- Display a list of action points -->
-        <?php foreach ($data['actionpoints'] as $actionpoint): ?>
+            <!-- Display a list of action points -->
+            <?php foreach ($data['actionpoints'] as $actionpoint): ?>
 
-            <!-- get the ID and decide which one should be active -->
-            <?php $active = (isset($data['id']) && $actionpoint->getID() == $data['id']->getID()) ? 'class="active"' : ''; ?>
+                <!-- Get the ID and decide which one should be selected and displayed (active) -->
+                <?php $active = (isset($data['id']) && $actionpoint->getID() == $data['id']->getID()) ? 'class="active"' : ''; ?>
 
-            <!-- display one line which contains name of the action point with a link to it -->
-            <li <?=$active?>>
-                <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
-                    <!-- If action point is set to done, display a tick -->
-                    <?php if($actionpoint->getIsDone()): ?>
-                        <i class="fa fa-check inline"></i>&nbsp;&nbsp;
-                    <?php endif; ?>
+                <!-- Display one line which contains name of the action point with a link to it -->
+                <li <?=$active?>>
+                    <a href="<?=SITE_URL;?>actionpoints/<?=$actionpoint->getID();?>">
+                        <!-- If action point is set to done, display a tick -->
+                        <?php if($actionpoint->getIsDone()): ?>
+                            <i class="fa fa-check inline"></i>&nbsp;&nbsp;
+                        <?php endif; ?>
 
-                    <!-- Display text of the action point -->
-                    <?=$actionpoint->getText();?>
+                        <!-- Display text of the action point -->
+                        <?=$actionpoint->getText();?>
 
-                    <!-- If the action point is not approved, display a notice -->
-                    <?php if(!$actionpoint->getIsApproved()): ?>
-                        &nbsp;<span class="label warning round no-indent">Not approved yet</span>
-                    <?php endif; ?>
+                        <!-- If the action point is not approved, display a notice -->
+                        <?php if(!$actionpoint->getIsApproved()): ?>
+                            &nbsp;<span class="label warning round no-indent">Not approved yet</span>
+                        <?php endif; ?>
 
-                    <!-- If the action point has run over deadline, display a notice -->
-                    <?php if($actionpoint->hasRunOverDeadline()): ?>
-                        &nbsp;<span class="label alert round no-indent">Deadline passed</span>
-                    <?php endif; ?>
-                </a>
-            </li>
+                        <!-- If the action point has run over deadline, display a notice -->
+                        <?php if($actionpoint->hasRunOverDeadline()): ?>
+                            &nbsp;<span class="label alert round no-indent">Deadline passed</span>
+                        <?php endif; ?>
+                    </a>
+                </li>
 
-        <?php endforeach; ?>
+            <?php endforeach; ?>
         <?php endif; ?>
 
     </ul>
@@ -61,16 +61,20 @@
                 <a href="<?=SITE_URL?>actionpoints/send/<?=$data['id']->getID()?>" class="button small warning">Send for approval &rarr;</a>
             <?php endif; ?>
         </div>
+
+        <!-- Meeting this action point has been agreed on -->
         <div class="large-12 columns">
             <span data-tooltip aria-haspopup="true" class="has-tip" title="This action point was agreed at this meeting"><i class="fa fa-calendar icon"></i>
             <span id="dp2"><?=DatetimeConverter::getUserFriendlyDateTimeFormat($data['meeting']->getDatetime());?></span></span>
         </div>
 
+        <!-- Deadline of the action point -->
         <div class="large-12 columns">
             <span data-tooltip aria-haspopup="true" class="has-tip" title="Deadline"><i class="fa fa-thumb-tack icon"></i>
             <span><?=$data['id']->getDeadlineUserFriendly();?></span></span>
         </div>
 
+        <!-- When the action point was marked as done -->
         <?php if($data['id']->getIsDone()): ?>
             <div class="large-12 columns">
                 <i class="fa fa-check icon" title="Done"></i>
@@ -78,6 +82,7 @@
             </div>
         <?php endif; ?>
 
+        <!-- Waiting for approval if not approved yet -->
         <?php if(!$data['id']->getIsApproved()): ?>
             <div class="large-12 columns">
                 <div class="panel">This action point is waiting for approval.
@@ -89,9 +94,11 @@
             </div>
         <?php endif; ?>
 
+        <!-- Set of buttons -->
         <div class="large-12 columns left top-20">
             <?php if(!$data['id']->getIsDone() && $data['id']->getIsApproved()): ?>
                 <!-- display only if the action point hasn't been marked as done and has been approved -->
+                <!-- done button -->
                 <a href="<?=SITE_URL?>actionpoints/done/<?=$data['id']->getID();?>" class="fa fa-check button success"></a>
             <?php endif; ?>
 
@@ -99,7 +106,9 @@
                     || HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)): ?>
                 <!-- display only if the action point hasn't been sent for approval (in case of a student) OR in case of a supervisor display anytime -->
                 <!-- also doesn't display to any user when an action point has been set as done and the operation has been approved -->
+                <!-- edit button -->
                 <a href="<?=SITE_URL?>actionpoints/edit/<?=$data['id']->getID();?>" class="fa fa-edit button"></a>
+                <!-- remove button -->
                 <a href="<?=SITE_URL?>actionpoints/remove/<?=$data['id']->getID();?>" class="fa fa-trash-o button alert"></a>
             <?php endif; ?>
         </div>
