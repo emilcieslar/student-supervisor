@@ -1,5 +1,6 @@
 # Student Project Supervision Management System
 University of Glasgow Masters Project 2015
+https://github.com/emilcieslar/student-supervisor
 
 ## INSTALLATION GUIDE:
 
@@ -20,3 +21,12 @@ University of Glasgow Masters Project 2015
 ### Minimal requirements:
 1. MySQL version 5.6.12 (might work in older versions, however not tested)
 2. PHP version 5.4.37 (again, might work in older versions, however not tested)
+
+
+### Folders and files that are not my work:
+1. CKEditor/ – replaces textarea for editing notes
+2. google-api-php-client/ - google calendar + signin
+3. docs/ - generated using tutorial found on phpdoc.org
+4. .gitignore - ignoring files on github
+
+Other files might contain code that is not mine, however just parts of it and it is commented inside those files what is not my work.
