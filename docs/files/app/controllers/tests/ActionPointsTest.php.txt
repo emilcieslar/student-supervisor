@@ -1,0 +1,16 @@
+<?php
+
+class ActionPointsTest extends PHPUnit_Framework_TestCase {
+
+    public function testWithinProjectScope()
+    {
+        # Init the controller
+        $APController = new ActionPoints();
+
+        # Call the index method
+        $indexData = $APController->index();
+
+        $this->assertEquals(0,0);
+    }
+}
+

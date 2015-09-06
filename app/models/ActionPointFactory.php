@@ -2,10 +2,20 @@
 
 require_once("ActionPoint.php");
 
+/**
+ * Generates ActionPoint objects from records in the database
+ */
 class ActionPointFactory
 {
+    /**
+     * A method to get action point objects from database
+     * @param int $projectId what project does these action points should belong to
+     * @param bool $sinceNow should it be only action points from now on
+     * @return array the array of action point objects
+     */
     public static function getActionPointsForProject($projectId, $sinceNow = false)
     {
+        # Get db connection
         $objPDO = PDOFactory::get();
 
         # If it's the supervisor logged in, get only action points that were sent for approval by student
@@ -37,10 +47,15 @@ class ActionPointFactory
             }
         }
 
+        # Return the array of action points
         return $myArr;
 
     }
 
+    /**
+     * A method to return action points for agenda
+     * @return array the action point objects
+     */
     public static function getActionPointsForAgenda()
     {
         # Get database connection
@@ -66,7 +81,7 @@ class ActionPointFactory
         # Define empty array
         $myArr = array();
 
-        # Add all notes to an array
+        # Add all action points to an array
         if($result = $objStatement->fetchAll(PDO::FETCH_ASSOC))
         {
             foreach($result as $row)
@@ -75,9 +90,15 @@ class ActionPointFactory
             }
         }
 
+        # Return the array
         return $myArr;
     }
 
+    /**
+     * A method to return action points' counts for RAG algorithm purposes
+     * @param int $factor what kind of count should be returned
+     * @return int the count
+     */
     public static function getActionPointsCount($factor)
     {
         # Get database connection
@@ -86,6 +107,7 @@ class ActionPointFactory
         # Get project ID from session
         $projectId = HTTPSession::getInstance()->PROJECT_ID;
 
+        # Beginning of the select statement
         $select = "COUNT(id) AS ap_count";
 
         # Decide what count to get from DB
@@ -104,7 +126,7 @@ class ActionPointFactory
             default: $factor = "";
         }
 
-        # Get number of action points that are not finished yet and are approved
+        # Get a certain number of action points
         $strQuery = "SELECT ".$select." FROM ActionPoint WHERE project_id = :project_id AND is_approved = 1".$factor." AND is_deleted = 0";
         $objStatement = $objPDO->prepare($strQuery);
         $objStatement->bindValue(':project_id', $projectId, PDO::PARAM_INT);
@@ -113,6 +135,7 @@ class ActionPointFactory
         # Return the value
         $result = $objStatement->fetch()['ap_count'];
 
+        # Return the count
         if($result)
             return $result;
         else

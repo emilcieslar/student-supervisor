@@ -1,0 +1,77 @@
+<?php
+
+$object = $notification->getObject();
+# Get text from the object
+$text = $object->getText();
+$deadline = DatetimeConverter::getUserFriendlyDateTimeFormat($object->getDeadline());
+
+# If it's amended, we need to get data from original object that has been amended
+if($notification->getAction() == NotificationAP::AMENDED)
+{
+    $objectOriginal = $notification->getObject(true);
+    # Get text from the object
+    $textOriginal = $objectOriginal->getText();
+    $deadlineOriginal = DatetimeConverter::getUserFriendlyDateTimeFormat($objectOriginal->getDeadline());
+}
+
+# If action is not done or sent_for_approval, then we can have larger field for text
+if($notification->getAction() != NotificationAP::SENT_FOR_APPROVAL && $notification->getAction() != NotificationAP::DONE)
+    $large = 12;
+else
+    $large = 8;
+
+?>
+
+<li class="notif">
+    <div class="large-<?=$large?> columns">
+        <?=$notification->getObjectType()?>
+        <strong>
+            <!-- Display link to the action point only if it wasn't removed -->
+            <?php if(!$notification->getObject()->getIsDeleted()): ?>
+                <a class="notification-object" href="<?=$notification->getController()?>/<?=$notification->getObjectId()?>"><?=$text?></a>
+            <?php else: ?>
+                <?=$text?>
+            <?php endif; ?>
+        </strong>
+        <?php if($notification->getAction() == NotificationAP::AMENDED): ?>
+        with deadline on <strong><?=$deadline?></strong>
+        <?php endif; ?>
+        has been <?=$notification::getActionText($notification->getAction())?>
+        <?php if($notification->getAction() == NotificationAP::AMENDED): ?>
+            from <strong><?=$textOriginal?></strong> with deadline on <strong><?=$deadlineOriginal?></strong>
+        <?php endif; ?>
+        by <?=$notification->getUsername()?>
+        <br><span class="label info round"><?=DatetimeConverter::getUserFriendlyDateTimeFormat($notification->getDatetimeCreated())?></span>
+        <!-- If the action point is deleted, display a warning -->
+        <?php if($notification->getObject()->getIsDeleted()): ?>
+            <span class="label alert round">deleted</span>
+        <?php endif; ?>
+    </div>
+
+    <div class="large-4 columns right">
+        <!-- Display options based on action that has been done on the object -->
+        <?php
+
+        switch($notification->getAction())
+        {
+            case NotificationAP::SENT_FOR_APPROVAL:
+            case NotificationAP::DONE:
+                ?>
+
+                <?php if((!$notification->getObject()->getIsApproved() || ($notification->getObject()->getIsApproved() && !$notification->getObject()->getIsDone())) && HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR): ?>
+                    <?php if(!$notification->getObject()->getIsApproved()): ?>
+                        <a href="<?php echo SITE_URL.$notification->getController()."/approve/" . $notification->getObjectId(); ?>" class="button success small top-10 right">Approve</a>
+                    <?php endif; ?>
+                    <a href="<?php echo SITE_URL.$notification->getController()."/edit/" . $notification->getObjectId(); ?>" class="button small top-10 right">Edit</a>
+                <?php endif; ?>
+                <?php
+                break;
+            default:
+                break;
+        }
+
+        ?>
+
+    </div>
+    <a href="<?=SITE_URL?>notifications/done/<?=$notification->getID()?>"><i class="notif-close fa fa-times"></i></a>
+</li>

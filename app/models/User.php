@@ -32,6 +32,10 @@ class User extends DataBoundObject
         ));
     }
 
+    /**
+     * A method to return the project id associated with a user
+     * @return null
+     */
     public function getProjectId()
     {
         # Get Project object and its ID
@@ -41,6 +45,11 @@ class User extends DataBoundObject
         return null;
     }
 
+    /**
+     * A method to return text for a type of a user
+     * @param int $type type constant
+     * @return string the text representation of that constant
+     */
     public function getTypeText($type)
     {
         switch($type)

@@ -1,0 +1,64 @@
+<?php
+
+class User extends DataBoundObject
+{
+    protected $Username;
+    protected $Password;
+    protected $FirstName;
+    protected $LastName;
+    protected $Type;
+    protected $Email;
+
+    const USER_TYPE_STUDENT = 0;
+    const USER_TYPE_SUPERVISOR = 1;
+    const USER_TYPE_ADMIN = 2;
+
+    protected function DefineTableName()
+    {
+        return("User");
+    }
+
+    protected function DefineRelationMap()
+    {
+        return(array(
+            "id" => "ID",
+            "username" => "Username",
+            "password" => "Password",
+            "first_name" => "FirstName",
+            "last_name" => "LastName",
+            "type" => "Type",
+            "email" => "Email",
+            "is_deleted" => "IsDeleted"
+        ));
+    }
+
+    /**
+     * A method to return the project id associated with a user
+     * @return null
+     */
+    public function getProjectId()
+    {
+        # Get Project object and its ID
+        if($projectId = ProjectFactory::getProjectWithUserId($this->ID))
+            return $projectId->getID();
+
+        return null;
+    }
+
+    /**
+     * A method to return text for a type of a user
+     * @param int $type type constant
+     * @return string the text representation of that constant
+     */
+    public function getTypeText($type)
+    {
+        switch($type)
+        {
+            case self::USER_TYPE_STUDENT: return "Student";
+            case self::USER_TYPE_SUPERVISOR: return "Supervisor";
+            case self::USER_TYPE_ADMIN: return "Administrator";
+        }
+    }
+
+}
+

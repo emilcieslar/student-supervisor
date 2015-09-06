@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Holds data associated with Meeting entity
+ */
 class Meeting extends DataBoundObject
 {
     protected $Datetime;
@@ -50,6 +53,10 @@ class Meeting extends DataBoundObject
         return DatetimeConverter::getUserFriendlyDateTimeFormat($this->getRepeatUntil());
     }
 
+    /**
+     * A method to return the previous meeting object
+     * @return Meeting|null
+     */
     public function getPreviousMeeting()
     {
         require_once 'MeetingFactory.php';
@@ -57,8 +64,14 @@ class Meeting extends DataBoundObject
         return $prevMeeting;
     }
 
+    /**
+     * A method to find out whether the meeting had taken place or not and if a student arrived
+     * @param bool $buttons hide editing buttons after 7 days
+     * @return bool
+     */
     public function getIsNoShow($buttons = true)
     {
+        # Datetime now
         $currentDate = new DateTime();
 
         # We want to hide the buttons after 7 days from no show (supervisor need some time to decide
@@ -66,17 +79,25 @@ class Meeting extends DataBoundObject
         if($buttons)
             $currentDate->sub(new DateInterval('P7D'));
 
+        # When did the meeting take place?
         $meetingDateTime = DateTime::createFromFormat('Y-m-d H:i:s', $this->Datetime);
 
+        # Return true if the meeting is in the past and has not taken place and hasn't been cancelled
         return ($meetingDateTime < $currentDate && !$this->TakenPlace && !$this->IsCancelled);
     }
 
+    /**
+     * A method to find out if this meeting is the next meeting
+     * @return bool true if it is the next meeting
+     */
     public function getIsNext()
     {
+        # If the variable IsNext is not set yet, set it
         if(!$this->IsNext)
             if(MeetingFactory::getNextMeeting())
                 $this->IsNext = $this->ID == MeetingFactory::getNextMeeting()->getID();
 
+        # Otherwise just return
         return $this->IsNext;
     }
 

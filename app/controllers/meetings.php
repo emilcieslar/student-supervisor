@@ -7,6 +7,7 @@ class Meetings extends Controller
 {
     public function index($id = null, $delete = null)
     {
+        # Get all meetings from database
         $meetings = $this->model('MeetingFactory');
         $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID);
 
@@ -36,19 +37,27 @@ class Meetings extends Controller
         if($delete)
             $data['delete'] = $id->getID();
 
+        # Display the view
         $this->view('meetings/index', $data);
-        #$this->view('meetings/index', ['month'=>$month, 'year'=>$year]);
     }
 
+    /**
+     * Displays a list of action points and a form to Add Meeting
+     */
     public function add()
     {
         # Get meetings to display them
         $meetings = $this->model('MeetingFactory');
         $meetings = $meetings->getMeetingsForProject(HTTPSession::getInstance()->PROJECT_ID);
 
+        # Display the view
         $this->view('meetings/index', ['meetings'=>$meetings, 'add'=>true]);
     }
 
+    /**
+     * A method to process POST request for adding a new meeting
+     * @param null $post the $_POST array
+     */
     public function addPost($post = null)
     {
         # Define default header, if it's not repeating meeting, we'll change it afterwards
@@ -85,6 +94,7 @@ class Meetings extends Controller
                 $repeatUntil = $dateTimeRepeatUntil->format('Y-m-d H:i:s');
             }
 
+            # Getting more data from post request...
             $isApproved = 0;
             if(isset($post['isApproved']))
                 $isApproved = 1;
@@ -106,7 +116,7 @@ class Meetings extends Controller
             $dateTime = DateTime::createFromFormat('d-m-Y H:i', $deadline . " " . $deadline_time_hours . ":" . $deadline_time_minutes);
             $date = $dateTime->format('Y-m-d H:i:s');
 
-            # Set provided information
+            # Set meeting with provided information
             $meeting->setDatetime($date);
 
             $meeting->setIsRepeating($isRepeating);
@@ -149,10 +159,11 @@ class Meetings extends Controller
                 $project = new Project(HTTPSession::getInstance()->PROJECT_ID);
                 $project = $project->getName();
 
-                # In that case, we can add it to the google calendar and save the id of this event
+                # We can add it to the google calendar and save the id of this event
                 $googleEventId = GoogleAuth::getInstance()->addEventToCalendar($project, $users, $datetimeGoogleStart, $datetimeGoogleEnd, $attendees);
             }
 
+            # If it's a google event, set it in the meeting
             if(isset($googleEventId))
                 $meeting->setGoogleEventId($googleEventId);
 
@@ -187,15 +198,13 @@ class Meetings extends Controller
 
             if(!$isRepeating)
             {
-                # If it's not repeating meeting, we wanna display the only meeting we've created
+                # If it's not repeating meeting, we want to display the only meeting we've created
                 $header = 'Location: ' . SITE_URL . 'meetings/' . $meeting->getID();
 
                 # Create a new notification only if it's not repeating meeting, creating a notification
                 # for repeated meeting would be a future work
                 new NotificationMeeting($meeting->getID(),NotificationMeeting::ADDED);
             }
-
-
         }
 
         # Redirect back to action points
@@ -203,6 +212,10 @@ class Meetings extends Controller
         die();
     }
 
+    /**
+     * A method to edit a meeting
+     * @param int $id the id used to identify the meeting to be edited
+     */
     public function edit($id = null)
     {
         if(isset($id))
@@ -235,6 +248,10 @@ class Meetings extends Controller
             header('Location: '.SITE_URL.'meetings');
     }
 
+    /**
+     * A method to process POST request for editing an existing meeting
+     * @param null $post the $_POST array
+     */
     public function editPost($post = null)
     {
         if(isset($post))
@@ -249,10 +266,6 @@ class Meetings extends Controller
 
             # Set googleEventId to the value provided from database (if any)
             $googleEventId = $meeting->getGoogleEventId();
-
-            # Save the existing Meeting to the temporary table
-            # in order to retrieve it if not approved by supervisor
-            $meeting->SaveTemporary();
 
             # Get details from post request
             $deadline = $post['deadline'];
@@ -282,7 +295,7 @@ class Meetings extends Controller
             $dateTime = DateTime::createFromFormat('d-m-Y H:i', $deadline . " " . $deadline_time_hours . ":" . $deadline_time_minutes);
             $date = $dateTime->format('Y-m-d H:i:s');
 
-            # Set provided details
+            # Set meeting with provided details
             $meeting->setDatetime($date);
             $meeting->setIsApproved($isApproved);
             $meeting->setTakenPlace($takenPlace);
@@ -306,10 +319,6 @@ class Meetings extends Controller
             if(!empty($googleEventId))
                 $meeting->setGoogleEventId($googleEventId);
 
-            # If the meeting is approved, we must delete the temporary one from temp table
-            if($isApproved)
-                $meeting->RemoveTemporary();
-
             # Save changes
             $meeting->Save();
 
@@ -324,9 +333,13 @@ class Meetings extends Controller
         die();
     }
 
+    /**
+     * A method to approve the meeting proposed by a student
+     * @param int $id the meeting id
+     */
     public function approve($id)
     {
-        # Only supervisor can approve, no one else has access to this page
+        # Only supervisor can approve, no one else has access to this method
         if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR)
         {
             # Retrieve action point from database based on provided id
@@ -346,6 +359,10 @@ class Meetings extends Controller
         header('Location: ' . SITE_URL . 'meetings/' . $id);
     }
 
+    /**
+     * A method to remove a meeting
+     * @param int $id the meeting id
+     */
     public function remove($id)
     {
         # Retrieve a meeting from database based on provided id
@@ -364,6 +381,11 @@ class Meetings extends Controller
         header('Location: ' . SITE_URL . 'meetings/' . $id . '/deleted');
     }
 
+    /**
+     * A method to cancel a meeting
+     * @param null $id the meeting id
+     * @param null $error display error in case trying to cancel two meetings in a row
+     */
     public function cancel($id = null, $error = null)
     {
         if($id)
@@ -411,6 +433,7 @@ class Meetings extends Controller
             if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_STUDENT)
                 $meeting->setIsApproved(0);
 
+            # Save the changes
             $meeting->Save();
 
             # Create a new notification
@@ -425,22 +448,37 @@ class Meetings extends Controller
             header('Location: ' . SITE_URL . 'meetings');
     }
 
+    /**
+     * A method to revert removed meeting
+     * @param $id the meeting id
+     */
     public function revertRemoval($id)
     {
+        # Create the meeting object
         $meeting = $this->model('Meeting',$id);
 
         # Check if user is allowed to perform this action
         $this->checkAuthIsApproved($meeting);
         $this->checkAuthProjectScope($meeting->getProjectId());
 
+        # Revert the deletion
         $meeting->setIsDeleted(0);
 
+        # Save changes
         $meeting->Save();
 
         # Redirect back to actionpoints
         header('Location: ' . SITE_URL . 'meetings');
     }
 
+    /**
+     * A method to check if user is allowed to perform certain actions on meeting
+     * No access if:
+     * 1. User is a student and a meeting has been approved
+     * 2. Meeting has taken place
+     * @param Meeting $meeting the meeting object
+     * @return bool true if allowed
+     */
     protected function checkAuthIsApproved($meeting)
     {
         # No access if:
@@ -455,6 +493,14 @@ class Meetings extends Controller
             return true;
     }
 
+    /**
+     * A method to check if user is allowed to perform certain actions on meeting
+     * No access if:
+     * 1. Meeting is not approved
+     * 2. Meeting has taken place
+     * @param Meeting $meeting the meeting object
+     * @return bool true if allowed
+     */
     protected function checkAuthIsNotApproved($meeting)
     {
         # No access if:
@@ -469,6 +515,10 @@ class Meetings extends Controller
             return true;
     }
 
+    /**
+     * A method to deny access if meeting was cancelled and approved
+     * @param Meeting $meeting the meeting object
+     */
     protected function checkAuthCancelled($meeting)
     {
         # If a meeting was cancelled and cancellation approved, no access
@@ -480,6 +530,11 @@ class Meetings extends Controller
         }
     }
 
+    /**
+     * A method to deny access if user is trying to cancel two meetings in a row
+     * @param Meeting $meeting the meeting object
+     * @param null $error if error should be displayed
+     */
     protected function checkAuthTwoMeetingsInRow($meeting, $error = null)
     {
         # Two meetings in a row cannot be cancelled, if previous meeting was cancelled

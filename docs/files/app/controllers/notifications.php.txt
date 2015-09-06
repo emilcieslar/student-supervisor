@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * Controls all the functionality associated with Notifications
+ */
+class Notifications extends Controller
+{
+    public function index()
+    {
+        # Get all notification objects from db
+        $notifications = $this->model('NotificationFactory');
+        $notifications = $notifications->getNotificationsForProject(HTTPSession::getInstance()->PROJECT_ID);
+
+        # Display the view
+        $this->view('notifications/index', ['notifications'=>$notifications]);
+    }
+
+    /**
+     * A method to remove the notification from the list of notifications)
+     * @param int $id the notification id
+     */
+    public function done($id)
+    {
+        # Get the notification object
+        $notif = new Notification($id);
+
+        # Check access rights
+        $this->checkAuthProjectScope($notif->getProjectId());
+        $this->checkAuthCreatedByStudent($notif);
+
+        # Delete the notification
+        $notif->Delete();
+
+        # Redirect back to notifications
+        header('Location: '.SITE_URL.'notifications');
+    }
+
+    /**
+     * A method to check whether a user is allowed to remove a notification
+     * In particular, if it's the student who created the notification, only a supervisor can
+     * remove it from the list (it is necessary for the supervisor to see every student action)
+     * @param Notification $notif the notification object
+     */
+    private function checkAuthCreatedByStudent(Notification $notif)
+    {
+        # If it's the student who created the notification, only a supervisor can
+        # remove it from the list (it is necessary for the supervisor to see every student action)
+        $creatorUserType = $this->model('User',$notif->getCreatorUserId())->getType();
+        if($creatorUserType == User::USER_TYPE_STUDENT && HTTPSession::getInstance()->USER_TYPE != User::USER_TYPE_SUPERVISOR)
+            header('Location: '.SITE_URL.'notifications');
+    }
+}

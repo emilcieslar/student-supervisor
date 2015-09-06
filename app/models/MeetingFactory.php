@@ -2,11 +2,21 @@
 
 require_once("Meeting.php");
 
+/**
+ * Generates Meeting objects from records in the database
+ */
 class MeetingFactory
 {
+    /**
+     * A method to get meetings from database
+     * @param int $projectId what project does these meetings should belong to
+     * @param bool $untilNow should it contain only meetings that have happend until now?
+     * @param bool $takenPlace should it contain only meetings that took place?
+     * @return array the meeting objects
+     */
     public static function getMeetingsForProject($projectId, $untilNow = false, $takenPlace = false)
     {
-
+        # Get database connection
         $objPDO = PDOFactory::get();
 
         # Find out whether we want only past meetings

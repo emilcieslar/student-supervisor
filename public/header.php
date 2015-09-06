@@ -52,7 +52,7 @@
                         </ul>
                     </li>
                 <?php endif; ?>
-                <li><a data-dropdown="drop-project" aria-controls="drop-project" aria-expanded="false"><i class="fa fa-info-circle"></i></a></li>
+                <li><a data-dropdown="drop-project" data-options="align:right" aria-controls="drop-project" aria-expanded="false"><i class="fa fa-info-circle"></i></a></li>
             <?php endif; ?>
         </ul>
 
