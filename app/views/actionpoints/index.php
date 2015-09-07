@@ -183,7 +183,7 @@
                     <small class="error">Every action point has to be agreed on a certain meeting</small>
                 </div>
 
-                <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR && $data['id']->getIsApproved()): ?>
+                <?php if(HTTPSession::getInstance()->USER_TYPE == User::USER_TYPE_SUPERVISOR && ($data['id']->getIsApproved() || (!$data['id']->getIsApproved() && $data['id']->getIsDone()))): ?>
                     <div class="large-12 columns">
                         <label>Choose a grade: <span class="slider-value"></span></label>
                         <div class="range-slider" data-slider data-options="start: 1; end: 22;">

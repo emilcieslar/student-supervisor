@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Holds data associated with Project entity
+ */
 class Project extends DataBoundObject
 {
     protected $Name;

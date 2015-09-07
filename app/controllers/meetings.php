@@ -539,7 +539,7 @@ class Meetings extends Controller
     {
         # Two meetings in a row cannot be cancelled, if previous meeting was cancelled
         # then we cannot approve this meeting to be cancelled
-        if($meeting->getPreviousMeeting()->getIsCancelled() && !$error)
+        if($meeting->getPreviousMeeting() instanceof Meeting && $meeting->getPreviousMeeting()->getIsCancelled() && !$error)
             header('Location: '. SITE_URL . 'meetings/cancel/'.$meeting->getID().'/error');
 
     }

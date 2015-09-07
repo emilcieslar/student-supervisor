@@ -2,6 +2,9 @@
 
 require_once 'PDOFactory.php';
 
+/**
+ * This class handles the connection of objects to database
+ */
 abstract class DataBoundObject
 {
     # Every object has an ID in the DB

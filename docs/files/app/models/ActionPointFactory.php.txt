@@ -2,6 +2,9 @@
 
 require_once("ActionPoint.php");
 
+/**
+ * Generates ActionPoint objects from records in the database
+ */
 class ActionPointFactory
 {
     /**

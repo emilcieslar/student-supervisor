@@ -2,8 +2,17 @@
 
 require_once("Note.php");
 
+/**
+ * Generates Note objects from records in the database
+ */
 class NoteFactory
 {
+    /**
+     * A method to return note objects from database
+     * @param null $meeting filter by a specific meeting
+     * @param bool $agenda if it should be agenda notes returned
+     * @return array the note objects
+     */
     public static function getNotes($meeting = null, $agenda = false)
     {
         # Get database connection
@@ -41,13 +50,10 @@ class NoteFactory
 
         # Add all notes to an array
         if($result = $objStatement->fetchAll(PDO::FETCH_ASSOC))
-        {
             foreach($result as $row)
-            {
                 $myArr[$row["id"]] = new Note($row["id"]);
-            }
-        }
 
+        # Return the note objects
         return $myArr;
     }
 }

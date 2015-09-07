@@ -106,7 +106,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">279</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">225</span>
                                 </a>
                             </li>
                             <li>
@@ -136,10 +136,10 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1545438677"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-83083699"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1545438677" class="accordion-body collapse in">
+            <div id="namespace-83083699" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                     
@@ -193,7 +193,7 @@
                     <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
 
                     <h1><small>\</small>ProjectFactory</h1>
-                    <p><em></em></p>
+                    <p><em>Generates Project objects from records in the database</em></p>
                     
                     
                                         
@@ -287,26 +287,17 @@
             <article class="method">
                 <h3 class="public ">getAllProjects()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getAllProjects(  <span class="argument">$projectId</span>,   <span class="argument">$sinceNow = false</span>) </pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">getAllProjects() : array</pre>
+                <p><em>A method to return all projects
+Not used in this version, however might be useful in future</em></p>
                 
 
-                                    <h4>Parameters</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td></td>
-                                <td>$projectId </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$sinceNow </td>
-                                <td></td>
-                            </tr>
-                                            </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>the project objects</p>
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -327,21 +318,24 @@
             <article class="method">
                 <h3 class="public ">getProjectWithUserId()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getProjectWithUserId(  <span class="argument">$id</span>) </pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">getProjectWithUserId(integer  <span class="argument">$id</span>) : null|\Project</pre>
+                <p><em>A method to return project associated with a provided user id
+If the user has more projects (supervisor), the first one is returned</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>integer</td>
                                 <td>$id </td>
-                                <td></td>
+                                <td><p>the user id</p></td>
                             </tr>
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    null|<a href="../classes/Project.html">\Project</a>
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -362,21 +356,24 @@
             <article class="method">
                 <h3 class="public ">getAllProjectsForUser()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getAllProjectsForUser(  <span class="argument">$userId</span>) </pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">getAllProjectsForUser(integer  <span class="argument">$userId</span>) : array</pre>
+                <p><em>A method to return all projects associated with a user ID</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>integer</td>
                                 <td>$userId </td>
-                                <td></td>
+                                <td><p>the user id</p></td>
                             </tr>
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>the project objects</p>
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -397,8 +394,8 @@
             <article class="method">
                 <h3 class="public ">getAllUsersForProject()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getAllUsersForProject(  <span class="argument">$projectId</span>) </pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">getAllUsersForProject(  <span class="argument">$projectId</span>) : array</pre>
+                <p><em>A method to return all users associated with a project</em></p>
                 
 
                                     <h4>Parameters</h4>
@@ -411,7 +408,10 @@
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>the user objects</p>
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -475,7 +475,7 @@
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on September 5th, 2015 at 19:47.
+                    on September 6th, 2015 at 22:02.
                 </section>
             </section>
         </section>

@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Holds data associated with User entity
+ */
 class User extends DataBoundObject
 {
     protected $Username;
@@ -34,6 +37,7 @@ class User extends DataBoundObject
 
     /**
      * A method to return the project id associated with a user
+     * If the user has more projects (supervisor), the first is returned
      * @return null
      */
     public function getProjectId()

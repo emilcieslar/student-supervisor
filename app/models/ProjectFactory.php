@@ -2,6 +2,9 @@
 
 require_once("Project.php");
 
+/**
+ * Generates Project objects from records in the database
+ */
 class ProjectFactory
 {
     /**

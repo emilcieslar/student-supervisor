@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Holds data associated with Notifications focused on Meetings
+ */
 class NotificationMeeting extends Notification
 {
     const ADDED = 1;
@@ -22,6 +25,8 @@ class NotificationMeeting extends Notification
             $this->ProjectId = HTTPSession::getInstance()->PROJECT_ID;
             $this->Action = $action;
 
+            # We have just set the values above, however unless we use set methods, DataBoundObject
+            # won't recognize these as modified, therefore we have to add them to modified relations table
             $this->arModifiedRelations['Controller'] = "1";
             $this->arModifiedRelations['CreatorUserId'] = "1";
             $this->arModifiedRelations['ObjectId'] = "1";
@@ -29,6 +34,7 @@ class NotificationMeeting extends Notification
             $this->arModifiedRelations['ProjectId'] = "1";
             $this->arModifiedRelations['Action'] = "1";
 
+            # Save the notification
             if($autoSave)
                 $this->Save();
         }
@@ -39,6 +45,11 @@ class NotificationMeeting extends Notification
 
     }
 
+    /**
+     * A method to return text representation of different action constants
+     * @param int $action the meeting constant
+     * @return string the text representation
+     */
     public static function getActionText($action)
     {
         $actionText[0] = "";

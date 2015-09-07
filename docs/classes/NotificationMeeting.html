@@ -106,7 +106,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">279</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">225</span>
                                 </a>
                             </li>
                             <li>
@@ -136,10 +136,10 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-369768203"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-280671604"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-369768203" class="accordion-body collapse in">
+            <div id="namespace-280671604" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                     
@@ -193,7 +193,7 @@
                     <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
 
                     <h1><small>\</small>NotificationMeeting</h1>
-                    <p><em></em></p>
+                    <p><em>Holds data associated with Notifications focused on Meetings</em></p>
                     
                     
                                         
@@ -914,13 +914,15 @@
             <article class="method">
                 <h3 class="public ">getUsername()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getUsername() </pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">getUsername() : mixed</pre>
+                <p><em>Get username of the creator of the notification</em></p>
                 
 
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    mixed
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -942,21 +944,29 @@
             <article class="method">
                 <h3 class="public ">getObject()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getObject(  <span class="argument">$temp = false</span>) </pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">getObject(boolean  <span class="argument">$temp = false</span>) : mixed</pre>
+                <p><em>A method to return an object based on $ObjectType
+Description:
+$ObjectType variable holds objects such as Action Point or Meeting,
+where in case of Meeting it&#039;s fine, however Action Point has a space
+so in order to retrieve ActionPoint object, we have to remove that space.</em></p>
+                <p>This method facilitates removal of such space and returns the object so it can
+be further handled (for example to get some data from it to display in notification)</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>boolean</td>
                                 <td>$temp </td>
-                                <td></td>
+                                <td><p>if it should be retrieved from temporary table (for example action point, we want to see how it was modified)</p></td>
                             </tr>
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    mixed
+                                            &mdash; <p>the object (Meeting, ActionPoint, ...)</p>
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -1325,21 +1335,24 @@ It is used to delete the object or set it as deleted, however physically keep it
             <article class="method">
                 <h3 class="public ">getActionText()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getActionText(  <span class="argument">$action</span>) </pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">getActionText(integer  <span class="argument">$action</span>) : string</pre>
+                <p><em>A method to return text representation of different action constants</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>integer</td>
                                 <td>$action </td>
-                                <td></td>
+                                <td><p>the meeting constant</p></td>
                             </tr>
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the text representation</p>
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -1542,7 +1555,7 @@ It is used to delete the object or set it as deleted, however physically keep it
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on September 5th, 2015 at 19:47.
+                    on September 6th, 2015 at 22:02.
                 </section>
             </section>
         </section>

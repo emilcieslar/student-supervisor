@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Holds data associated with Notification entity
+ */
 class Notification extends DataBoundObject
 {
     const ADD = "added";
@@ -46,19 +49,38 @@ class Notification extends DataBoundObject
         ));
     }
 
+    /**
+     * Get username of the creator of the notification
+     * @return mixed
+     */
     public function getUsername()
     {
         require_once("User.php");
+        # Get the user object
         $user = new User($this->CreatorUserId);
+        # Return hers/his username
         return $user->getUsername();
     }
 
+    /**
+     * A method to return an object based on $ObjectType
+     * Description:
+     * $ObjectType variable holds objects such as Action Point or Meeting,
+     * where in case of Meeting it's fine, however Action Point has a space
+     * so in order to retrieve ActionPoint object, we have to remove that space.
+     * This method facilitates removal of such space and returns the object so it can
+     * be further handled (for example to get some data from it to display in notification)
+     * @param bool $temp if it should be retrieved from temporary table (for example action point, we want to see how it was modified)
+     * @return mixed the object (Meeting, ActionPoint, ...)
+     */
     public function getObject($temp = false)
     {
         # Get object type without spaces
         $objectType = str_replace(' ', '', $this->ObjectType);
         require_once($objectType.".php");
+        # Create the object
         $object = new $objectType($this->ObjectId, $temp);
+        # And return it
         return $object;
     }
 }

@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Generates Notification objects from records in the database
+ */
 class NotificationFactory
 {
     /**
